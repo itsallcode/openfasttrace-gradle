@@ -1,0 +1,56 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.9.7'
+    id 'com.github.hierynomus.license' version '0.13.1'
+}
+
+repositories {
+   jcenter()
+}
+
+version = '0.0.1'
+group = 'com.github.kaklakariada'
+
+ext {
+  gradlePluginId = 'com.github.kaklakariada.openfasttrack'
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+gradlePlugin {
+    plugins {
+        awsSamDeployPlugin {
+            id = gradlePluginId
+            implementationClass = 'com.github.kaklakariada.aws.sam.AwsSamDeployPlugin'
+        }
+    }
+}
+
+pluginBundle {
+  website = 'https://github.com/hamstercommunity/openfasttrack-gradle/blob/master/README.md'
+  vcsUrl = 'https://github.com/hamstercommunity/openfasttrack-gradle'
+  description = 'Gradle plugin for tracing requirements using OpenFastTrack'
+  tags = ['requirements', 'tracing']
+
+  plugins {
+    awsSamDeployPlugin {
+      id = gradlePluginId
+      displayName = 'OpenFastTrack requirements tracing plugin'
+    }
+  }
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+license {
+    header = file('gradle/license-header.txt')
+    ext.year = 2017
+    ext.name = 'Hamster community'
+    ext.email = 'christoph at users.sourceforge.net'
+}
