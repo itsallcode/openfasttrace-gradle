@@ -1,0 +1,67 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'jacoco'
+    id 'com.gradle.plugin-publish' version '0.9.7'
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id "org.sonarqube" version '2.2.1'
+}
+
+repositories {
+   jcenter()
+}
+
+version = '0.0.1'
+group = 'com.github.kaklakariada'
+
+ext {
+  gradlePluginId = 'com.github.kaklakariada.openfasttrack'
+}
+
+dependencies {
+    compile 'com.github.kaklakariada:openfasttrack:0.1.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.6.5'
+}
+
+gradlePlugin {
+    plugins {
+        awsSamDeployPlugin {
+            id = gradlePluginId
+            implementationClass = 'openfasttrack.gradle.OpenFastTrackPlugin'
+        }
+    }
+}
+
+pluginBundle {
+  website = 'https://github.com/hamstercommunity/openfasttrack-gradle/blob/master/README.md'
+  vcsUrl = 'https://github.com/hamstercommunity/openfasttrack-gradle'
+  description = 'Gradle plugin for tracing requirements using OpenFastTrack'
+  tags = ['requirements', 'tracing']
+
+  plugins {
+    awsSamDeployPlugin {
+      id = gradlePluginId
+      displayName = 'OpenFastTrack requirements tracing plugin'
+    }
+  }
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+license {
+    header = file('gradle/license-header.txt')
+    ext.year = 2017
+    ext.name = 'Hamster community'
+    ext.email = 'christoph at users.sourceforge.net'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
