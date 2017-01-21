@@ -2,6 +2,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.9.7'
     id 'com.github.hierynomus.license' version '0.13.1'
+    id "org.sonarqube" version '2.2.1'
 }
 
 repositories {
@@ -16,6 +17,7 @@ ext {
 }
 
 dependencies {
+    compile 'com.github.kaklakariada:openfasttrack:0.1.0'
     testCompile 'junit:junit:4.12'
 }
 
@@ -23,7 +25,7 @@ gradlePlugin {
     plugins {
         awsSamDeployPlugin {
             id = gradlePluginId
-            implementationClass = 'com.github.kaklakariada.aws.sam.AwsSamDeployPlugin'
+            implementationClass = 'openfasttrack.gradle.OpenFastTrackPlugin'
         }
     }
 }
