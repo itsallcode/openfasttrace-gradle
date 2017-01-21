@@ -1,4 +1,5 @@
 codecov:
+  branch: develop
   notify:
     require_ci_to_pass: yes
 
@@ -21,6 +22,6 @@ parsers:
       macro: no
 
 comment:
-  layout: "header, diff"
+  layout: "header, diff, changes, sunburst, uncovered, tree"
   behavior: default
   require_changes: no
