@@ -17,14 +17,57 @@
  */
 package openfasttrack.gradle;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toList;
+
+import java.io.File;
+import java.util.List;
+
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.logging.Logging;
+import org.slf4j.Logger;
+
+import openfasttrack.gradle.task.TraceTask;
+import openfasttrack.report.ReportVerbosity;
 
 public class OpenFastTrackPlugin implements Plugin<Project>
 {
+    private static final Logger LOG = Logging.getLogger(OpenFastTrackPlugin.class);
+    private static final String TASK_GROUP = "trace";
+    private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
+    private Project project;
+
     @Override
     public void apply(Project project)
     {
+        LOG.info("Initialize OpenFastTrack plugin...");
+        this.project = project;
+        project.afterEvaluate((p) -> createTasks());
+    }
 
+    private void createTasks()
+    {
+        LOG.debug("Creating tasks");
+        createTracingTask(project);
+    }
+
+    private void createTracingTask(Project project)
+    {
+        final TraceTask traceTask = createTask("traceRequirements", TraceTask.class);
+        traceTask.setGroup(TASK_GROUP);
+        traceTask.setDescription("Trace requirements and generate tracing report");
+        traceTask.inputDirectories = DEFAULT_DIRECTORIES.stream() //
+                .map(dir -> new File(project.getRootDir(), dir)) //
+                .collect(toList());
+        traceTask.outputFile = new File(project.getBuildDir(), "reports/tracing.txt");
+        traceTask.reportVerbosity = ReportVerbosity.FAILURE_DETAILS;
+    }
+
+    private <T extends DefaultTask> T createTask(String taskName, Class<T> taskType)
+    {
+        return taskType.cast(project.task(singletonMap("type", taskType), taskName));
     }
 }
