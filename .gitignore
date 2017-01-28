@@ -4,3 +4,5 @@
 /.settings/org.eclipse.buildship.core.prefs
 /bin/
 /build/
+/example-project/.gradle
+/example-project/build
