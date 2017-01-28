@@ -21,7 +21,11 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -30,27 +34,32 @@ import org.junit.Test;
 
 public class PluginTest
 {
-    private static final File PROJECT_DIR = new File("example-project");
+    private static final Path PROJECT_DIR = Paths.get("example-project").toAbsolutePath();
     private BuildResult buildResult;
 
     @Test
-    public void testGetTasks()
+    public void testTracingTaskAddedToProject()
     {
         runBuild(PROJECT_DIR, "tasks");
-        assertThat(buildResult.getOutput(), containsString("traceRequirements - blah"));
+        assertThat(buildResult.getOutput(), containsString(
+                "traceRequirements - Trace requirements and generate tracing report"));
     }
 
     @Test
-    public void testExampleProject()
+    public void testTraceExampleProject() throws IOException
     {
         runBuild(PROJECT_DIR, "traceRequirements");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        final Path reportFile = PROJECT_DIR.resolve("build/reports/tracing.txt");
+        final String reportContent = new String(Files.readAllBytes(reportFile),
+                StandardCharsets.UTF_8);
+        assertThat(reportContent, containsString("ok - 0 total"));
     }
 
-    private void runBuild(File projectDir, String... arguments)
+    private void runBuild(Path projectDir, String... arguments)
     {
         buildResult = GradleRunner.create() //
-                .withProjectDir(projectDir.getAbsoluteFile()) //
+                .withProjectDir(projectDir.toFile()) //
                 .withPluginClasspath() //
                 .withArguments(arguments) //
                 .forwardOutput() //
