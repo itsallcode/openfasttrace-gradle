@@ -50,10 +50,12 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
-        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace");
+        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        assertThat(fileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt")),
-                containsString("ok - 0 total"));
+        final String report = fileContent(
+                PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"));
+        assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~example~1 (impl, -utest)"));
+        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
     }
 
     @Test
@@ -61,8 +63,10 @@ public class OpenFastTrackPluginTest
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        assertThat(fileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt")),
-                containsString("ok - 0 total"));
+        final String report = fileContent(
+                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
+        assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~example~1 (impl, -utest)"));
+        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
     }
 
     private String fileContent(Path file) throws IOException
