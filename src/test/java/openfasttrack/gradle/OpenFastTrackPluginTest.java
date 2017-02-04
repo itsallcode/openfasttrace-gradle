@@ -17,33 +17,67 @@
  */
 package openfasttrack.gradle;
 
-import org.gradle.api.Project;
-import org.junit.Before;
-import org.junit.Rule;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 public class OpenFastTrackPluginTest
 {
-    @Rule
-    public MockitoRule mrule = MockitoJUnit.rule();
+    private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
+    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
+    private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
+    private BuildResult buildResult;
 
-    private OpenFastTrackPlugin plugin;
-
-    @Mock
-    private Project projectMock;
-
-    @Before
-    public void setUp()
+    @Test
+    public void testTracingTaskAddedToProject()
     {
-        plugin = new OpenFastTrackPlugin();
+        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "tasks", "--stacktrace");
+        assertThat(buildResult.getOutput(), containsString(
+                "traceRequirements - Trace requirements and generate tracing report"));
     }
 
     @Test
-    public void testApply()
+    public void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
-        plugin.apply(projectMock);
+        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace");
+        assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        assertThat(fileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt")),
+                containsString("ok - 0 total"));
+    }
+
+    @Test
+    public void testTraceExampleProjectWithCustomConfig() throws IOException
+    {
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--stacktrace");
+        assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        assertThat(fileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt")),
+                containsString("ok - 0 total"));
+    }
+
+    private String fileContent(Path file) throws IOException
+    {
+        final String reportContent = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+        return reportContent;
+    }
+
+    private void runBuild(Path projectDir, String... arguments)
+    {
+        buildResult = GradleRunner.create() //
+                .withProjectDir(projectDir.toFile()) //
+                .withPluginClasspath() //
+                .withArguments(arguments) //
+                .forwardOutput() //
+                .build();
     }
 }

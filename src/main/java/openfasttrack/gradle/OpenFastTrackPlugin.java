@@ -39,31 +39,56 @@ public class OpenFastTrackPlugin implements Plugin<Project>
     private static final String TASK_GROUP = "trace";
     private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
     private Project project;
+    private TracingConfig config;
 
     @Override
     public void apply(Project project)
     {
         LOG.info("Initialize OpenFastTrack plugin...");
         this.project = project;
+        this.config = createConfigDsl();
         project.afterEvaluate((p) -> createTasks());
+    }
+
+    private TracingConfig createConfigDsl()
+    {
+        LOG.debug("Setup serverless config DSL");
+        return project.getExtensions().create("requirementTracing", TracingConfig.class);
     }
 
     private void createTasks()
     {
         LOG.debug("Creating tasks");
-        createTracingTask(project);
+        createTracingTask();
     }
 
-    private void createTracingTask(Project project)
+    private void createTracingTask()
     {
         final TraceTask traceTask = createTask("traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        traceTask.inputDirectories = DEFAULT_DIRECTORIES.stream() //
+        traceTask.inputDirectories = getInputDirectories();
+        traceTask.outputFile = getReportFile();
+        traceTask.reportVerbosity = ReportVerbosity.FAILURE_DETAILS;
+    }
+
+    private File getReportFile()
+    {
+        return config.reportFile != null ? config.reportFile
+                : new File(project.getBuildDir(), "reports/tracing.txt");
+    }
+
+    private List<File> getInputDirectories()
+    {
+        return config.inputDirectories != null ? config.inputDirectories
+                : getDefaultInputDirectories();
+    }
+
+    private List<File> getDefaultInputDirectories()
+    {
+        return DEFAULT_DIRECTORIES.stream() //
                 .map(dir -> new File(project.getRootDir(), dir)) //
                 .collect(toList());
-        traceTask.outputFile = new File(project.getBuildDir(), "reports/tracing.txt");
-        traceTask.reportVerbosity = ReportVerbosity.FAILURE_DETAILS;
     }
 
     private <T extends DefaultTask> T createTask(String taskName, Class<T> taskType)
