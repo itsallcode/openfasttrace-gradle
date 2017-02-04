@@ -50,10 +50,15 @@ public class PluginTest
     {
         runBuild(PROJECT_DIR, "traceRequirements");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        final Path reportFile = PROJECT_DIR.resolve("build/reports/tracing.txt");
+        assertThat(reportContent(PROJECT_DIR), containsString("ok - 0 total"));
+    }
+
+    private String reportContent(Path projectDir) throws IOException
+    {
+        final Path reportFile = projectDir.resolve("build/reports/tracing.txt");
         final String reportContent = new String(Files.readAllBytes(reportFile),
                 StandardCharsets.UTF_8);
-        assertThat(reportContent, containsString("ok - 0 total"));
+        return reportContent;
     }
 
     private void runBuild(Path projectDir, String... arguments)
