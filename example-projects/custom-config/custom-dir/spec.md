@@ -1,5 +1,5 @@
 # Tracing Example
-`dsn~example~1`
+`dsn~exampleB~1`
 
 Example requirement
 

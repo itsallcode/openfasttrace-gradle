@@ -23,10 +23,12 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.logging.Logging;
 import org.slf4j.Logger;
 
@@ -37,62 +39,64 @@ public class OpenFastTrackPlugin implements Plugin<Project>
 {
     private static final Logger LOG = Logging.getLogger(OpenFastTrackPlugin.class);
     private static final String TASK_GROUP = "trace";
+    private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
     private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
-    private Project project;
     private TracingConfig config;
 
     @Override
     public void apply(Project project)
     {
-        LOG.info("Initialize OpenFastTrack plugin...");
-        this.project = project;
-        this.config = createConfigDsl();
-        project.afterEvaluate((p) -> createTasks());
+        LOG.debug("Initializing OpenFastTrack plugin for {}", project);
+        this.config = createConfigDsl(project);
+        project.afterEvaluate(this::createTasks);
     }
 
-    private TracingConfig createConfigDsl()
+    private TracingConfig createConfigDsl(Project project)
     {
-        LOG.debug("Setup serverless config DSL");
+        LOG.debug("Setting up plugin configuration...");
         return project.getExtensions().create("requirementTracing", TracingConfig.class);
     }
 
-    private void createTasks()
+    private void createTasks(Project project)
     {
         LOG.debug("Creating tasks");
-        createTracingTask();
+        createTracingTask(project);
     }
 
-    private void createTracingTask()
+    private void createTracingTask(Project project)
     {
-        final TraceTask traceTask = createTask("traceRequirements", TraceTask.class);
+        final TraceTask traceTask = createTask(project, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        traceTask.inputDirectories = getInputDirectories();
-        traceTask.outputFile = getReportFile();
+        traceTask.inputDirectories = getInputDirectories(project);
+        traceTask.outputFile = getReportFile(project);
         traceTask.reportVerbosity = ReportVerbosity.FAILURE_DETAILS;
     }
 
-    private File getReportFile()
+    private File getReportFile(Project project)
     {
         return config.reportFile != null ? config.reportFile
-                : new File(project.getBuildDir(), "reports/tracing.txt");
+                : new File(project.getBuildDir(), DEFAULT_REPORT_FILE);
     }
 
-    private List<File> getInputDirectories()
+    private List<File> getInputDirectories(Project project)
     {
         return config.inputDirectories != null ? config.inputDirectories
-                : getDefaultInputDirectories();
+                : getDefaultInputDirectories(project);
     }
 
-    private List<File> getDefaultInputDirectories()
+    private List<File> getDefaultInputDirectories(Project project)
     {
         return DEFAULT_DIRECTORIES.stream() //
                 .map(dir -> new File(project.getRootDir(), dir)) //
                 .collect(toList());
     }
 
-    private <T extends DefaultTask> T createTask(String taskName, Class<T> taskType)
+    private <T extends DefaultTask> T createTask(Project project, String taskName,
+            Class<T> taskType)
     {
-        return taskType.cast(project.task(singletonMap("type", taskType), taskName));
+        final Map<String, Class<T>> taskConfig = singletonMap("type", taskType);
+        final Task task = project.task(taskConfig, taskName);
+        return taskType.cast(task);
     }
 }
