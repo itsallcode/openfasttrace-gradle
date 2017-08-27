@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputFile;
@@ -37,11 +39,12 @@ import openfasttrack.report.ReportVerbosity;
 public class TraceTask extends DefaultTask
 {
     @InputDirectory
-    public List<File> inputDirectories;
+    public final ConfigurableFileCollection inputDirectories = getProject().files();
     @OutputFile
-    public File outputFile;
+    public final ConfigurableFileCollection outputFile = getProject().files();
     @Input
-    public ReportVerbosity reportVerbosity;
+    public PropertyState<ReportVerbosity> reportVerbosity = getProject()
+            .property(ReportVerbosity.class);
 
     @TaskAction
     public void trace() throws IOException
@@ -53,21 +56,22 @@ public class TraceTask extends DefaultTask
 
     private void createReportOutputDir() throws IOException
     {
-        if (outputFile.getParentFile().exists())
+        if (outputFile.getSingleFile().getParentFile().exists())
         {
             return;
         }
-        if (!outputFile.getParentFile().mkdirs())
+        if (!outputFile.getSingleFile().mkdirs())
         {
-            throw new IOException("Error creating directory " + outputFile.getParent());
+            throw new IOException(
+                    "Error creating directory " + outputFile.getSingleFile().getParent());
         }
     }
 
     private CliArguments buildTraceCommandArgs()
     {
         final CliArguments args = new CliArguments();
-        args.setOutputFile(outputFile.getAbsolutePath());
-        args.setReportVerbosity(reportVerbosity);
+        args.setOutputFile(outputFile.getSingleFile().getAbsolutePath());
+        args.setReportVerbosity(reportVerbosity.get());
         args.setUnnamedValues(getUnnamedArgs());
         return args;
     }
@@ -82,7 +86,7 @@ public class TraceTask extends DefaultTask
 
     private List<String> getInputDirPaths()
     {
-        return inputDirectories.stream() //
+        return inputDirectories.getFiles().stream() //
                 .map(File::getAbsolutePath) //
                 .collect(toList());
     }

@@ -19,11 +19,12 @@ package openfasttrack.gradle;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
@@ -47,13 +48,13 @@ public class OpenFastTrackPlugin implements Plugin<Project>
     {
         LOG.info("Initializing OpenFastTrack plugin for project '{}'", project);
         project.allprojects(this::createConfigDsl);
-        project.allprojects(p -> p.afterEvaluate(this::createTasks));
+        project.allprojects(this::createTasks);
     }
 
     private void createConfigDsl(Project project)
     {
         LOG.info("Setting up plugin configuration for project '{}'", project.getName());
-        project.getExtensions().create("requirementTracing", TracingConfig.class);
+        project.getExtensions().create("requirementTracing", TracingConfig.class, project);
     }
 
     private void createTasks(Project project)
@@ -67,9 +68,9 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         final TraceTask traceTask = createTask(project, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        traceTask.inputDirectories = getInputDirectories(project);
-        traceTask.outputFile = getReportFile(project);
-        traceTask.reportVerbosity = ReportVerbosity.FAILURE_DETAILS;
+        traceTask.inputDirectories.setFrom(getInputDirectories(project));
+        traceTask.outputFile.setFrom(getReportFile(project));
+        traceTask.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
 
         LOG.info("### Input dirs: " + traceTask.inputDirectories);
     }
@@ -77,7 +78,7 @@ public class OpenFastTrackPlugin implements Plugin<Project>
     private File getReportFile(Project project)
     {
         final TracingConfig config = getConfig(project);
-        return config.reportFile != null ? config.reportFile
+        return config.reportFile.isPresent() ? config.reportFile.get()
                 : new File(project.getBuildDir(), DEFAULT_REPORT_FILE);
     }
 
@@ -86,18 +87,18 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         return project.getExtensions().getByType(TracingConfig.class);
     }
 
-    private List<File> getInputDirectories(Project project)
+    private Set<File> getInputDirectories(Project project)
     {
         final TracingConfig config = getConfig(project);
-        return config.inputDirectories != null ? config.inputDirectories
+        return !config.inputDirectories.isEmpty() ? config.inputDirectories.getFiles()
                 : getDefaultInputDirectories(project);
     }
 
-    private List<File> getDefaultInputDirectories(Project project)
+    private Set<File> getDefaultInputDirectories(Project project)
     {
         return DEFAULT_DIRECTORIES.stream() //
                 .map(dir -> new File(project.getRootDir(), dir)) //
-                .collect(toList());
+                .collect(toSet());
     }
 
     private <T extends DefaultTask> T createTask(Project project, String taskName,

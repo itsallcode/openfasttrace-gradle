@@ -3,6 +3,6 @@ plugins {
 }
 
 requirementTracing {
-  inputDirectories = [file('custom-dir')]
+  inputDirectories = files('custom-dir')
   reportFile = file('build/custom-report.txt')
 }

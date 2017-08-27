@@ -18,10 +18,37 @@
 package openfasttrack.gradle;
 
 import java.io.File;
-import java.util.List;
+
+import org.gradle.api.Project;
+import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.PropertyState;
 
 public class TracingConfig
 {
-    public List<File> inputDirectories;
-    public File reportFile;
+    public final PropertyState<String> message;
+    public final ConfigurableFileCollection inputDirectories;
+    public final PropertyState<File> reportFile;
+
+    public TracingConfig(Project project)
+    {
+        this.message = project.property(String.class);
+        this.inputDirectories = project.files();
+        this.reportFile = project.property(File.class);
+    }
+
+    public void setMessage(String message)
+    {
+        this.message.set(message);
+    }
+
+    public void setInputDirectories(FileCollection inputDirs)
+    {
+        this.inputDirectories.setFrom(inputDirs);
+    }
+
+    public void setReportFile(File reportFile)
+    {
+        this.reportFile.set(reportFile);
+    }
 }
