@@ -6,3 +6,4 @@
 /build/
 /example-projects/*/.gradle
 /example-projects/*/build
+/example-projects/multi-project/*/build
