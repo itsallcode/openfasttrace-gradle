@@ -1,0 +1,3 @@
+requirementTracing {
+  inputDirectories = files('custom-dir1')
+}

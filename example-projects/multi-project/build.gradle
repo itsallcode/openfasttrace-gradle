@@ -1,0 +1,8 @@
+plugins {
+    id 'com.github.kaklakariada.openfasttrack'
+}
+
+requirementTracing {
+  inputDirectories = files('custom-dir-root')
+  reportFile = file('build/custom-report.txt')
+}

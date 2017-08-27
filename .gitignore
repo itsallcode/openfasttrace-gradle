@@ -1,0 +1,10 @@
+/.gradle/
+/.project
+/.classpath
+/.settings/org.eclipse.buildship.core.prefs
+/bin/
+/build/
+/example-projects/*/.gradle
+/example-projects/*/build
+/example-projects/*/gradle.properties
+/example-projects/multi-project/*/build
