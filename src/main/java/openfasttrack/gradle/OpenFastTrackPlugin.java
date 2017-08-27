@@ -41,25 +41,24 @@ public class OpenFastTrackPlugin implements Plugin<Project>
     private static final String TASK_GROUP = "trace";
     private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
     private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
-    private TracingConfig config;
 
     @Override
     public void apply(Project project)
     {
-        LOG.debug("Initializing OpenFastTrack plugin for {}", project);
-        this.config = createConfigDsl(project);
-        project.afterEvaluate(this::createTasks);
+        LOG.info("Initializing OpenFastTrack plugin for project '{}'", project);
+        project.allprojects(this::createConfigDsl);
+        project.allprojects(p -> p.afterEvaluate(this::createTasks));
     }
 
-    private TracingConfig createConfigDsl(Project project)
+    private void createConfigDsl(Project project)
     {
-        LOG.debug("Setting up plugin configuration...");
-        return project.getExtensions().create("requirementTracing", TracingConfig.class);
+        LOG.info("Setting up plugin configuration for project '{}'", project.getName());
+        project.getExtensions().create("requirementTracing", TracingConfig.class);
     }
 
     private void createTasks(Project project)
     {
-        LOG.debug("Creating tasks");
+        LOG.info("#### Creating tasks for project '{}'", project.getName());
         createTracingTask(project);
     }
 
@@ -71,16 +70,25 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         traceTask.inputDirectories = getInputDirectories(project);
         traceTask.outputFile = getReportFile(project);
         traceTask.reportVerbosity = ReportVerbosity.FAILURE_DETAILS;
+
+        LOG.info("### Input dirs: " + traceTask.inputDirectories);
     }
 
     private File getReportFile(Project project)
     {
+        final TracingConfig config = getConfig(project);
         return config.reportFile != null ? config.reportFile
                 : new File(project.getBuildDir(), DEFAULT_REPORT_FILE);
     }
 
+    private TracingConfig getConfig(Project project)
+    {
+        return project.getExtensions().getByType(TracingConfig.class);
+    }
+
     private List<File> getInputDirectories(Project project)
     {
+        final TracingConfig config = getConfig(project);
         return config.inputDirectories != null ? config.inputDirectories
                 : getDefaultInputDirectories(project);
     }

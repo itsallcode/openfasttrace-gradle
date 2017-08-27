@@ -37,6 +37,7 @@ public class OpenFastTrackPluginTest
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
     private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
+    private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
     private BuildResult buildResult;
 
     @Test
@@ -62,6 +63,17 @@ public class OpenFastTrackPluginTest
     public void testTraceExampleProjectWithCustomConfig() throws IOException
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--stacktrace");
+        assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        final String report = fileContent(
+                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
+        assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)"));
+        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+    }
+
+    @Test
+    public void testTraceMultiProject() throws IOException
+    {
+        runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
