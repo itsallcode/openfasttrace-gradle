@@ -51,7 +51,6 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
-        deleteBuildDir(PROJECT_DEFAULT_CONFIG_DIR);
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
@@ -63,7 +62,6 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceExampleProjectWithCustomConfig() throws IOException
     {
-        deleteBuildDir(PROJECT_CUSTOM_CONFIG_DIR);
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
@@ -75,7 +73,6 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceMultiProject() throws IOException
     {
-        deleteBuildDir(MULTI_PROJECT_DIR);
         runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
@@ -90,18 +87,19 @@ public class OpenFastTrackPluginTest
         return reportContent;
     }
 
-    private void deleteBuildDir(Path projectDir)
-    {
-        TestUtil.deleteRecursive(projectDir.resolve("build"));
-    }
-
     private void runBuild(Path projectDir, String... arguments)
     {
+        deleteBuildDir(projectDir);
         buildResult = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
                 .withPluginClasspath() //
                 .withArguments(arguments) //
                 .forwardOutput() //
                 .build();
+    }
+
+    private void deleteBuildDir(Path projectDir)
+    {
+        TestUtil.deleteRecursive(projectDir.resolve("build"));
     }
 }
