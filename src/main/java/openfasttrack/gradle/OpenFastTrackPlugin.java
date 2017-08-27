@@ -59,7 +59,7 @@ public class OpenFastTrackPlugin implements Plugin<Project>
 
     private void createTasks(Project project)
     {
-        LOG.info("#### Creating tasks for project '{}'", project.getName());
+        LOG.info("Creating tasks for project '{}'", project.getName());
         createTracingTask(project);
     }
 
@@ -71,8 +71,6 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         traceTask.inputDirectories.setFrom(getInputDirectories(project));
         traceTask.outputFile.setFrom(getReportFile(project));
         traceTask.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
-
-        LOG.info("### Input dirs: " + traceTask.inputDirectories);
     }
 
     private File getReportFile(Project project)
