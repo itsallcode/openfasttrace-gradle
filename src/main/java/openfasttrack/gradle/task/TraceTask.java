@@ -57,14 +57,14 @@ public class TraceTask extends DefaultTask
 
     private void createReportOutputDir() throws IOException
     {
-        if (outputFile.getSingleFile().getParentFile().exists())
+        final File outputDir = outputFile.getSingleFile().getParentFile();
+        if (outputDir.exists())
         {
             return;
         }
-        if (!outputFile.getSingleFile().mkdirs())
+        if (!outputDir.mkdirs())
         {
-            throw new IOException(
-                    "Error creating directory " + outputFile.getSingleFile().getParent());
+            throw new IOException("Error creating directory " + outputDir);
         }
     }
 
