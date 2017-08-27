@@ -29,6 +29,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -76,6 +77,7 @@ public class TraceTask extends DefaultTask
         return args;
     }
 
+    @Internal
     private List<String> getUnnamedArgs()
     {
         final List<String> unnamedValueArgs = new ArrayList<>();
@@ -84,6 +86,7 @@ public class TraceTask extends DefaultTask
         return unnamedValueArgs;
     }
 
+    @Internal
     private List<String> getInputDirPaths()
     {
         return inputDirectories.getFiles().stream() //
