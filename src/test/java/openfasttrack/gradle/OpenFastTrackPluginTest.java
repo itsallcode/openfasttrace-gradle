@@ -51,6 +51,7 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
+        deleteBuildDir(PROJECT_DEFAULT_CONFIG_DIR);
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
@@ -62,7 +63,8 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceExampleProjectWithCustomConfig() throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--stacktrace");
+        deleteBuildDir(PROJECT_CUSTOM_CONFIG_DIR);
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
@@ -73,6 +75,7 @@ public class OpenFastTrackPluginTest
     @Test
     public void testTraceMultiProject() throws IOException
     {
+        deleteBuildDir(MULTI_PROJECT_DIR);
         runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         final String report = fileContent(
@@ -85,6 +88,11 @@ public class OpenFastTrackPluginTest
     {
         final String reportContent = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
         return reportContent;
+    }
+
+    private void deleteBuildDir(Path projectDir)
+    {
+        TestUtil.deleteRecursive(projectDir.resolve("build"));
     }
 
     private void runBuild(Path projectDir, String... arguments)
