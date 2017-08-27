@@ -42,7 +42,7 @@ public class TracingConfig
     public TracingConfig(Project project)
     {
         this.message = project.property(String.class);
-        this.inputDirectories = project.files();
+        this.inputDirectories = project.files(getDefaultInputDirectories(project));
         this.reportFile = project.getLayout().newFileVar();
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
     }
