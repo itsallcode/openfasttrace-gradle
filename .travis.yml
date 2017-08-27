@@ -4,7 +4,7 @@ jdk:
   - oraclejdk8
 
 addons:
-  sonarqube:
+  sonarcloud:
     token:
       secure: e2kcU0qD9f9zisUuhc9gszVZPV+gQQwqzOqsNXSY3EbrOnwgMhL0h+4Q9vGXe2FDC4sEgpxnxUoCGuKNCHQSiGmiEKJQ3VjrNgPfsXLOC6M+4bwiykuy2LjD9j6dLctNvV9cUqN+BUIYcJOeqQNMFe7BrVuGSsR+Sb5yYbi3wiCrBw3mBQIxyH9GOQMDrKwExuKt3vJeTaLJzzy0EIVivNzxznqWrD30++gfMD9q7e7glGcQbqvdXs+XFShZkU7lwNThRMKx+8lVtTeg2nPSGFGvq1HHaPKvMaei+yEzTWLPd4tzSWpRIZJ8k4YjMz54D0uhKRzn1Iys7WUkRFp/QuTr+tTGiSDdMFHxfa4Afcq4GJ/AjPYv63iXtn42/v658aPft9py3PjJzUrqtsMN1lYOCw+00BFyCNitRB3YvfdM2reFygp7RE6ZiWsIYI1Uv7WY1mUk5jsLm2MMBm24U7rR8mgSP/A0Avh1kynMzZMx6bu0Br9WNtBngf+vRvLFt9/lzkGhxRhP3UmLU2QwRH8j86c3LvmBgb6hPoqFf1HoF8qW1cGaDuBuPUm9a/ilyttAFKDd5zDv7Sa2GS714+PCDg4WZllhgTCYnRObqRV7BWD3yK7Y7b5L3X1QmMbqW4MFGK+hshUsK6WBS82J/UVUbfRO06jAv6I7IRg5jfM=
     branches:
