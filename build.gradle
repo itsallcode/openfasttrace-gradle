@@ -54,10 +54,17 @@ test {
 }
 
 license {
-    header = file('gradle/license-header.txt')
+    header = rootProject.file('gradle/license-header.txt')
+    strictCheck = true
+    skipExistingHeaders = false
     ext.year = 2017
     ext.name = 'Hamster community'
     ext.email = 'christoph at users.sourceforge.net'
+}
+
+downloadLicenses {
+    includeProjectDependencies = true
+    ignoreFatalParseErrors = false
 }
 
 jacocoTestReport {
