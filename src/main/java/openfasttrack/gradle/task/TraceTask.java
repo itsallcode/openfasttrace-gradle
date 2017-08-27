@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.RegularFileVar;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -42,7 +43,7 @@ public class TraceTask extends DefaultTask
     @InputDirectory
     public final ConfigurableFileCollection inputDirectories = getProject().files();
     @OutputFile
-    public final ConfigurableFileCollection outputFile = getProject().files();
+    public final RegularFileVar outputFile = getProject().getLayout().newFileVar();
     @Input
     public PropertyState<ReportVerbosity> reportVerbosity = getProject()
             .property(ReportVerbosity.class);
@@ -57,7 +58,7 @@ public class TraceTask extends DefaultTask
 
     private void createReportOutputDir() throws IOException
     {
-        final File outputDir = outputFile.getSingleFile().getParentFile();
+        final File outputDir = getOuputFile().getParentFile();
         if (outputDir.exists())
         {
             return;
@@ -71,10 +72,17 @@ public class TraceTask extends DefaultTask
     private CliArguments buildTraceCommandArgs()
     {
         final CliArguments args = new CliArguments();
-        args.setOutputFile(outputFile.getSingleFile().getAbsolutePath());
+        args.setOutputFile(getOuputFile().getAbsolutePath());
         args.setReportVerbosity(reportVerbosity.get());
         args.setUnnamedValues(getUnnamedArgs());
+        getLogger().info("Output file: {}", args.getOutputFile());
         return args;
+    }
+
+    @Internal
+    private File getOuputFile()
+    {
+        return outputFile.getAsFile().get();
     }
 
     @Internal

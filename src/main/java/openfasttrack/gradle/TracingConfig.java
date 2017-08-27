@@ -17,24 +17,34 @@
  */
 package openfasttrack.gradle;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileVar;
 import org.gradle.api.provider.PropertyState;
 
 public class TracingConfig
 {
+    private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
+    private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
+
     public final PropertyState<String> message;
     public final ConfigurableFileCollection inputDirectories;
-    public final PropertyState<File> reportFile;
+    public final RegularFileVar reportFile;
 
     public TracingConfig(Project project)
     {
         this.message = project.property(String.class);
         this.inputDirectories = project.files();
-        this.reportFile = project.property(File.class);
+        this.reportFile = project.getLayout().newFileVar();
+        this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
     }
 
     public void setMessage(String message)
@@ -50,5 +60,24 @@ public class TracingConfig
     public void setReportFile(File reportFile)
     {
         this.reportFile.set(reportFile);
+    }
+
+    public RegularFileVar getReportFile()
+    {
+        return reportFile;
+    }
+
+    private Set<File> getDefaultInputDirectories(Project project)
+    {
+        return DEFAULT_DIRECTORIES.stream() //
+                .map(dir -> new File(project.getRootDir(), dir)) //
+                .collect(toSet());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "TracingConfig [message=" + message + ", inputDirectories="
+                + inputDirectories.getFiles() + ", reportFile=" + reportFile + "]";
     }
 }

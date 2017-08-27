@@ -17,14 +17,9 @@
  */
 package openfasttrack.gradle;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.toSet;
 
-import java.io.File;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
@@ -40,8 +35,6 @@ public class OpenFastTrackPlugin implements Plugin<Project>
 {
     private static final Logger LOG = Logging.getLogger(OpenFastTrackPlugin.class);
     private static final String TASK_GROUP = "trace";
-    private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
-    private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
 
     @Override
     public void apply(Project project)
@@ -68,35 +61,15 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         final TraceTask traceTask = createTask(project, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        traceTask.inputDirectories.setFrom(getInputDirectories(project));
-        traceTask.outputFile.setFrom(getReportFile(project));
+        TracingConfig config = getConfig(project);
+        traceTask.inputDirectories.setFrom(config.inputDirectories);
+        traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
-    }
-
-    private File getReportFile(Project project)
-    {
-        final TracingConfig config = getConfig(project);
-        return config.reportFile.isPresent() ? config.reportFile.get()
-                : new File(project.getBuildDir(), DEFAULT_REPORT_FILE);
     }
 
     private TracingConfig getConfig(Project project)
     {
         return project.getExtensions().getByType(TracingConfig.class);
-    }
-
-    private Set<File> getInputDirectories(Project project)
-    {
-        final TracingConfig config = getConfig(project);
-        return !config.inputDirectories.isEmpty() ? config.inputDirectories.getFiles()
-                : getDefaultInputDirectories(project);
-    }
-
-    private Set<File> getDefaultInputDirectories(Project project)
-    {
-        return DEFAULT_DIRECTORIES.stream() //
-                .map(dir -> new File(project.getRootDir(), dir)) //
-                .collect(toSet());
     }
 
     private <T extends DefaultTask> T createTask(Project project, String taskName,
