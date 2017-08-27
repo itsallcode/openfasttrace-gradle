@@ -1,6 +1,7 @@
 plugins {
     id 'java-gradle-plugin'
     id 'jacoco'
+    id "pl.droidsonroids.jacoco.testkit" version "1.0.3"
     id 'com.gradle.plugin-publish' version '0.9.7'
     id 'com.github.hierynomus.license' version '0.14.0'
     id 'org.sonarqube' version '2.5'
@@ -23,6 +24,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.8.47'
 }
+
+clean {
+    def exampleProjects = rootProject.file('example-projects').listFiles()
+    def propertyFiles = exampleProjects.collect{new File(it,'gradle.properties')}
+    propertyFiles.each { delete it }
+}
+
 
 gradlePlugin {
     plugins {
@@ -70,6 +78,6 @@ downloadLicenses {
 jacocoTestReport {
     reports {
         xml.enabled true
-        html.enabled false
+        html.enabled true
     }
 }

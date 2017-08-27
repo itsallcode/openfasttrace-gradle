@@ -90,12 +90,20 @@ public class OpenFastTrackPluginTest
     private void runBuild(Path projectDir, String... arguments)
     {
         deleteBuildDir(projectDir);
+        configureJacoco(projectDir);
         buildResult = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
                 .withPluginClasspath() //
                 .withArguments(arguments) //
                 .forwardOutput() //
                 .build();
+    }
+
+    private void configureJacoco(Path projectDir)
+    {
+        final String testkitGradleConfig = TestUtil.readResource(this.getClass(),
+                "/testkit-gradle.properties");
+        TestUtil.writeFile(projectDir.resolve("gradle.properties"), testkitGradleConfig);
     }
 
     private void deleteBuildDir(Path projectDir)
