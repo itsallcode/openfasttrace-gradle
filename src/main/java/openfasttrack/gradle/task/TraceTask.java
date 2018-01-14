@@ -53,7 +53,7 @@ public class TraceTask extends DefaultTask
     {
         createReportOutputDir();
         final CliArguments args = buildTraceCommandArgs();
-        new TraceCommand(args).start();
+        new TraceCommand(args).run();
     }
 
     private void createReportOutputDir() throws IOException
@@ -75,7 +75,7 @@ public class TraceTask extends DefaultTask
         args.setOutputFile(getOuputFile().getAbsolutePath());
         args.setReportVerbosity(reportVerbosity.get());
         args.setUnnamedValues(getUnnamedArgs());
-        getLogger().info("Output file: {}", args.getOutputFile());
+        getLogger().info("Output path: {}", args.getOutputPath());
         return args;
     }
 
