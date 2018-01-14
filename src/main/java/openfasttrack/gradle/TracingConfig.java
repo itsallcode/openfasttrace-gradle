@@ -27,23 +27,23 @@ import java.util.Set;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.file.RegularFileVar;
-import org.gradle.api.provider.PropertyState;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
 
 public class TracingConfig
 {
     private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
     private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
 
-    public final PropertyState<String> message;
+    public final Property<String> message;
     public final ConfigurableFileCollection inputDirectories;
-    public final RegularFileVar reportFile;
+    public final RegularFileProperty reportFile;
 
     public TracingConfig(Project project)
     {
-        this.message = project.property(String.class);
+        this.message = project.getObjects().property(String.class);
         this.inputDirectories = project.files(getDefaultInputDirectories(project));
-        this.reportFile = project.getLayout().newFileVar();
+        this.reportFile = project.getLayout().fileProperty();
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
     }
 
@@ -62,7 +62,7 @@ public class TracingConfig
         this.reportFile.set(reportFile);
     }
 
-    public RegularFileVar getReportFile()
+    public RegularFileProperty getReportFile()
     {
         return reportFile;
     }

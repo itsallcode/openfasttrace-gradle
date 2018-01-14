@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.RegularFileVar;
-import org.gradle.api.provider.PropertyState;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
@@ -43,9 +43,9 @@ public class TraceTask extends DefaultTask
     @InputDirectory
     public final ConfigurableFileCollection inputDirectories = getProject().files();
     @OutputFile
-    public final RegularFileVar outputFile = getProject().getLayout().newFileVar();
+    public final RegularFileProperty outputFile = getProject().getLayout().fileProperty();
     @Input
-    public PropertyState<ReportVerbosity> reportVerbosity = getProject()
+    public Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
 
     @TaskAction
