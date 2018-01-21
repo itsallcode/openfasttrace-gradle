@@ -35,6 +35,7 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import openfasttrack.core.Trace;
+import openfasttrack.importer.legacytag.LegacyTagImporterConfig;
 import openfasttrack.mode.ReportMode;
 import openfasttrack.report.ReportVerbosity;
 
@@ -45,7 +46,7 @@ public class TraceTask extends DefaultTask
     @OutputFile
     public final RegularFileProperty outputFile = getProject().getLayout().fileProperty();
     @Input
-    public Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
+    public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
 
     @TaskAction
@@ -56,8 +57,14 @@ public class TraceTask extends DefaultTask
         final Trace trace = reporter //
                 .addInputs(getInputDirPaths()) //
                 .setReportVerbosity(reportVerbosity.get()) //
+                .setLegacyTagImporterPathConfig(createLegacyTagImporterConfig()) //
                 .trace();
         reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
+    }
+
+    private LegacyTagImporterConfig createLegacyTagImporterConfig()
+    {
+        return new LegacyTagImporterConfig();
     }
 
     private void createReportOutputDir() throws IOException
