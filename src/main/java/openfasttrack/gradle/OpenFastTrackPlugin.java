@@ -29,7 +29,6 @@ import org.gradle.api.logging.Logging;
 import org.slf4j.Logger;
 
 import openfasttrack.gradle.task.TraceTask;
-import openfasttrack.report.ReportVerbosity;
 
 public class OpenFastTrackPlugin implements Plugin<Project>
 {
@@ -40,8 +39,8 @@ public class OpenFastTrackPlugin implements Plugin<Project>
     public void apply(Project project)
     {
         LOG.info("Initializing OpenFastTrack plugin for project '{}'", project);
-        project.allprojects(this::createConfigDsl);
-        project.allprojects(this::createTasks);
+        createConfigDsl(project);
+        createTasks(project);
     }
 
     private void createConfigDsl(Project project)
@@ -61,10 +60,10 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         final TraceTask traceTask = createTask(project, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        TracingConfig config = getConfig(project);
+        final TracingConfig config = getConfig(project);
         traceTask.inputDirectories.setFrom(config.inputDirectories);
         traceTask.outputFile.set(config.reportFile);
-        traceTask.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
+        traceTask.reportVerbosity.set(config.reportVerbosity);
     }
 
     private TracingConfig getConfig(Project project)
