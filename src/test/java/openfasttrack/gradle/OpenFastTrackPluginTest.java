@@ -53,10 +53,9 @@ public class OpenFastTrackPluginTest
     {
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        final String report = fileContent(
-                PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"));
-        assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleA~1 (impl, -utest)"));
-        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+        assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+                "not ok - 0/1>0>0/0 - dsn~exampleA~1 (impl, -utest)",
+                "not ok - 2 total, 2 not covered");
     }
 
     @Test
@@ -64,10 +63,9 @@ public class OpenFastTrackPluginTest
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        final String report = fileContent(
-                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
-        assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)"));
-        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)",
+                "not ok - 2 total, 2 not covered");
     }
 
     @Test
@@ -75,16 +73,23 @@ public class OpenFastTrackPluginTest
     {
         runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        final String report = fileContent(
-                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
-        assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)"));
-        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)",
+                "not ok - 2 total, 2 not covered");
+    }
+
+    private void assertFileContent(Path file, String... lines) throws IOException
+    {
+        final String fileContent = fileContent(file);
+        for (final String line : lines)
+        {
+            assertThat(fileContent, containsString(line));
+        }
     }
 
     private String fileContent(Path file) throws IOException
     {
-        final String reportContent = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
-        return reportContent;
+        return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
     }
 
     private void runBuild(Path projectDir, String... arguments)
