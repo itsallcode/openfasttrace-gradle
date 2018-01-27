@@ -5,6 +5,25 @@ Gradle plugin for [OpenFastTrace](https://github.com/itsallcode/openfasttrace)
 [![Sonarcloud Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)
 [![codecov](https://codecov.io/gh/itsallcode/openfasttrace-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/itsallcode/openfasttrace-gradle)
 
+## Usage
+
+1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
+
+    ```gradle
+    plugins {
+      id "org.itsallcode.openfasttrace" version "0.1.0"
+    }
+    ```
+
+1. Configure project, see [example projects](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects)
+1. Run
+
+    ```bash
+    $ ./gradlew traceRequirements
+    ```
+
+1. Report is written to `build/reports/tracing.txt` by default.
+
 ## Development
 
 ```bash
@@ -41,7 +60,8 @@ $ ./gradlew licenseFormat
 1. Run
 
     ```bash
-    $ ./gradlew clean publishPlugins --info
+    $ ./gradlew clean publishPlugins
     ```
 
+   Plugin will be published at https://plugins.gradle.org/m2/org/itsallcode/openfasttrace/org.itsallcode.openfasttrace.gradle.plugin/
 1. Create a [release](https://github.com/itsallcode/openfasttrace-gradle/releases) in GitHub
