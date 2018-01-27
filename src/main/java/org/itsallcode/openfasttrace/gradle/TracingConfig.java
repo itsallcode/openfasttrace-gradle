@@ -29,27 +29,24 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
+import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 public class TracingConfig
 {
     private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
     private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
 
-    public final Property<String> message;
+    public final Property<ReportVerbosity> reportVerbosity;
     public final ConfigurableFileCollection inputDirectories;
     public final RegularFileProperty reportFile;
 
     public TracingConfig(Project project)
     {
-        this.message = project.getObjects().property(String.class);
         this.inputDirectories = project.files(getDefaultInputDirectories(project));
         this.reportFile = project.getLayout().fileProperty();
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
-    }
-
-    public void setMessage(String message)
-    {
-        this.message.set(message);
+        this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
+        this.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
     }
 
     public void setInputDirectories(FileCollection inputDirs)
@@ -74,10 +71,15 @@ public class TracingConfig
                 .collect(toSet());
     }
 
+    public void setReportVerbosity(ReportVerbosity reportVerbosity)
+    {
+        this.reportVerbosity.set(reportVerbosity);
+    }
+
     @Override
     public String toString()
     {
-        return "TracingConfig [message=" + message + ", inputDirectories="
-                + inputDirectories.getFiles() + ", reportFile=" + reportFile + "]";
+        return "TracingConfig [inputDirectories=" + inputDirectories + ", reportFile=" + reportFile
+                + ", reportVerbosity=" + reportVerbosity + "]";
     }
 }

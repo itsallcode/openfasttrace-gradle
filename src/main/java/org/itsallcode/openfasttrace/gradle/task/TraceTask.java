@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.gradle.api.DefaultTask;
@@ -33,8 +33,9 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-import org.itsallcode.openfasttrace.cli.CliArguments;
-import org.itsallcode.openfasttrace.cli.commands.TraceCommand;
+import org.itsallcode.openfasttrace.core.Trace;
+import org.itsallcode.openfasttrace.importer.legacytag.LegacyTagImporterConfig;
+import org.itsallcode.openfasttrace.mode.ReportMode;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 public class TraceTask extends DefaultTask
@@ -44,15 +45,20 @@ public class TraceTask extends DefaultTask
     @OutputFile
     public final RegularFileProperty outputFile = getProject().getLayout().fileProperty();
     @Input
-    public Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
+    public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
 
     @TaskAction
     public void trace() throws IOException
     {
         createReportOutputDir();
-        final CliArguments args = buildTraceCommandArgs();
-        new TraceCommand(args).run();
+        final ReportMode reporter = new ReportMode();
+        final Trace trace = reporter //
+                .addInputs(getInputDirPaths()) //
+                .setReportVerbosity(reportVerbosity.get()) //
+                .setLegacyTagImporterPathConfig(createLegacyTagImporterConfig()) //
+                .trace();
+        reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
     }
 
     private void createReportOutputDir() throws IOException
@@ -68,14 +74,9 @@ public class TraceTask extends DefaultTask
         }
     }
 
-    private CliArguments buildTraceCommandArgs()
+    private LegacyTagImporterConfig createLegacyTagImporterConfig()
     {
-        final CliArguments args = new CliArguments();
-        args.setOutputFile(getOuputFile().getAbsolutePath());
-        args.setReportVerbosity(reportVerbosity.get());
-        args.setUnnamedValues(getUnnamedArgs());
-        getLogger().info("Output path: {}", args.getOutputPath());
-        return args;
+        return new LegacyTagImporterConfig();
     }
 
     @Internal
@@ -84,20 +85,10 @@ public class TraceTask extends DefaultTask
         return outputFile.getAsFile().get();
     }
 
-    @Internal
-    private List<String> getUnnamedArgs()
-    {
-        final List<String> unnamedValueArgs = new ArrayList<>();
-        unnamedValueArgs.add(TraceCommand.COMMAND_NAME);
-        unnamedValueArgs.addAll(getInputDirPaths());
-        return unnamedValueArgs;
-    }
-
-    @Internal
-    private List<String> getInputDirPaths()
+    private List<Path> getInputDirPaths()
     {
         return inputDirectories.getFiles().stream() //
-                .map(File::getAbsolutePath) //
+                .map(File::toPath) //
                 .collect(toList());
     }
 }
