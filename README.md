@@ -2,7 +2,7 @@
 Gradle plugin for [OpenFastTrace](https://github.com/itsallcode/openfasttrace)
 
 [![Build Status](https://travis-ci.org/itsallcode/openfasttrace-gradle.svg?branch=develop)](https://travis-ci.org/itsallcode/openfasttrace-gradle)
-[![Sonarcloud Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.github.kaklakariada%3Aopenfasttrack-gradle%3Adevelop)](https://sonarcloud.io/dashboard/index/com.github.kaklakariada%3Aopenfasttrack-gradle%3Adevelop)
+[![Sonarcloud Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)
 [![codecov](https://codecov.io/gh/itsallcode/openfasttrace-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/itsallcode/openfasttrace-gradle)
 
 ## Development
