@@ -42,7 +42,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-  website = 'https://github.com/itsallcode/openfasttrace-gradle/blob/master/README.md'
+  website = 'https://github.com/itsallcode/openfasttrace-gradle'
   vcsUrl = 'https://github.com/itsallcode/openfasttrace-gradle'
   description = 'Gradle plugin for tracing requirements using OpenFastTrace'
   tags = ['requirements', 'tracing']
