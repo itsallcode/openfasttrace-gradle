@@ -12,17 +12,16 @@ addons:
       - develop      
 
 script:
-  - ./gradlew clean check sonarqube
+  - ./gradlew clean check sonarqube --info --stacktrace
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.m2/repository/
     - $HOME/.sonar/cache/
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
 after_success:
-  - ./gradlew jacocoTestReport
+  - ./gradlew jacocoTestReport --info --stacktrace
   - bash <(curl -s https://codecov.io/bash)
