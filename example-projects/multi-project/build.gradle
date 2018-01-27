@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.kaklakariada.openfasttrack'
+    id 'org.itsallcode.openfasttrace'
 }
 
 requirementTracing {

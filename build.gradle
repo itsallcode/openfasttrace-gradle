@@ -13,14 +13,14 @@ repositories {
 }
 
 version = '0.0.1'
-group = 'com.github.kaklakariada'
+group = 'org.itsallcode'
 
 ext {
-  gradlePluginId = 'com.github.kaklakariada.openfasttrack'
+  gradlePluginId = 'org.itsallcode.openfasttrace'
 }
 
 dependencies {
-    compile 'com.github.kaklakariada:openfasttrack:0.2.0'
+    compile 'org.itsallcode:openfasttrace:0.3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.13.0'
 }
@@ -34,23 +34,23 @@ clean {
 
 gradlePlugin {
     plugins {
-        openFastTrackPlugin {
+        openFastTracePlugin {
             id = gradlePluginId
-            implementationClass = 'openfasttrack.gradle.OpenFastTrackPlugin'
+            implementationClass = 'org.itsallcode.openfasttrace.gradle.OpenFastTracePlugin'
         }
     }
 }
 
 pluginBundle {
-  website = 'https://github.com/hamstercommunity/openfasttrack-gradle/blob/master/README.md'
-  vcsUrl = 'https://github.com/hamstercommunity/openfasttrack-gradle'
-  description = 'Gradle plugin for tracing requirements using OpenFastTrack'
+  website = 'https://github.com/itsallcode/openfasttrace-gradle/blob/master/README.md'
+  vcsUrl = 'https://github.com/itsallcode/openfasttrace-gradle'
+  description = 'Gradle plugin for tracing requirements using OpenFastTrace'
   tags = ['requirements', 'tracing']
 
   plugins {
-    openFastTrackPlugin {
+    openFastTracePlugin {
       id = gradlePluginId
-      displayName = 'OpenFastTrack requirements tracing plugin'
+      displayName = 'OpenFastTrace requirements tracing plugin'
     }
   }
 }
@@ -66,7 +66,7 @@ license {
     strictCheck = true
     skipExistingHeaders = false
     ext.year = 2017
-    ext.name = 'Hamster community'
+    ext.name = "It's all code"
     ext.email = 'christoph at users.sourceforge.net'
 }
 

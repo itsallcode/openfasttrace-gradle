@@ -1,6 +1,6 @@
 /**
- * openfasttrack-gradle - Gradle plugin for tracing requirements using OpenFastTrack
- * Copyright (C) 2017 Hamster community <christoph at users.sourceforge.net>
+ * openfasttrace-gradle - Gradle plugin for tracing requirements using OpenFastTrace
+ * Copyright (C) 2017 It's all code <christoph at users.sourceforge.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package openfasttrack.gradle;
+package org.itsallcode.openfasttrace.gradle;
 
 import static java.util.Collections.singletonMap;
 
@@ -26,14 +26,13 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.logging.Logging;
+import org.itsallcode.openfasttrace.gradle.task.TraceTask;
+import org.itsallcode.openfasttrace.report.ReportVerbosity;
 import org.slf4j.Logger;
 
-import openfasttrack.gradle.task.TraceTask;
-import openfasttrack.report.ReportVerbosity;
-
-public class OpenFastTrackPlugin implements Plugin<Project>
+public class OpenFastTracePlugin implements Plugin<Project>
 {
-    private static final Logger LOG = Logging.getLogger(OpenFastTrackPlugin.class);
+    private static final Logger LOG = Logging.getLogger(OpenFastTracePlugin.class);
     private static final String TASK_GROUP = "trace";
 
     @Override
@@ -61,7 +60,7 @@ public class OpenFastTrackPlugin implements Plugin<Project>
         final TraceTask traceTask = createTask(project, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        TracingConfig config = getConfig(project);
+        final TracingConfig config = getConfig(project);
         traceTask.inputDirectories.setFrom(config.inputDirectories);
         traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);

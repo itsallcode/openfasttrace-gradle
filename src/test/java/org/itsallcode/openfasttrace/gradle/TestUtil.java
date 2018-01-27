@@ -1,6 +1,6 @@
 /**
- * openfasttrack-gradle - Gradle plugin for tracing requirements using OpenFastTrack
- * Copyright (C) 2017 Hamster community <christoph at users.sourceforge.net>
+ * openfasttrace-gradle - Gradle plugin for tracing requirements using OpenFastTrace
+ * Copyright (C) 2017 It's all code <christoph at users.sourceforge.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package openfasttrack.gradle;
+package org.itsallcode.openfasttrace.gradle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
