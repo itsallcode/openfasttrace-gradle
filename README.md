@@ -18,12 +18,30 @@ $ ./gradlew check
 Import into eclipse using [buildship](https://projects.eclipse.org/projects/tools.buildship) plugin:
 
 1. Select File > Import... > Gradle > Gradle Project
-2. Click "Next"
-3. Select Project root directory
-4. Click "Finish"
+1. Click "Next"
+1. Select Project root directory
+1. Click "Finish"
 
 ### Generate license header for added files:
 
 ```bash
 $ ./gradlew licenseFormat
 ```
+
+### Publish to `plugins.gradle.org`
+
+1. Add your API key to `~/.gradle/gradle.properties`:
+
+    ```
+    gradle.publish.key = <key>
+    gradle.publish.secret = <secret>
+    ```
+
+1. Update version number in `build.gradle`
+1. Run
+
+    ```bash
+    $ ./gradlew clean publishPlugins --info
+    ```
+
+1. Create a [release](https://github.com/itsallcode/openfasttrace-gradle/releases) in GitHub

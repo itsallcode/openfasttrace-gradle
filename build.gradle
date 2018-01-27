@@ -12,7 +12,7 @@ repositories {
    mavenLocal()
 }
 
-version = '0.0.1'
+version = '0.1.0'
 group = 'org.itsallcode'
 
 ext {
@@ -27,7 +27,7 @@ dependencies {
 
 clean {
     def exampleProjects = rootProject.file('example-projects').listFiles()
-    def propertyFiles = exampleProjects.collect{new File(it,'gradle.properties')}
+    def propertyFiles = exampleProjects.collect{new File(it, 'gradle.properties')}
     propertyFiles.each { delete it }
 }
 
@@ -60,6 +60,8 @@ test {
         showStandardStreams = true
     }
 }
+
+publishPlugins.dependsOn check
 
 license {
     header = rootProject.file('gradle/license-header.txt')
