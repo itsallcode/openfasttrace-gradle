@@ -2,9 +2,9 @@ plugins {
     id 'java-gradle-plugin'
     id 'jacoco'
     id 'pl.droidsonroids.jacoco.testkit' version '1.0.3'
-    id 'com.gradle.plugin-publish' version '0.9.9'
+    id 'com.gradle.plugin-publish' version '0.9.10'
     id 'com.github.hierynomus.license' version '0.14.0'
-    id 'org.sonarqube' version '2.6.1'
+    id 'org.sonarqube' version '2.6.2'
 }
 
 repositories {
@@ -20,7 +20,7 @@ ext {
 }
 
 dependencies {
-    compile 'org.itsallcode:openfasttrace:0.3.0'
+    compile 'org.itsallcode:openfasttrace:0.5.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.13.0'
 }

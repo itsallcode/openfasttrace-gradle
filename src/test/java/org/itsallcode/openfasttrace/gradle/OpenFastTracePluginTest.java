@@ -56,7 +56,7 @@ public class OpenFastTracePluginTest
         final String report = fileContent(
                 PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"));
         assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleA~1 (impl, -utest)"));
-        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+        assertThat(report, containsString("not ok - 2 total, 2 defect"));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class OpenFastTracePluginTest
         final String report = fileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
         assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)"));
-        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+        assertThat(report, containsString("not ok - 2 total, 2 defect"));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class OpenFastTracePluginTest
         final String report = fileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"));
         assertThat(report, containsString("not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)"));
-        assertThat(report, containsString("not ok - 2 total, 2 not covered"));
+        assertThat(report, containsString("not ok - 2 total, 2 defect"));
     }
 
     private String fileContent(Path file) throws IOException
