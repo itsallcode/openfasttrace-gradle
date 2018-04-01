@@ -17,12 +17,14 @@
  */
 package org.itsallcode.openfasttrace.gradle.task;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -35,6 +37,7 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.core.Trace;
 import org.itsallcode.openfasttrace.importer.legacytag.LegacyTagImporterConfig;
+import org.itsallcode.openfasttrace.importer.legacytag.PathConfig;
 import org.itsallcode.openfasttrace.mode.ReportMode;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
@@ -47,6 +50,8 @@ public class TraceTask extends DefaultTask
     @Input
     public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
+    @Input
+    public Supplier<List<PathConfig>> pathConfig = () -> emptyList();
 
     @TaskAction
     public void trace() throws IOException
@@ -56,7 +61,7 @@ public class TraceTask extends DefaultTask
         final Trace trace = reporter //
                 .addInputs(getInputDirPaths()) //
                 .setReportVerbosity(reportVerbosity.get()) //
-                .setLegacyTagImporterPathConfig(createLegacyTagImporterConfig()) //
+                .setLegacyTagImporterPathConfig(new LegacyTagImporterConfig(pathConfig.get())) //
                 .trace();
         reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
     }
@@ -72,11 +77,6 @@ public class TraceTask extends DefaultTask
         {
             throw new IOException("Error creating directory " + outputDir);
         }
-    }
-
-    private LegacyTagImporterConfig createLegacyTagImporterConfig()
-    {
-        return new LegacyTagImporterConfig();
     }
 
     @Internal
