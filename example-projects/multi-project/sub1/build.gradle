@@ -1,3 +1,8 @@
 requirementTracing {
   inputDirectories = files('custom-dir1')
+  pathConfig {
+    'regex:sub1pattern' {
+      coveredItemNamePrefix = 'customPrefix'
+    }
+  }
 }

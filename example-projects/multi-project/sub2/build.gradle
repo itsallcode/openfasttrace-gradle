@@ -1,2 +1,6 @@
 requirementTracing {
+  pathConfig {
+    'glob:sub2pattern' { }
+    sub2pattern2 { }
+  }
 }

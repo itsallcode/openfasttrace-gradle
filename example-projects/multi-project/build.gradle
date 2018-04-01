@@ -5,4 +5,8 @@ plugins {
 requirementTracing {
   inputDirectories = files('custom-dir-root')
   reportFile = file('build/custom-report.txt')
+  pathConfig {
+    rootPatternBalh { }
+    'regex:rootPatternBlubb' { }
+  }
 }
