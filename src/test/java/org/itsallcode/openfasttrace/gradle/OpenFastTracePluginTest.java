@@ -54,8 +54,7 @@ public class OpenFastTracePluginTest
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleA~1 (impl, -utest)",
-                "not ok - 2 total, 2 not covered");
+                "not ok - 0/1>0>0/0 - dsn~exampleA~1 (impl, -utest)", "not ok - 2 total, 2 defect");
     }
 
     @Test
@@ -64,8 +63,7 @@ public class OpenFastTracePluginTest
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)",
-                "not ok - 2 total, 2 not covered");
+                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", "not ok - 2 total, 2 defect");
     }
 
     @Test
@@ -74,8 +72,7 @@ public class OpenFastTracePluginTest
         runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)",
-                "not ok - 2 total, 2 not covered");
+                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", "not ok - 2 total, 2 defect");
     }
 
     private void assertFileContent(Path file, String... lines) throws IOException
