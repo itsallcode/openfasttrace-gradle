@@ -3,7 +3,7 @@ plugins {
 }
 
 requirementTracing {
-  inputDirectories = files('custom-dir-root')
+  inputDirectories = files('.')
   reportFile = file('build/custom-report.txt')
   pathConfig {
     rootPatternBalh { }

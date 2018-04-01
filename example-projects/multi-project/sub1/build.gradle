@@ -1,8 +1,14 @@
 requirementTracing {
   inputDirectories = files('custom-dir1')
   pathConfig {
-    'regex:sub1pattern' {
-      coveredItemNamePrefix = 'customPrefix'
+    'regex:src/.*\\.impl\\..*' {
+      coveredItemNamePrefix = 'prefix'
+      tagArtifactType = 'impl'
+      coveredItemArtifactType = 'dsn'
+    }
+    'glob:src/*.test.*' {
+      tagArtifactType = 'utest'
+      coveredItemArtifactType = 'dsn'
     }
   }
 }

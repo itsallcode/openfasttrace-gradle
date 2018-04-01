@@ -32,8 +32,8 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
+import org.itsallcode.openfasttrace.gradle.config.PathPatternConfig;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
-import org.itsallcode.openfasttrace.gradle.config.TracingConfig.PathPatternConfig;
 import org.itsallcode.openfasttrace.gradle.task.TraceTask;
 import org.itsallcode.openfasttrace.importer.legacytag.PathConfig;
 import org.slf4j.Logger;
@@ -90,7 +90,6 @@ public class OpenFastTracePlugin implements Plugin<Project>
 
     private Stream<PathConfig> getPathConfigFromProject(Project project)
     {
-        System.out.println("-------" + project + " ----------------------------");
         final TracingConfig tracingConfig = project.getExtensions().getByType(TracingConfig.class);
         return tracingConfig.getPathConfig();
     }

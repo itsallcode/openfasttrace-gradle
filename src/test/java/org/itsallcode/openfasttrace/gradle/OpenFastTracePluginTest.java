@@ -71,8 +71,7 @@ public class OpenFastTracePluginTest
     {
         runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
-        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", "not ok - 2 total, 2 defect");
+        assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
     private void assertFileContent(Path file, String... lines) throws IOException

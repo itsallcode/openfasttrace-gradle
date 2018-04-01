@@ -21,7 +21,6 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -86,7 +85,7 @@ public class TracingConfig
 
     public Stream<PathConfig> getPathConfig()
     {
-        return pathConfig.stream().map(c -> c.convert(project)).peek(System.out::println);
+        return pathConfig.stream().map(c -> c.convert(project));
     }
 
     @Override
@@ -95,91 +94,5 @@ public class TracingConfig
         return "TracingConfig [project=" + project + ", reportVerbosity=" + reportVerbosity
                 + ", inputDirectories=" + inputDirectories + ", reportFile=" + reportFile
                 + ", pathConfig=" + pathConfig + "]";
-    }
-
-    public static class PathPatternConfig
-    {
-        private static final String GLOB_PREFIX = "glob:";
-        private static final String REGEX_PREFIX = "regex:";
-        private final String pathPattern;
-        public String coveredItemArtifactType;
-        public String tagArtifactType;
-        public String coveredItemNamePrefix;
-
-        public PathPatternConfig(String pathPattern)
-        {
-            this.pathPattern = pathPattern;
-        }
-
-        public String getPathPattern()
-        {
-            return pathPattern;
-        }
-
-        public String getName()
-        {
-            return getPathPattern();
-        }
-
-        private PathConfig convert(Project project)
-        {
-            return new PathConfig(getPattern(project), coveredItemArtifactType, getPrefix(project),
-                    tagArtifactType);
-        }
-
-        private String getPattern(Project project)
-        {
-            final String relativeProjectPath = getRelativeProjectPath(project);
-            final String pattern = getPatternWithoutPrefix();
-            return getPrefix() + relativeProjectPath
-                    + (pattern.startsWith("/") || relativeProjectPath.isEmpty() ? "" : "/")
-                    + pattern;
-        }
-
-        private String getPatternWithoutPrefix()
-        {
-            if (pathPattern.startsWith(GLOB_PREFIX))
-            {
-                return pathPattern.substring(GLOB_PREFIX.length());
-            }
-            else if (pathPattern.startsWith(REGEX_PREFIX))
-            {
-                return pathPattern.substring(REGEX_PREFIX.length());
-            }
-            return pathPattern;
-        }
-
-        private String getPrefix()
-        {
-            if (pathPattern.startsWith(GLOB_PREFIX))
-            {
-                return GLOB_PREFIX;
-            }
-            else if (pathPattern.startsWith(REGEX_PREFIX))
-            {
-                return REGEX_PREFIX;
-            }
-            return "";
-        }
-
-        private String getRelativeProjectPath(Project project)
-        {
-            final Path rootDir = project.getRootDir().toPath();
-            final Path projectDir = project.getProjectDir().toPath();
-            final String relativeProjectPath = rootDir.relativize(projectDir).toString();
-            return relativeProjectPath;
-        }
-
-        private String getPrefix(Project project)
-        {
-            if (coveredItemNamePrefix != null && !coveredItemNamePrefix.isEmpty())
-            {
-                return coveredItemNamePrefix;
-            }
-            else
-            {
-                return project.getName();
-            }
-        }
     }
 }

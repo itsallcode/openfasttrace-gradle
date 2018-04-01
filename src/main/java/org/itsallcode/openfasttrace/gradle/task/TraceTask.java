@@ -18,6 +18,7 @@
 package org.itsallcode.openfasttrace.gradle.task;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -61,9 +62,26 @@ public class TraceTask extends DefaultTask
         final Trace trace = reporter //
                 .addInputs(getInputDirPaths()) //
                 .setReportVerbosity(reportVerbosity.get()) //
-                .setLegacyTagImporterPathConfig(new LegacyTagImporterConfig(pathConfig.get())) //
+                .setLegacyTagImporterPathConfig(getPathConfig()) //
                 .trace();
         reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
+    }
+
+    @Internal
+    private LegacyTagImporterConfig getPathConfig()
+    {
+        final List<PathConfig> paths = pathConfig.get();
+        final Path basePath = getProject().getRootProject().getRootDir().toPath();
+        getLogger().info("Got path configurations (base path: {})\n{}", basePath,
+                paths.stream().map(this::formatPathConfig).collect(joining("\n")));
+        return new LegacyTagImporterConfig(basePath, paths);
+    }
+
+    private String formatPathConfig(PathConfig config)
+    {
+        return " - " + config.getPattern() + " (type " + config.getTagArtifactType() + "): covers '"
+                + config.getCoveredItemArtifactType() + "', prefix: '"
+                + config.getCoveredItemNamePrefix() + "'";
     }
 
     private void createReportOutputDir() throws IOException
