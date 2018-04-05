@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.gradle.api.DefaultTask;
@@ -74,7 +75,7 @@ public class TraceTask extends DefaultTask
         final Path basePath = getProject().getRootProject().getRootDir().toPath();
         getLogger().info("Got path configurations (base path: {})\n{}", basePath,
                 paths.stream().map(this::formatPathConfig).collect(joining("\n")));
-        return new LegacyTagImporterConfig(basePath, paths);
+        return new LegacyTagImporterConfig(Optional.of(basePath), paths);
     }
 
     private String formatPathConfig(PathConfig config)
