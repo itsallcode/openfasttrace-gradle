@@ -5,7 +5,7 @@ requirementTracing {
       tagArtifactType = 'utest'
       coveredItemArtifactType = 'dsn'
     }
-    'regex:src/.*\\.impl\\..*' {
+    'glob:src/*.impl.*' {
       coveredItemNamePrefix = 'prefix'
       tagArtifactType = 'impl'
       coveredItemArtifactType = 'dsn'
