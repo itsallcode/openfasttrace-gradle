@@ -22,7 +22,7 @@ ext {
 }
 
 dependencies {
-    compile 'org.itsallcode:openfasttrace:0.5.1'
+    compile 'org.itsallcode:openfasttrace:0.5.2-SNAPSHOT'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.13.0'
 }

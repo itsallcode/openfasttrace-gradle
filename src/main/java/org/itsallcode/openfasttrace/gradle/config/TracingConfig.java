@@ -31,7 +31,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
-import org.itsallcode.openfasttrace.importer.legacytag.PathConfig;
+import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 public class TracingConfig

@@ -38,8 +38,8 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.core.Trace;
-import org.itsallcode.openfasttrace.importer.legacytag.LegacyTagImporterConfig;
-import org.itsallcode.openfasttrace.importer.legacytag.PathConfig;
+import org.itsallcode.openfasttrace.importer.legacytag.config.LegacyTagImporterConfig;
+import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 import org.itsallcode.openfasttrace.mode.ReportMode;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
@@ -80,8 +80,8 @@ public class TraceTask extends DefaultTask
 
     private String formatPathConfig(PathConfig config)
     {
-        return " - " + config.getPattern() + " (type " + config.getTagArtifactType() + "): covers '"
-                + config.getCoveredItemArtifactType() + "', prefix: '"
+        return " - " + config.getDescription() + " (type " + config.getTagArtifactType()
+                + "): covers '" + config.getCoveredItemArtifactType() + "', prefix: '"
                 + config.getCoveredItemNamePrefix() + "'";
     }
 

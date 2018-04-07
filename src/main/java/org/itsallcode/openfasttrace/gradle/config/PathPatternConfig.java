@@ -20,7 +20,7 @@ package org.itsallcode.openfasttrace.gradle.config;
 import java.nio.file.Path;
 
 import org.gradle.api.Project;
-import org.itsallcode.openfasttrace.importer.legacytag.PathConfig;
+import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 
 public class PathPatternConfig
 {
@@ -48,7 +48,7 @@ public class PathPatternConfig
 
     PathConfig convert(Project project)
     {
-        return new PathConfig(getPattern(project), coveredItemArtifactType,
+        return PathConfig.createPatternConfig(getPattern(project), coveredItemArtifactType,
                 getItemNamePrefix(project), tagArtifactType);
     }
 

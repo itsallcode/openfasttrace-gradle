@@ -35,7 +35,7 @@ import org.gradle.api.plugins.ExtensionAware;
 import org.itsallcode.openfasttrace.gradle.config.PathPatternConfig;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.TraceTask;
-import org.itsallcode.openfasttrace.importer.legacytag.PathConfig;
+import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 import org.slf4j.Logger;
 
 public class OpenFastTracePlugin implements Plugin<Project>
