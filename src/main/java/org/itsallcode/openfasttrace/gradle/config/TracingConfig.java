@@ -23,15 +23,13 @@ import static java.util.stream.Collectors.toSet;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
-import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.Property;
-import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 public class TracingConfig
@@ -43,13 +41,11 @@ public class TracingConfig
     public final Property<ReportVerbosity> reportVerbosity;
     public final ConfigurableFileCollection inputDirectories;
     public final RegularFileProperty reportFile;
-    private final NamedDomainObjectContainer<PathPatternConfig> pathConfig;
 
-    public TracingConfig(Project project, NamedDomainObjectContainer<PathPatternConfig> pathConfig)
+    public TracingConfig(Project project)
     {
         this.project = project;
-        this.pathConfig = pathConfig;
-        this.inputDirectories = project.files(getDefaultInputDirectories(project));
+        this.inputDirectories = project.files(getDefaultInputDirectories());
         this.reportFile = project.getLayout().fileProperty();
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
@@ -71,7 +67,7 @@ public class TracingConfig
         return reportFile;
     }
 
-    private Set<File> getDefaultInputDirectories(Project project)
+    private Set<File> getDefaultInputDirectories()
     {
         return DEFAULT_DIRECTORIES.stream() //
                 .map(dir -> new File(project.getRootDir(), dir)) //
@@ -83,9 +79,9 @@ public class TracingConfig
         this.reportVerbosity.set(reportVerbosity);
     }
 
-    public Stream<PathConfig> getPathConfig()
+    public TagPathConfiguration getTagPathConfig()
     {
-        return pathConfig.stream().map(c -> c.convert(project));
+        return ((ExtensionAware) this).getExtensions().getByType(TagPathConfiguration.class);
     }
 
     @Override
@@ -93,6 +89,6 @@ public class TracingConfig
     {
         return "TracingConfig [project=" + project + ", reportVerbosity=" + reportVerbosity
                 + ", inputDirectories=" + inputDirectories + ", reportFile=" + reportFile
-                + ", pathConfig=" + pathConfig + "]";
+                + ", pathConfig=" + getTagPathConfig() + "]";
     }
 }

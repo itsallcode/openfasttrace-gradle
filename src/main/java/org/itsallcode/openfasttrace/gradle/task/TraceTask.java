@@ -72,10 +72,9 @@ public class TraceTask extends DefaultTask
     private LegacyTagImporterConfig getPathConfig()
     {
         final List<PathConfig> paths = pathConfig.get();
-        final Path basePath = getProject().getRootProject().getRootDir().toPath();
-        getLogger().info("Got path configurations (base path: {})\n{}", basePath,
+        getLogger().info("Got path configurations\n{}",
                 paths.stream().map(this::formatPathConfig).collect(joining("\n")));
-        return new LegacyTagImporterConfig(Optional.of(basePath), paths);
+        return new LegacyTagImporterConfig(Optional.empty(), paths);
     }
 
     private String formatPathConfig(PathConfig config)

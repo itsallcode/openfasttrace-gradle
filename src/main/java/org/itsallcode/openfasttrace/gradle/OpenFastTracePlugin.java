@@ -26,13 +26,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
-import org.itsallcode.openfasttrace.gradle.config.PathPatternConfig;
+import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.TraceTask;
 import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
@@ -48,19 +47,17 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         LOG.info("Initializing OpenFastTrack plugin for project '{}'", project);
         project.allprojects(this::createConfigDsl);
-        // createConfigDsl(project);
         createTasks(project);
     }
 
     private void createConfigDsl(Project project)
     {
         LOG.info("Setting up plugin configuration for project '{}'", project.getName());
-        final NamedDomainObjectContainer<PathPatternConfig> pathConfig = project
-                .container(PathPatternConfig.class);
 
         final TracingConfig tracingConfig = project.getExtensions().create("requirementTracing",
-                TracingConfig.class, project, pathConfig);
-        ((ExtensionAware) tracingConfig).getExtensions().add("pathConfig", pathConfig);
+                TracingConfig.class, project);
+        ((ExtensionAware) tracingConfig).getExtensions().create("tags", TagPathConfiguration.class,
+                project);
     }
 
     private void createTasks(Project project)
@@ -78,20 +75,19 @@ public class OpenFastTracePlugin implements Plugin<Project>
         traceTask.inputDirectories.setFrom(config.inputDirectories);
         traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(config.reportVerbosity);
-        traceTask.pathConfig = () -> getPathConfigFromRootProject(project.getAllprojects());
+        traceTask.pathConfig = () -> getPathConfig(project.getAllprojects());
     }
 
-    private List<PathConfig> getPathConfigFromRootProject(Set<Project> allProjects)
+    private List<PathConfig> getPathConfig(Set<Project> allProjects)
     {
         return allProjects.stream() //
-                .flatMap(this::getPathConfigFromProject) //
+                .flatMap(this::getPathConfig) //
                 .collect(toList());
     }
 
-    private Stream<PathConfig> getPathConfigFromProject(Project project)
+    private Stream<PathConfig> getPathConfig(Project project)
     {
-        final TracingConfig tracingConfig = project.getExtensions().getByType(TracingConfig.class);
-        return tracingConfig.getPathConfig();
+        return getConfig(project).getTagPathConfig().getPathConfig();
     }
 
     private TracingConfig getConfig(Project project)

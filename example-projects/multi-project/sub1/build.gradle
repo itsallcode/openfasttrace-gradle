@@ -1,11 +1,13 @@
 requirementTracing {
   inputDirectories = files('custom-dir1')
-  pathConfig {
-    'glob:src/*.test.*' {
+  tags {
+    tag {
+      paths = fileTree(dir: 'src/').include '*.test.*'
       tagArtifactType = 'utest'
       coveredItemArtifactType = 'dsn'
     }
-    'glob:src/*.impl.*' {
+    tag {
+      paths = fileTree(dir: 'src/').include '*.impl.*'
       coveredItemNamePrefix = 'prefix'
       tagArtifactType = 'impl'
       coveredItemArtifactType = 'dsn'
