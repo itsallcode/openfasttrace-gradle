@@ -63,10 +63,12 @@ test {
     }
 }
 
+test.onlyIf { rootProject.name == 'openfasttrace-gradle' }
+
 publishPlugins.dependsOn check
 
 license {
-    header = rootProject.file('gradle/license-header.txt')
+    header = file('gradle/license-header.txt')
     strictCheck = true
     skipExistingHeaders = false
     ext.year = 2017
