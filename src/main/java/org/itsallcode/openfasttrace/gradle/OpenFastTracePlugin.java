@@ -19,15 +19,19 @@ package org.itsallcode.openfasttrace.gradle;
 
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
@@ -41,11 +45,11 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private static final String TASK_GROUP_NAME = "trace";
 
     @Override
-    public void apply(Project project)
+    public void apply(Project rootProject)
     {
-        LOG.info("Initializing OpenFastTrack plugin for project '{}'", project);
-        project.allprojects(this::createConfigDsl);
-        createTasks(project);
+        LOG.info("Initializing OpenFastTrack plugin for project '{}'", rootProject);
+        rootProject.allprojects(this::createConfigDsl);
+        createTasks(rootProject);
     }
 
     private void createConfigDsl(Project project)
@@ -58,22 +62,40 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 project);
     }
 
-    private void createTasks(Project project)
+    private void createTasks(Project rootProject)
     {
-        LOG.info("Creating tasks for project '{}'", project.getName());
-        createTracingTask(project);
+        LOG.info("Creating tasks for project '{}'", rootProject.getName());
+        createTracingTask(rootProject);
     }
 
-    private void createTracingTask(Project project)
+    private void createTracingTask(Project rootProject)
     {
-        final TraceTask traceTask = createTask(project, "traceRequirements", TraceTask.class);
+        final TraceTask traceTask = createTask(rootProject, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP_NAME);
         traceTask.setDescription("Trace requirements and generate tracing report");
-        final TracingConfig config = getConfig(project);
+        final TracingConfig config = getConfig(rootProject);
         traceTask.inputDirectories.setFrom(config.inputDirectories);
         traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(config.reportVerbosity);
-        traceTask.pathConfig = () -> getPathConfig(project.getAllprojects());
+        traceTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
+        traceTask.importedRequirements = () -> getImportedRequirements(
+                rootProject.getAllprojects());
+    }
+
+    private Set<File> getImportedRequirements(Set<Project> allProjects)
+    {
+        return allProjects.stream() //
+                .flatMap(this::getImportedRequirements) //
+                .collect(toSet());
+    }
+
+    private Stream<File> getImportedRequirements(Project project)
+    {
+        final String configurationName = "oftRequirementConfig";
+        final Configuration configuration = project.getConfigurations().create(configurationName);
+        getConfig(project).importedRequirements.forEach(
+                dependency -> project.getDependencies().add(configurationName, dependency));
+        return configuration.getFiles().stream();
     }
 
     private List<TagPathConfiguration> getPathConfig(Set<Project> allProjects)

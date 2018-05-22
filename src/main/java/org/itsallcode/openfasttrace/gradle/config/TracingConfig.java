@@ -21,6 +21,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ public class TracingConfig
     public final Property<ReportVerbosity> reportVerbosity;
     public final ConfigurableFileCollection inputDirectories;
     public final RegularFileProperty reportFile;
+    public List<Object> importedRequirements;
 
     public TracingConfig(Project project)
     {
@@ -50,6 +52,7 @@ public class TracingConfig
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
         this.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
+        this.importedRequirements = new ArrayList<>();
     }
 
     public void setInputDirectories(FileCollection inputDirs)

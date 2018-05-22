@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -56,6 +56,8 @@ public class TraceTask extends DefaultTask
             .property(ReportVerbosity.class);
     @Input
     public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
+    @Input
+    public Supplier<Set<File>> importedRequirements;
 
     @TaskAction
     public void trace() throws IOException
@@ -72,11 +74,14 @@ public class TraceTask extends DefaultTask
 
     private List<Path> getAllImportFiles()
     {
+        final Stream<Path> importedRequirementPaths = importedRequirements.get().stream()
+                .map(File::toPath);
         final Stream<Path> inputDirPaths = inputDirectories.getFiles().stream() //
                 .map(File::toPath);
         final Stream<Path> inputTagPaths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPaths);
-        return Stream.concat(inputDirPaths, inputTagPaths).collect(toList());
+        return Stream.concat(importedRequirementPaths, Stream.concat(inputDirPaths, inputTagPaths))
+                .collect(toList());
     }
 
     @Internal
@@ -86,7 +91,7 @@ public class TraceTask extends DefaultTask
                 .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
         getLogger().info("Got path configurations\n{}",
                 paths.stream().map(this::formatPathConfig).collect(joining("\n")));
-        return new LegacyTagImporterConfig(Optional.empty(), paths);
+        return new LegacyTagImporterConfig(paths);
     }
 
     private String formatPathConfig(PathConfig config)
