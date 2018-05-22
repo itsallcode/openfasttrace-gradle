@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
@@ -34,7 +33,6 @@ import org.gradle.api.plugins.ExtensionAware;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.TraceTask;
-import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 import org.slf4j.Logger;
 
 public class OpenFastTracePlugin implements Plugin<Project>
@@ -78,16 +76,16 @@ public class OpenFastTracePlugin implements Plugin<Project>
         traceTask.pathConfig = () -> getPathConfig(project.getAllprojects());
     }
 
-    private List<PathConfig> getPathConfig(Set<Project> allProjects)
+    private List<TagPathConfiguration> getPathConfig(Set<Project> allProjects)
     {
         return allProjects.stream() //
-                .flatMap(this::getPathConfig) //
+                .map(this::getTagPathConfig) //
                 .collect(toList());
     }
 
-    private Stream<PathConfig> getPathConfig(Project project)
+    private TagPathConfiguration getTagPathConfig(Project project)
     {
-        return getConfig(project).getTagPathConfig().getPathConfig();
+        return getConfig(project).getTagPathConfig();
     }
 
     private TracingConfig getConfig(Project project)

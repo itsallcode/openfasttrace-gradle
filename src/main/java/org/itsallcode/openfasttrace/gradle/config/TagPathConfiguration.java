@@ -17,6 +17,7 @@
  */
 package org.itsallcode.openfasttrace.gradle.config;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -46,6 +47,11 @@ public class TagPathConfiguration
     public Stream<PathConfig> getPathConfig()
     {
         return tagConfigs.stream().map(TagConfig::convert);
+    }
+
+    public Stream<Path> getPaths()
+    {
+        return tagConfigs.stream().map(TagConfig::getPaths).flatMap(List::stream);
     }
 
     @Override

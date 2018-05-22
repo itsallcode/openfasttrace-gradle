@@ -43,12 +43,18 @@ public class TagConfig
 
     public PathConfig convert()
     {
-        final List<Path> pathList = paths.getFiles().stream() //
+        return PathConfig.builder() //
+                .coveredItemArtifactType(coveredItemArtifactType)
+                .coveredItemNamePrefix(getItemNamePrefix()) //
+                .tagArtifactType(tagArtifactType).pathListMatcher(getPaths()) //
+                .build();
+    }
+
+    public List<Path> getPaths()
+    {
+        return paths.getFiles().stream() //
                 .map(File::toPath) //
                 .collect(toList());
-        return PathConfig.builder().coveredItemArtifactType(coveredItemArtifactType)
-                .coveredItemNamePrefix(getItemNamePrefix()).tagArtifactType(tagArtifactType)
-                .pathListMatcher(pathList).build();
     }
 
     private String getItemNamePrefix()

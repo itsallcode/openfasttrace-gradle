@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -38,6 +39,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.core.Trace;
+import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.importer.legacytag.config.LegacyTagImporterConfig;
 import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
 import org.itsallcode.openfasttrace.mode.ReportMode;
@@ -53,7 +55,7 @@ public class TraceTask extends DefaultTask
     public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
     @Input
-    public Supplier<List<PathConfig>> pathConfig = () -> emptyList();
+    public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
 
     @TaskAction
     public void trace() throws IOException
@@ -61,17 +63,27 @@ public class TraceTask extends DefaultTask
         createReportOutputDir();
         final ReportMode reporter = new ReportMode();
         final Trace trace = reporter //
-                .addInputs(getInputDirPaths()) //
+                .addInputs(getAllImportFiles()) //
                 .setReportVerbosity(reportVerbosity.get()) //
                 .setLegacyTagImporterPathConfig(getPathConfig()) //
                 .trace();
         reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
     }
 
+    private List<Path> getAllImportFiles()
+    {
+        final Stream<Path> inputDirPaths = inputDirectories.getFiles().stream() //
+                .map(File::toPath);
+        final Stream<Path> inputTagPaths = pathConfig.get().stream()
+                .flatMap(TagPathConfiguration::getPaths);
+        return Stream.concat(inputDirPaths, inputTagPaths).collect(toList());
+    }
+
     @Internal
     private LegacyTagImporterConfig getPathConfig()
     {
-        final List<PathConfig> paths = pathConfig.get();
+        final List<PathConfig> paths = pathConfig.get().stream()
+                .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
         getLogger().info("Got path configurations\n{}",
                 paths.stream().map(this::formatPathConfig).collect(joining("\n")));
         return new LegacyTagImporterConfig(Optional.empty(), paths);
@@ -101,12 +113,5 @@ public class TraceTask extends DefaultTask
     private File getOuputFile()
     {
         return outputFile.getAsFile().get();
-    }
-
-    private List<Path> getInputDirPaths()
-    {
-        return inputDirectories.getFiles().stream() //
-                .map(File::toPath) //
-                .collect(toList());
     }
 }
