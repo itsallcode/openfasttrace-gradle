@@ -19,12 +19,32 @@ targetCompatibility = '1.8'
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
+  oftVersion = '0.5.3'
+  oftSourceDir = file('../openfasttrace')
+  useOftSources = oftSourceDir.exists()
+  oftMavenTargetDir = new File(oftSourceDir, 'target/classes')
 }
 
 dependencies {
-    compile 'org.itsallcode:openfasttrace:0.5.3'
+    if(useOftSources) {
+        logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftMavenTargetDir"
+        compile files(oftMavenTargetDir) {
+            builtBy "compileOft"
+        }
+    } else {
+        compile "org.itsallcode:openfasttrace:$oftVersion"
+    }
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.13.0'
+}
+
+task compileOft(type: Exec) {
+    workingDir oftSourceDir
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine "mvn.cmd", "compile"
+    } else {
+        commandLine "mvn", "compile"
+    }
 }
 
 clean {
