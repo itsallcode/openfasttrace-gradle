@@ -41,9 +41,9 @@ dependencies {
 task compileOft(type: Exec) {
     workingDir oftSourceDir
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "mvn.cmd", "compile"
+        commandLine 'mvn.cmd', 'resources:resources', 'compiler:compile'
     } else {
-        commandLine "mvn", "compile"
+        commandLine "mvn", 'resources:resources', 'compiler:compile'
     }
 }
 
