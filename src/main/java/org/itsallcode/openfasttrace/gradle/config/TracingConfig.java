@@ -17,13 +17,9 @@
  */
 package org.itsallcode.openfasttrace.gradle.config;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -36,7 +32,6 @@ import org.itsallcode.openfasttrace.report.ReportVerbosity;
 public class TracingConfig
 {
     private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
-    private static final List<String> DEFAULT_DIRECTORIES = asList("src", "doc");
 
     private final Project project;
     public final Property<ReportVerbosity> reportVerbosity;
@@ -47,7 +42,7 @@ public class TracingConfig
     public TracingConfig(Project project)
     {
         this.project = project;
-        this.inputDirectories = project.files(getDefaultInputDirectories());
+        this.inputDirectories = project.files();
         this.reportFile = project.getLayout().fileProperty();
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
@@ -68,13 +63,6 @@ public class TracingConfig
     public RegularFileProperty getReportFile()
     {
         return reportFile;
-    }
-
-    private Set<File> getDefaultInputDirectories()
-    {
-        return DEFAULT_DIRECTORIES.stream() //
-                .map(dir -> new File(project.getRootDir(), dir)) //
-                .collect(toSet());
     }
 
     public void setReportVerbosity(ReportVerbosity reportVerbosity)

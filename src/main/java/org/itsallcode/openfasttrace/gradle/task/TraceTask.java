@@ -18,6 +18,7 @@
 package org.itsallcode.openfasttrace.gradle.task;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -30,7 +31,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
@@ -48,7 +48,7 @@ import org.itsallcode.openfasttrace.report.ReportVerbosity;
 public class TraceTask extends DefaultTask
 {
     @InputDirectory
-    public final ConfigurableFileCollection inputDirectories = getProject().files();
+    public Supplier<Set<File>> inputDirectories = () -> emptySet();
     @OutputFile
     public final RegularFileProperty outputFile = getProject().getLayout().fileProperty();
     @Input
@@ -76,12 +76,14 @@ public class TraceTask extends DefaultTask
     {
         final Stream<Path> importedRequirementPaths = importedRequirements.get().stream()
                 .map(File::toPath);
-        final Stream<Path> inputDirPaths = inputDirectories.getFiles().stream() //
+        final Stream<Path> inputDirPaths = inputDirectories.get().stream() //
                 .map(File::toPath);
         final Stream<Path> inputTagPaths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPaths);
-        return Stream.concat(importedRequirementPaths, Stream.concat(inputDirPaths, inputTagPaths))
-                .collect(toList());
+        final List<Path> files = Stream
+                .concat(importedRequirementPaths, Stream.concat(inputDirPaths, inputTagPaths))
+                .peek(p -> System.out.println("- " + p)).collect(toList());
+        return files;
     }
 
     @Internal
@@ -89,7 +91,7 @@ public class TraceTask extends DefaultTask
     {
         final List<PathConfig> paths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
-        getLogger().info("Got path configurations\n{}",
+        getLogger().info("Got {} path configurations:\n{}", paths.size(),
                 paths.stream().map(this::formatPathConfig).collect(joining("\n")));
         return new LegacyTagImporterConfig(paths);
     }

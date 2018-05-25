@@ -59,7 +59,7 @@ public class TagConfig
 
     private String getItemNamePrefix()
     {
-        if (coveredItemNamePrefix == null || coveredItemNamePrefix.isEmpty())
+        if (coveredItemNamePrefix == null)
         {
             return project.getName() + ".";
         }

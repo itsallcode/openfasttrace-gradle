@@ -74,12 +74,20 @@ public class OpenFastTracePlugin implements Plugin<Project>
         traceTask.setGroup(TASK_GROUP_NAME);
         traceTask.setDescription("Trace requirements and generate tracing report");
         final TracingConfig config = getConfig(rootProject);
-        traceTask.inputDirectories.setFrom(config.inputDirectories);
+        traceTask.inputDirectories = () -> getAllInputDirectories(rootProject.getAllprojects());
         traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(config.reportVerbosity);
         traceTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
         traceTask.importedRequirements = () -> getImportedRequirements(
                 rootProject.getAllprojects());
+    }
+
+    private Set<File> getAllInputDirectories(Set<Project> allProjects)
+    {
+        return allProjects.stream() //
+                .map(project -> getConfig(project).inputDirectories.getFiles()) //
+                .flatMap(Set::stream) //
+                .collect(toSet());
     }
 
     private Set<File> getImportedRequirements(Set<Project> allProjects)
