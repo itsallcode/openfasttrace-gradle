@@ -38,6 +38,8 @@ public class TracingConfig
     public final ConfigurableFileCollection inputDirectories;
     public final RegularFileProperty reportFile;
     public List<Object> importedRequirements;
+    public List<String> filteredTags;
+    public List<String> filteredArtifactTypes;
 
     public TracingConfig(Project project)
     {
@@ -48,6 +50,8 @@ public class TracingConfig
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
         this.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
         this.importedRequirements = new ArrayList<>();
+        this.filteredTags = new ArrayList<>();
+        this.filteredArtifactTypes = new ArrayList<>();
     }
 
     public void setInputDirectories(FileCollection inputDirs)

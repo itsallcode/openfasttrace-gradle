@@ -38,6 +38,7 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.itsallcode.openfasttrace.FilterSettings;
 import org.itsallcode.openfasttrace.core.Trace;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.importer.legacytag.config.LegacyTagImporterConfig;
@@ -58,6 +59,10 @@ public class TraceTask extends DefaultTask
     public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
     @Input
     public Supplier<Set<File>> importedRequirements;
+    @Input
+    public Supplier<Set<String>> filteredArtifactTypes;
+    @Input
+    public Supplier<Set<String>> filteredTags;
 
     @TaskAction
     public void trace() throws IOException
@@ -68,8 +73,16 @@ public class TraceTask extends DefaultTask
                 .addInputs(getAllImportFiles()) //
                 .setReportVerbosity(reportVerbosity.get()) //
                 .setLegacyTagImporterPathConfig(getPathConfig()) //
-                .trace();
+                .setFilters(getFilterSettings()).trace();
         reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
+    }
+
+    private FilterSettings getFilterSettings()
+    {
+        return new FilterSettings.Builder() //
+                .artifactTypes(filteredArtifactTypes.get()) //
+                .tags(filteredTags.get()) //
+                .build();
     }
 
     private List<Path> getAllImportFiles()

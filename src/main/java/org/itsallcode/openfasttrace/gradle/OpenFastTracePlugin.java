@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +81,18 @@ public class OpenFastTracePlugin implements Plugin<Project>
         traceTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
         traceTask.importedRequirements = () -> getImportedRequirements(
                 rootProject.getAllprojects());
+        traceTask.filteredArtifactTypes = () -> getFilteredArtifactTypes(rootProject);
+        traceTask.filteredTags = () -> getFilteredTags(rootProject);
+    }
+
+    private Set<String> getFilteredTags(Project rootProject)
+    {
+        return new HashSet<>(getConfig(rootProject).filteredTags);
+    }
+
+    private Set<String> getFilteredArtifactTypes(Project rootProject)
+    {
+        return new HashSet<>(getConfig(rootProject).filteredArtifactTypes);
     }
 
     private Set<File> getAllInputDirectories(Set<Project> allProjects)
