@@ -19,10 +19,18 @@ targetCompatibility = '1.8'
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
-  oftVersion = '0.5.3'
-  oftSourceDir = file('../openfasttrace')
-  useOftSources = oftSourceDir.exists()
-  oftMavenTargetDir = new File(oftSourceDir, 'target/classes')
+  oftVersion = '0.5.4'
+  if(project.hasProperty('oftSourceDir')) {
+    oftSourceDir = file(project.oftSourceDir)
+    useOftSources = oftSourceDir.exists()
+    if(!useOftSources) {
+      logger.warn "OFT source directory $oftSourceDir does not exist"
+    }
+    oftMavenTargetDir = new File(oftSourceDir, 'target/classes')
+  } else {
+    oftSourceDir = 'oft-dir-not-found'
+    useOftSources = false
+  }
 }
 
 dependencies {

@@ -32,6 +32,14 @@ $ ./gradlew check
 # Test report: build/reports/tests/index.html
 ```
 
+### Use `openfasttrace` from source
+
+To use `openfasttrace` from source during development create file `gradle.properties` with the following content:
+
+```properties
+oftSourceDir = ../openfasttrace
+```
+
 ### Using eclipse
 
 Import into eclipse using [buildship](https://projects.eclipse.org/projects/tools.buildship) plugin:
@@ -49,14 +57,19 @@ $ ./gradlew licenseFormat
 
 ### Publish to `plugins.gradle.org`
 
-1. Add your API key to `~/.gradle/gradle.properties`:
+#### Preparations
 
-    ```
+Add your API key to `~/.gradle/gradle.properties`:
+
+    ```properties
     gradle.publish.key = <key>
     gradle.publish.secret = <secret>
     ```
 
-1. Update version number in `build.gradle`
+#### Publish release
+
+1. Update version number in `build.gradle` and `README.md`
+1. Commit and push changes
 1. Run
 
     ```bash
