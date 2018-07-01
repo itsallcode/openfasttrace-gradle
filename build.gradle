@@ -8,8 +8,7 @@ plugins {
 }
 
 repositories {
-   jcenter()
-   mavenLocal()
+    jcenter()
 }
 
 version = '0.2.0'
