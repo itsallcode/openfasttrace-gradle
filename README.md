@@ -11,11 +11,11 @@ Gradle plugin for [OpenFastTrace](https://github.com/itsallcode/openfasttrace)
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.1.0"
+      id "org.itsallcode.openfasttrace" version "0.2.0"
     }
     ```
 
-1. Configure project, see [example projects](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects)
+1. Configure your project, see [examples](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects)
 1. Run
 
     ```bash
