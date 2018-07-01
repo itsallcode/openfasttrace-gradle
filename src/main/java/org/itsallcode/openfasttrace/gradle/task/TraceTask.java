@@ -56,6 +56,8 @@ public class TraceTask extends DefaultTask
     public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
     @Input
+    public Supplier<String> reportFormat;
+    @Input
     public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
     @Input
     public Supplier<Set<File>> importedRequirements;
@@ -73,8 +75,9 @@ public class TraceTask extends DefaultTask
                 .addInputs(getAllImportFiles()) //
                 .setReportVerbosity(reportVerbosity.get()) //
                 .setLegacyTagImporterPathConfig(getPathConfig()) //
-                .setFilters(getFilterSettings()).trace();
-        reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
+                .setFilters(getFilterSettings()) //
+                .trace();
+        reporter.reportToFileInFormat(trace, getOuputFile().toPath(), reportFormat.get());
     }
 
     private FilterSettings getFilterSettings()
