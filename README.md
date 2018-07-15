@@ -1,9 +1,15 @@
 # openfasttrace-gradle
-Gradle plugin for [OpenFastTrace](https://github.com/itsallcode/openfasttrace)
+Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.com/itsallcode/openfasttrace).
+
+## Project Information
 
 [![Build Status](https://travis-ci.org/itsallcode/openfasttrace-gradle.svg?branch=develop)](https://travis-ci.org/itsallcode/openfasttrace-gradle)
 [![Sonarcloud Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)
 [![codecov](https://codecov.io/gh/itsallcode/openfasttrace-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/itsallcode/openfasttrace-gradle)
+
+* [Blog](https://blog.itsallcode.org/)
+* [Contributing guide](CONTRIBUTING.md)
+* [OpenFastTrace stories](https://github.com/itsallcode/openfasttrace/wiki/OFT-Stories)
 
 ## Usage
 
