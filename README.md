@@ -40,11 +40,14 @@ $ ./gradlew check
 
 ### Use `openfasttrace` from source
 
-To use `openfasttrace` from source during development create file `gradle.properties` with the following content:
+To use `openfasttrace` from source during development:
 
-```properties
-oftSourceDir = ../openfasttrace
-```
+1. Clone https://github.com/itsallcode/openfasttrace to `../openfasttrace`
+1. Create file `gradle.properties` with the following content:
+
+    ```properties
+    oftSourceDir = ../openfasttrace
+    ```
 
 ### Using eclipse
 
