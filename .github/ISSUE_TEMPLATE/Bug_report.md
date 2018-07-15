@@ -15,10 +15,10 @@ A clear and concise description of what the bug is.
 A clear and concise description of what you expected to happen.
 
 # Environment
-- OFT: [e.g. 1.2.3]
+- Gradle version: [e.g. 4.8.1]
+- openfasttrace-gradle version: [e.g. 1.2.3]
 - OS: [e.g. Debian Linux 9, Kernel 4.13.0]
 - Java Version: [e.g. openjdk version "1.8.0_162"]
-- Maven Version (in case of build problems only): [e.g. 3.5.0]
 
 ## Additional context
 Add any other context about the problem here.
