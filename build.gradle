@@ -18,7 +18,7 @@ targetCompatibility = '1.8'
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
-  oftVersion = '1.0.0'
+  oftVersion = '1.1.0'
   if(project.hasProperty('oftSourceDir')) {
     oftSourceDir = file(project.oftSourceDir)
     useOftSources = oftSourceDir.exists()
@@ -42,7 +42,7 @@ dependencies {
         compile "org.itsallcode:openfasttrace:$oftVersion"
     }
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.13.0'
+    testCompile 'org.mockito:mockito-core:2.19.1'
 }
 
 task compileOft(type: Exec) {
