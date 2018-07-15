@@ -54,7 +54,7 @@ public class OpenFastTracePluginTest
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
         assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleA~1 (impl, -utest)", "not ok - 2 total, 2 defect");
+                "ok - 0 total");
     }
 
     @Test

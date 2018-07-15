@@ -35,7 +35,6 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.FilterSettings;
@@ -56,6 +55,8 @@ public class TraceTask extends DefaultTask
     public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
     @Input
+    public Supplier<String> reportFormat;
+    @Input
     public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
     @Input
     public Supplier<Set<File>> importedRequirements;
@@ -72,9 +73,10 @@ public class TraceTask extends DefaultTask
         final Trace trace = reporter //
                 .addInputs(getAllImportFiles()) //
                 .setReportVerbosity(reportVerbosity.get()) //
-                .setLegacyTagImporterPathConfig(getPathConfig()) //
-                .setFilters(getFilterSettings()).trace();
-        reporter.reportToFileInFormat(trace, getOuputFile().toPath(), "");
+                .setLegacyTagImporterPathConfig(getPathConfigInternal()) //
+                .setFilters(getFilterSettings()) //
+                .trace();
+        reporter.reportToFileInFormat(trace, getOuputFileInternal().toPath(), reportFormat.get());
     }
 
     private FilterSettings getFilterSettings()
@@ -99,8 +101,7 @@ public class TraceTask extends DefaultTask
         return files;
     }
 
-    @Internal
-    private LegacyTagImporterConfig getPathConfig()
+    private LegacyTagImporterConfig getPathConfigInternal()
     {
         final List<PathConfig> paths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
@@ -118,7 +119,7 @@ public class TraceTask extends DefaultTask
 
     private void createReportOutputDir() throws IOException
     {
-        final File outputDir = getOuputFile().getParentFile();
+        final File outputDir = getOuputFileInternal().getParentFile();
         if (outputDir.exists())
         {
             return;
@@ -129,8 +130,7 @@ public class TraceTask extends DefaultTask
         }
     }
 
-    @Internal
-    private File getOuputFile()
+    private File getOuputFileInternal()
     {
         return outputFile.getAsFile().get();
     }

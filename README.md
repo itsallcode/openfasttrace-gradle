@@ -4,7 +4,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 ## Project Information
 
 [![Build Status](https://travis-ci.org/itsallcode/openfasttrace-gradle.svg?branch=develop)](https://travis-ci.org/itsallcode/openfasttrace-gradle)
-[![Sonarcloud Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)
+[![Sonarcloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle%3Adevelop)
 [![codecov](https://codecov.io/gh/itsallcode/openfasttrace-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/itsallcode/openfasttrace-gradle)
 
 * [Blog](https://blog.itsallcode.org/)
@@ -17,11 +17,11 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.1.0"
+      id "org.itsallcode.openfasttrace" version "0.2.0"
     }
     ```
 
-1. Configure project, see [example projects](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects)
+1. Configure your project, see [examples](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects)
 1. Run
 
     ```bash

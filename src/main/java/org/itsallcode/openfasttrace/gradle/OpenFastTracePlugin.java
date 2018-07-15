@@ -78,6 +78,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         traceTask.inputDirectories = () -> getAllInputDirectories(rootProject.getAllprojects());
         traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(config.reportVerbosity);
+        traceTask.reportFormat = () -> config.reportFormat;
         traceTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
         traceTask.importedRequirements = () -> getImportedRequirements(
                 rootProject.getAllprojects());

@@ -8,18 +8,17 @@ plugins {
 }
 
 repositories {
-   jcenter()
-   mavenLocal()
+    jcenter()
 }
 
-version = '0.1.0'
+version = '0.2.0'
 group = 'org.itsallcode'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
-  oftVersion = '0.6.0'
+  oftVersion = '1.0.0'
   if(project.hasProperty('oftSourceDir')) {
     oftSourceDir = file(project.oftSourceDir)
     useOftSources = oftSourceDir.exists()

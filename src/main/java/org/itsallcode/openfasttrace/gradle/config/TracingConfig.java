@@ -32,9 +32,12 @@ import org.itsallcode.openfasttrace.report.ReportVerbosity;
 public class TracingConfig
 {
     private static final String DEFAULT_REPORT_FILE = "reports/tracing.txt";
+    private static final ReportVerbosity DEFAULT_REPORT_VERBOSITY = ReportVerbosity.FAILURE_DETAILS;
+    private static final String DEFAULT_REPORT_FORMAT = "plain";
 
     private final Project project;
     public final Property<ReportVerbosity> reportVerbosity;
+    public String reportFormat;
     public final ConfigurableFileCollection inputDirectories;
     public final RegularFileProperty reportFile;
     public List<Object> importedRequirements;
@@ -48,7 +51,8 @@ public class TracingConfig
         this.reportFile = project.getLayout().fileProperty();
         this.reportFile.set(new File(project.getBuildDir(), DEFAULT_REPORT_FILE));
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
-        this.reportVerbosity.set(ReportVerbosity.FAILURE_DETAILS);
+        this.reportVerbosity.set(DEFAULT_REPORT_VERBOSITY);
+        this.reportFormat = DEFAULT_REPORT_FORMAT;
         this.importedRequirements = new ArrayList<>();
         this.filteredTags = new ArrayList<>();
         this.filteredArtifactTypes = new ArrayList<>();
