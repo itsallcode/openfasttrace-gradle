@@ -11,7 +11,7 @@ repositories {
     jcenter()
 }
 
-version = '0.2.0'
+version = '0.3.0'
 group = 'org.itsallcode'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -74,7 +74,7 @@ pluginBundle {
   website = 'https://github.com/itsallcode/openfasttrace-gradle'
   vcsUrl = 'https://github.com/itsallcode/openfasttrace-gradle'
   description = 'Gradle plugin for tracing requirements using OpenFastTrace'
-  tags = ['requirements', 'tracing']
+  tags = ['requirementstracing', 'requirements', 'tracing', 'reqtracing', 'openfasttrace', 'oft']
 
   plugins {
     openFastTracePlugin {
