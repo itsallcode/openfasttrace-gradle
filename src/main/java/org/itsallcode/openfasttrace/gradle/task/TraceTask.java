@@ -64,6 +64,8 @@ public class TraceTask extends DefaultTask
     public Supplier<Set<String>> filteredArtifactTypes;
     @Input
     public Supplier<Set<String>> filteredTags;
+    @Input
+    public Supplier<Boolean> filterAcceptsItemsWithoutTag;
 
     @TaskAction
     public void trace() throws IOException
@@ -84,7 +86,7 @@ public class TraceTask extends DefaultTask
         return new FilterSettings.Builder() //
                 .artifactTypes(filteredArtifactTypes.get()) //
                 .tags(filteredTags.get()) //
-                .build();
+                .withoutTags(filterAcceptsItemsWithoutTag.get()).build();
     }
 
     private List<Path> getAllImportFiles()
