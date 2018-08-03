@@ -32,74 +32,44 @@ import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
-import org.itsallcode.openfasttrace.FilterSettings;
-import org.itsallcode.openfasttrace.core.Trace;
+import org.itsallcode.openfasttrace.exporter.specobject.SpecobjectExporterFactory;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.importer.tag.config.TagImporterConfig;
-import org.itsallcode.openfasttrace.mode.ReportMode;
-import org.itsallcode.openfasttrace.report.ReportVerbosity;
+import org.itsallcode.openfasttrace.mode.ConvertMode;
 
-public class TraceTask extends DefaultTask
+public class ExportTask extends DefaultTask
 {
     @InputDirectory
     public Supplier<Set<File>> inputDirectories = () -> emptySet();
     @OutputFile
     public final RegularFileProperty outputFile = getProject().getLayout().fileProperty();
     @Input
-    public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
-            .property(ReportVerbosity.class);
-    @Input
-    public Supplier<String> reportFormat;
-    @Input
     public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
-    @Input
-    public Supplier<Set<File>> importedRequirements;
-    @Input
-    public Supplier<Set<String>> filteredArtifactTypes;
-    @Input
-    public Supplier<Set<String>> filteredTags;
-    @Input
-    public Supplier<Boolean> filterAcceptsItemsWithoutTag;
 
     @TaskAction
     public void trace() throws IOException
     {
         createReportOutputDir();
-        final ReportMode reporter = new ReportMode();
-        final Trace trace = reporter //
+        final ConvertMode converter = new ConvertMode();
+        converter //
                 .addInputs(getAllImportFiles()) //
-                .setReportVerbosity(reportVerbosity.get()) //
                 .setLegacyTagImporterPathConfig(getPathConfigInternal()) //
-                .setFilters(getFilterSettings()) //
-                .trace();
-        reporter.reportToFileInFormat(trace, getOuputFileInternal().toPath(), reportFormat.get());
-    }
-
-    private FilterSettings getFilterSettings()
-    {
-        return new FilterSettings.Builder() //
-                .artifactTypes(filteredArtifactTypes.get()) //
-                .tags(filteredTags.get()) //
-                .withoutTags(filterAcceptsItemsWithoutTag.get()).build();
+                .convertToFileInFormat(getOuputFileInternal().toPath(),
+                        SpecobjectExporterFactory.SUPPORTED_FORMAT);
     }
 
     private List<Path> getAllImportFiles()
     {
-        final Stream<Path> importedRequirementPaths = importedRequirements.get().stream()
-                .map(File::toPath);
         final Stream<Path> inputDirPaths = inputDirectories.get().stream() //
                 .map(File::toPath);
         final Stream<Path> inputTagPaths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPaths);
-        return Stream
-                .concat(importedRequirementPaths, Stream.concat(inputDirPaths, inputTagPaths))
-                .collect(toList());
+        return Stream.concat(inputDirPaths, inputTagPaths).collect(toList());
     }
 
     private TagImporterConfig getPathConfigInternal()
