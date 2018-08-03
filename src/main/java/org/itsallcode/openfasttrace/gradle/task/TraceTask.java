@@ -40,8 +40,8 @@ import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.FilterSettings;
 import org.itsallcode.openfasttrace.core.Trace;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
-import org.itsallcode.openfasttrace.importer.legacytag.config.LegacyTagImporterConfig;
-import org.itsallcode.openfasttrace.importer.legacytag.config.PathConfig;
+import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
+import org.itsallcode.openfasttrace.importer.tag.config.TagImporterConfig;
 import org.itsallcode.openfasttrace.mode.ReportMode;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
@@ -103,13 +103,13 @@ public class TraceTask extends DefaultTask
         return files;
     }
 
-    private LegacyTagImporterConfig getPathConfigInternal()
+    private TagImporterConfig getPathConfigInternal()
     {
         final List<PathConfig> paths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
         getLogger().info("Got {} path configurations:\n{}", paths.size(),
                 paths.stream().map(this::formatPathConfig).collect(joining("\n")));
-        return new LegacyTagImporterConfig(paths);
+        return new TagImporterConfig(paths);
     }
 
     private String formatPathConfig(PathConfig config)
