@@ -43,6 +43,7 @@ public class TracingConfig
     public List<Object> importedRequirements;
     public List<String> filteredTags;
     public List<String> filteredArtifactTypes;
+    public boolean filterAcceptsItemsWithoutTag = true;
 
     public TracingConfig(Project project)
     {

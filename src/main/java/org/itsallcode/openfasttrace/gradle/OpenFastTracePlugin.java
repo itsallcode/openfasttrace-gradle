@@ -84,6 +84,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 rootProject.getAllprojects());
         traceTask.filteredArtifactTypes = () -> getFilteredArtifactTypes(rootProject);
         traceTask.filteredTags = () -> getFilteredTags(rootProject);
+        traceTask.filterAcceptsItemsWithoutTag = () -> config.filterAcceptsItemsWithoutTag;
     }
 
     private Set<String> getFilteredTags(Project rootProject)
