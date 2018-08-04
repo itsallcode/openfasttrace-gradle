@@ -59,6 +59,18 @@ public class OpenFastTracePluginTest
     }
 
     @Test
+    public void testCollectExampleProjectWithCustomConfig() throws IOException
+    {
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements", "--info", "--stacktrace");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
+        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
+                "<specdocument><specobjects doctype=\"impl\"><specobject><id>exampleB-",
+                "<providescoverage><provcov><linksto>dsn:exampleB</linksto><dstversion>1</dstversion></provcov></providescoverage>",
+                "</specobjects><specobjects doctype=\"dsn\"><specobject><id>exampleB</id>",
+                "<needscoverage><needsobj>utest</needsobj><needsobj>impl</needsobj></needscoverage>");
+    }
+
+    @Test
     public void testTraceExampleProjectWithCustomConfig() throws IOException
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements", "--info", "--stacktrace");

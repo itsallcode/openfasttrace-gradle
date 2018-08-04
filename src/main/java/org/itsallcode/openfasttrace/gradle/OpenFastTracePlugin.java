@@ -37,6 +37,7 @@ import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
+import org.itsallcode.openfasttrace.gradle.task.CollectTask;
 import org.itsallcode.openfasttrace.gradle.task.TraceTask;
 import org.slf4j.Logger;
 
@@ -66,20 +67,34 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private void createTasks(Project rootProject)
     {
         LOG.info("Creating tasks for project '{}'", rootProject.getName());
-        createTracingTask(rootProject);
+        final CollectTask collectTask = createCollectTask(rootProject);
+        createTracingTask(rootProject, collectTask);
     }
 
-    private void createTracingTask(Project rootProject)
+    private CollectTask createCollectTask(Project rootProject)
+    {
+        final CollectTask collectTask = createTask(rootProject, "collectRequirements",
+                CollectTask.class);
+        collectTask.setGroup(TASK_GROUP_NAME);
+        collectTask.setDescription("Collect requirements and generate specobject file");
+
+        collectTask.outputFile.set(new File(rootProject.getBuildDir(), "reports/requirements.xml"));
+        collectTask.inputDirectories = () -> getAllInputDirectories(rootProject.getAllprojects());
+        collectTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
+        return collectTask;
+    }
+
+    private void createTracingTask(Project rootProject, CollectTask collectTask)
     {
         final TraceTask traceTask = createTask(rootProject, "traceRequirements", TraceTask.class);
         traceTask.setGroup(TASK_GROUP_NAME);
         traceTask.setDescription("Trace requirements and generate tracing report");
+        traceTask.dependsOn(collectTask);
         final TracingConfig config = getConfig(rootProject);
-        traceTask.inputDirectories = () -> getAllInputDirectories(rootProject.getAllprojects());
+        traceTask.requirementsFile.set(collectTask.outputFile);
         traceTask.outputFile.set(config.reportFile);
         traceTask.reportVerbosity.set(config.reportVerbosity);
         traceTask.reportFormat = () -> config.reportFormat;
-        traceTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
         traceTask.importedRequirements = () -> getImportedRequirements(
                 rootProject.getAllprojects());
         traceTask.filteredArtifactTypes = () -> getFilteredArtifactTypes(rootProject);

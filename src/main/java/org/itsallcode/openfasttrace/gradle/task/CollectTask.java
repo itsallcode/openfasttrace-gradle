@@ -17,14 +17,13 @@
  */
 package org.itsallcode.openfasttrace.gradle.task;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -42,17 +41,18 @@ import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.importer.tag.config.TagImporterConfig;
 import org.itsallcode.openfasttrace.mode.ConvertMode;
 
-public class ExportTask extends DefaultTask
+public class CollectTask extends DefaultTask
 {
     @InputDirectory
-    public Supplier<Set<File>> inputDirectories = () -> emptySet();
+    public Supplier<Set<File>> inputDirectories = Collections::emptySet;
     @OutputFile
     public final RegularFileProperty outputFile = getProject().getLayout().fileProperty();
+
     @Input
-    public Supplier<List<TagPathConfiguration>> pathConfig = () -> emptyList();
+    public Supplier<List<TagPathConfiguration>> pathConfig = Collections::emptyList;
 
     @TaskAction
-    public void trace() throws IOException
+    public void collectRequirements() throws IOException
     {
         createReportOutputDir();
         final ConvertMode converter = new ConvertMode();
@@ -76,8 +76,11 @@ public class ExportTask extends DefaultTask
     {
         final List<PathConfig> paths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
-        getLogger().info("Got {} path configurations:\n{}", paths.size(),
-                paths.stream().map(this::formatPathConfig).collect(joining("\n")));
+        if (getLogger().isInfoEnabled())
+        {
+            getLogger().info("Got {} path configurations:\n{}", paths.size(),
+                    paths.stream().map(this::formatPathConfig).collect(joining("\n")));
+        }
         return new TagImporterConfig(paths);
     }
 
