@@ -22,47 +22,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 
 public class TestUtil
 {
-    public static void deleteRecursive(Path dir)
-    {
-        if (!Files.exists(dir))
-        {
-            return;
-        }
-        try
-        {
-            Files.walkFileTree(dir, new SimpleFileVisitor<Path>()
-            {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                        throws IOException
-                {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-                        throws IOException
-                {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
-        catch (final IOException e)
-        {
-            throw new AssertionError("Error deleting dir " + dir, e);
-        }
-    }
-
     public static String readResource(Class<?> clazz, String resourceName)
     {
         final URL resource = clazz.getResource(resourceName);

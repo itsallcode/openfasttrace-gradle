@@ -51,8 +51,9 @@ public class OpenFastTracePluginTest
     @Test
     public void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
-        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "traceRequirements", "--stacktrace", "--info");
-        assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements", "--stacktrace",
+                "--info");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
     }
@@ -60,17 +61,18 @@ public class OpenFastTracePluginTest
     @Test
     public void testTraceExampleProjectWithCustomConfig() throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
-        assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements", "--info", "--stacktrace");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", "not ok - 2 total, 2 defect");
+                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", //
+                "not ok - 2 total, 2 defect");
     }
 
     @Test
     public void testTraceMultiProject() throws IOException
     {
-        runBuild(MULTI_PROJECT_DIR, "traceRequirements", "--info", "--stacktrace");
-        assertEquals(buildResult.task(":traceRequirements").getOutcome(), TaskOutcome.SUCCESS);
+        runBuild(MULTI_PROJECT_DIR, "clean", "traceRequirements", "--info", "--stacktrace");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
@@ -90,7 +92,6 @@ public class OpenFastTracePluginTest
 
     private void runBuild(Path projectDir, String... arguments)
     {
-        deleteBuildDir(projectDir);
         configureJacoco(projectDir);
         buildResult = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
@@ -105,10 +106,5 @@ public class OpenFastTracePluginTest
         final String testkitGradleConfig = TestUtil.readResource(this.getClass(),
                 "/testkit-gradle.properties");
         TestUtil.writeFile(projectDir.resolve("gradle.properties"), testkitGradleConfig);
-    }
-
-    private void deleteBuildDir(Path projectDir)
-    {
-        TestUtil.deleteRecursive(projectDir.resolve("build"));
     }
 }
