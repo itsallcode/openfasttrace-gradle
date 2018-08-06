@@ -17,7 +17,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.3.0"
+      id "org.itsallcode.openfasttrace" version "0.3.1"
     }
     ```
 
@@ -77,6 +77,7 @@ Add your API key to `~/.gradle/gradle.properties`:
 
 #### Publish release
 
+1. Make sure that property `oftSourceDir` in file `gradle.properties` is commented out, i.e. openfasttrace is not used from source.
 1. Update version number in `build.gradle` and `README.md`
 1. Commit and push changes
 1. Run
