@@ -17,7 +17,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.3.0"
+      id "org.itsallcode.openfasttrace" version "0.4.0"
     }
     ```
 
@@ -70,10 +70,10 @@ $ ./gradlew licenseFormat
 
 Add your API key to `~/.gradle/gradle.properties`:
 
-    ```properties
-    gradle.publish.key = <key>
-    gradle.publish.secret = <secret>
-    ```
+```properties
+gradle.publish.key = <key>
+gradle.publish.secret = <secret>
+```
 
 #### Publish release
 
