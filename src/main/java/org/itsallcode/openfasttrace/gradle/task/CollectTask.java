@@ -35,11 +35,15 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.itsallcode.openfasttrace.ExportSettings;
+import org.itsallcode.openfasttrace.ImportSettings;
+import org.itsallcode.openfasttrace.Oft;
+import org.itsallcode.openfasttrace.core.Newline;
+import org.itsallcode.openfasttrace.core.OftRunner;
+import org.itsallcode.openfasttrace.core.SpecificationItem;
 import org.itsallcode.openfasttrace.exporter.specobject.SpecobjectExporterFactory;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
-import org.itsallcode.openfasttrace.importer.tag.config.TagImporterConfig;
-import org.itsallcode.openfasttrace.mode.ConvertMode;
 
 public class CollectTask extends DefaultTask
 {
@@ -55,12 +59,26 @@ public class CollectTask extends DefaultTask
     public void collectRequirements() throws IOException
     {
         createReportOutputDir();
-        final ConvertMode converter = new ConvertMode();
-        converter //
+
+        final Oft oft = new OftRunner();
+        final List<SpecificationItem> importedItems = oft.importItems(getImportSettings());
+        oft.exportToPath(importedItems, getOuputFileInternal().toPath(), getExportSettings());
+    }
+
+    private ExportSettings getExportSettings()
+    {
+        return ExportSettings.builder() //
+                .outputFormat(SpecobjectExporterFactory.SUPPORTED_FORMAT) //
+                .newline(Newline.UNIX) //
+                .build();
+    }
+
+    private ImportSettings getImportSettings()
+    {
+        return ImportSettings.builder() //
                 .addInputs(getAllImportFiles()) //
-                .setLegacyTagImporterPathConfig(getPathConfigInternal()) //
-                .convertToFileInFormat(getOuputFileInternal().toPath(),
-                        SpecobjectExporterFactory.SUPPORTED_FORMAT);
+                .pathConfigs(getPathConfigInternal()) //
+                .build();
     }
 
     private List<Path> getAllImportFiles()
@@ -72,7 +90,7 @@ public class CollectTask extends DefaultTask
         return Stream.concat(inputDirPaths, inputTagPaths).collect(toList());
     }
 
-    private TagImporterConfig getPathConfigInternal()
+    private List<PathConfig> getPathConfigInternal()
     {
         final List<PathConfig> paths = pathConfig.get().stream()
                 .flatMap(TagPathConfiguration::getPathConfig).collect(toList());
@@ -81,7 +99,7 @@ public class CollectTask extends DefaultTask
             getLogger().info("Got {} path configurations:\n{}", paths.size(),
                     paths.stream().map(this::formatPathConfig).collect(joining("\n")));
         }
-        return new TagImporterConfig(paths);
+        return paths;
     }
 
     private String formatPathConfig(PathConfig config)
