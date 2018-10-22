@@ -1,0 +1,16 @@
+plugins {
+    id "base"
+    id 'org.itsallcode.openfasttrace'
+}
+
+repositories {
+    flatDir {
+        dirs 'build/repo'
+    }
+}
+
+requirementTracing {
+  reportFormat = 'plain'
+  reportVerbosity = 'ALL'
+  importedRequirements = [':requirements:1.0@zip']
+}

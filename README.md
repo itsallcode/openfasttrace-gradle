@@ -30,6 +30,24 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 1. Report is written to `build/reports/tracing.txt` by default.
 
+### Importing external requirements
+
+You can import requirements from another project (e.g. the software architecture design)
+using `importedRequirements`. The requirements must be published
+to a repository as a zip file and can be referenced using the usual gradle dependency syntax:
+
+    ```gradle
+    repositories {
+      maven {
+        url "http://repo.example.com/maven2"
+      }
+    }
+
+    requirementTracing {
+      importedRequirements = ['com.example:swad:1.0.0@zip']
+    }
+    ```
+
 ## Development
 
 ```bash

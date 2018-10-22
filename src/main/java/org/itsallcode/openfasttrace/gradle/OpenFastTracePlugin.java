@@ -131,9 +131,14 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         final String configurationName = "oftRequirementConfig";
         final Configuration configuration = project.getConfigurations().create(configurationName);
-        getConfig(project).importedRequirements.forEach(
-                dependency -> project.getDependencies().add(configurationName, dependency));
-        return configuration.getFiles().stream();
+        getConfig(project).importedRequirements.forEach(dependency -> {
+            LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
+                    configurationName, project);
+            project.getDependencies().add(configurationName, dependency);
+        });
+        final Set<File> files = configuration.getFiles();
+        LOG.info("Found {} dependency files: {}", files.size(), files);
+        return files.stream();
     }
 
     private List<TagPathConfiguration> getPathConfig(Set<Project> allProjects)

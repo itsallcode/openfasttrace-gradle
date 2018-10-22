@@ -38,6 +38,7 @@ public class OpenFastTracePluginTest
     private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
     private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
+    private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
     private BuildResult buildResult;
 
     @Test
@@ -86,6 +87,32 @@ public class OpenFastTracePluginTest
         runBuild(MULTI_PROJECT_DIR, "clean", "traceRequirements", "--info", "--stacktrace");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
+    }
+
+    @Test
+    public void testTraceDependencyProject() throws IOException
+    {
+        runBuild(DEPENDENCY_CONFIG_DIR, "clean", "--info", "--stacktrace");
+        final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
+        createDependencyZip(dependencyZip);
+
+        runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+                "requirements-1.0.zip!spec.md:2", //
+                "requirements-1.0.zip!source.java:1", //
+                "not ok - 2 total, 2 defect");
+    }
+
+    private void createDependencyZip(final Path dependencyZip) throws IOException
+    {
+        Files.createDirectories(dependencyZip.getParent());
+        try (ZipFileBuilder zipBuilder = ZipFileBuilder.create(dependencyZip))
+        {
+            zipBuilder
+                    .addEntry("source.java", PROJECT_DEFAULT_CONFIG_DIR.resolve("src/source.java")) //
+                    .addEntry("spec.md", PROJECT_DEFAULT_CONFIG_DIR.resolve("doc/spec.md"));
+        }
     }
 
     private void assertFileContent(Path file, String... lines) throws IOException
