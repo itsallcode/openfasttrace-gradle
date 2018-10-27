@@ -17,16 +17,23 @@
  */
 package org.itsallcode.openfasttrace.gradle;
 
+import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.zip.ZipException;
 
+import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -39,6 +46,7 @@ public class OpenFastTracePluginTest
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
     private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
+    private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private BuildResult buildResult;
 
     @Test
@@ -102,6 +110,34 @@ public class OpenFastTracePluginTest
                 "requirements-1.0.zip!spec.md:2", //
                 "requirements-1.0.zip!source.java:1", //
                 "not ok - 2 total, 2 defect");
+    }
+
+    @Test
+    public void testPublishToMavenRepo() throws IOException
+    {
+        runBuild(PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal", "--info", "--stacktrace");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
+
+        final Path archive = PUBLISH_CONFIG_DIR
+                .resolve("build/distributions/publish-config-1.0.zip");
+        assertTrue(Files.exists(archive));
+        try (ZipFile zip = new ZipFile(archive.toFile()))
+        {
+            final String entryContent = readEntry(zip, "requirements.xml");
+            assertThat(entryContent, containsString("<specobject><id>exampleB</id>" //
+                    + "<status>approved</status>" //
+                    + "<version>1</version>"));
+        }
+    }
+
+    private String readEntry(ZipFile zip, String entryName) throws IOException, ZipException
+    {
+        final ZipArchiveEntry reqirementsEntry = zip.getEntry(entryName);
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(zip.getInputStream(reqirementsEntry))))
+        {
+            return reader.lines().collect(joining("\n"));
+        }
     }
 
     private void createDependencyZip(final Path dependencyZip) throws IOException
