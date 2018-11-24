@@ -1,0 +1,25 @@
+plugins {
+    id "base"
+    id 'org.itsallcode.openfasttrace'
+    id 'maven-publish'
+}
+
+group = 'org.itsallcode.openfasttrace'
+version = '1.0'
+
+requirementTracing {
+  inputDirectories = files('doc')
+}
+
+task requirementsZip(type: Zip, dependsOn: collectRequirements) {
+   from collectRequirements.outputFile
+   into '/'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact requirementsZip
+        }
+    }
+}
