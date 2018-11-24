@@ -27,6 +27,8 @@ import org.gradle.api.Project;
 import org.gradle.api.file.FileTree;
 import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
 
+// Public fields are required for configuration via gradle
+@SuppressWarnings("squid:ClassVariableVisibilityCheck")
 public class TagConfig
 {
     private final Project project;
