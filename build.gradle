@@ -32,6 +32,10 @@ ext {
   }
 }
 
+jacoco {
+  toolVersion = '0.8.2'
+}
+
 dependencies {
     if(useOftSources) {
         logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftMavenTargetDir"
