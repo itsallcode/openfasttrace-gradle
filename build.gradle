@@ -2,8 +2,8 @@ plugins {
     id 'java-gradle-plugin'
     id 'jacoco'
     id 'pl.droidsonroids.jacoco.testkit' version '1.0.3'
-    id 'com.gradle.plugin-publish' version '0.9.10'
-    id 'com.github.hierynomus.license' version '0.14.0'
+    id 'com.gradle.plugin-publish' version '0.10.0'
+    id 'com.github.hierynomus.license' version '0.15.0'
     id 'org.sonarqube' version '2.6.2'
 }
 
@@ -11,14 +11,14 @@ repositories {
     jcenter()
 }
 
-version = '0.4.0'
+version = '0.5.0'
 group = 'org.itsallcode'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
-  oftVersion = '2.0.0'
+  oftVersion = '2.1.0'
   if(project.hasProperty('oftSourceDir')) {
     oftSourceDir = file(project.oftSourceDir)
     useOftSources = oftSourceDir.exists()
@@ -32,6 +32,10 @@ ext {
   }
 }
 
+jacoco {
+  toolVersion = '0.8.2'
+}
+
 dependencies {
     if(useOftSources) {
         logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftMavenTargetDir"
@@ -42,7 +46,6 @@ dependencies {
         compile "org.itsallcode:openfasttrace:$oftVersion"
     }
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.19.1'
 }
 
 task compileOft(type: Exec) {
