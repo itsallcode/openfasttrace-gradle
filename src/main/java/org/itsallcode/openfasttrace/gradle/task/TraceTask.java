@@ -125,6 +125,16 @@ public class TraceTask extends DefaultTask
 
     private File getOuputFileInternal()
     {
-        return outputFile.getAsFile().get();
+        if (outputFile.isPresent())
+        {
+            return outputFile.getAsFile().get();
+        }
+        return getDefaultOutputFile();
+    }
+
+    private File getDefaultOutputFile()
+    {
+        final String extension = reportFormat.get().equals("html") ? "html" : "txt";
+        return new File(getProject().getBuildDir(), "reports/tracing." + extension);
     }
 }
