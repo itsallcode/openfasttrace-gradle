@@ -1,0 +1,9 @@
+plugins {
+    id "base"
+    id 'org.itsallcode.openfasttrace'
+}
+
+requirementTracing {
+  inputDirectories = files('custom-dir')
+  reportFormat = 'html'
+}

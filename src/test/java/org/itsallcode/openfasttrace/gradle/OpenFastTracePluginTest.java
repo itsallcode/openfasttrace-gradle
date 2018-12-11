@@ -47,6 +47,7 @@ public class OpenFastTracePluginTest
     private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
+    private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
     private BuildResult buildResult;
 
     @Test
@@ -77,6 +78,16 @@ public class OpenFastTracePluginTest
                 "<providescoverage><provcov><linksto>dsn:exampleB</linksto><dstversion>1</dstversion></provcov></providescoverage>",
                 "</specobjects><specobjects doctype=\"dsn\"><specobject><id>exampleB</id>",
                 "<needscoverage><needsobj>utest</needsobj><needsobj>impl</needsobj></needscoverage>");
+    }
+
+    @Test
+    public void testHtmlReportConfig() throws IOException
+    {
+        runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+                "<!DOCTYPE html>", //
+                "<summary title=\"dsn~exampleB~1\">&#x2705; <b>exampleB</b><small>, rev. 1, dsn</small></summary>");
     }
 
     @Test
