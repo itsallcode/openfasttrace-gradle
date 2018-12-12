@@ -27,6 +27,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.Property;
+import org.itsallcode.openfasttrace.gradle.util.DeprecationUtil;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 // Public fields are required for configuration via gradle
@@ -50,7 +51,7 @@ public class TracingConfig
     {
         this.project = project;
         this.inputDirectories = project.files();
-        this.reportFile = project.getLayout().fileProperty();
+        this.reportFile = DeprecationUtil.createFileProperty(project);
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
         this.reportVerbosity.set(DEFAULT_REPORT_VERBOSITY);
         this.reportFormat = DEFAULT_REPORT_FORMAT;
