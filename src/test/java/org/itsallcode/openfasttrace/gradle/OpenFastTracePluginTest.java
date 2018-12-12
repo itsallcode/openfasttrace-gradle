@@ -87,7 +87,7 @@ public class OpenFastTracePluginTest
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>", //
-                "<summary title=\"dsn~exampleB~1\">&#x2705; <b>exampleB</b><small>, rev. 1, dsn</small></summary>");
+                "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>");
     }
 
     @Test
