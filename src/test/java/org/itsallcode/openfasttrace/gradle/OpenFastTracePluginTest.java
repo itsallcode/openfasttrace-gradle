@@ -77,7 +77,8 @@ public class OpenFastTracePluginTest
                 "<specdocument>", //
                 "<specobjects doctype=\"impl\"><specobject><id>exampleB-",
                 "<providescoverage><provcov><linksto>dsn:exampleB</linksto><dstversion>1</dstversion></provcov></providescoverage>",
-                "</specobjects><specobjects doctype=\"dsn\"><specobject><id>exampleB</id>",
+                "</specobjects>", //
+                "<specobjects doctype=\"dsn\"><specobject><id>exampleB</id>",
                 "<needscoverage><needsobj>utest</needsobj><needsobj>impl</needsobj></needscoverage>");
     }
 
