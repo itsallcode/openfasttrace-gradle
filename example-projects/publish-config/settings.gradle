@@ -1,2 +1,0 @@
-// Gradle complains about deprecated features without this line
-enableFeaturePreview('STABLE_PUBLISHING')
