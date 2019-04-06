@@ -2,9 +2,9 @@ plugins {
     id 'java-gradle-plugin'
     id 'jacoco'
     id 'pl.droidsonroids.jacoco.testkit' version '1.0.3'
-    id 'com.gradle.plugin-publish' version '0.10.0'
+    id 'com.gradle.plugin-publish' version '0.10.1'
     id 'com.github.hierynomus.license' version '0.15.0'
-    id 'org.sonarqube' version '2.6.2'
+    id 'org.sonarqube' version '2.7'
 }
 
 repositories {
@@ -34,7 +34,7 @@ ext {
 }
 
 jacoco {
-  toolVersion = '0.8.2'
+  toolVersion = '0.8.3'
 }
 
 dependencies {
