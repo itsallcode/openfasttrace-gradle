@@ -74,12 +74,39 @@ public class OpenFastTracePluginTest
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements", "--info", "--stacktrace");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
-                "<specdocument>", //
-                "<specobjects doctype=\"impl\"><specobject><id>exampleB-",
-                "<providescoverage><provcov><linksto>dsn:exampleB</linksto><dstversion>1</dstversion></provcov></providescoverage>",
-                "</specobjects>", //
-                "<specobjects doctype=\"dsn\"><specobject><id>exampleB</id>",
-                "<needscoverage><needsobj>utest</needsobj><needsobj>impl</needsobj></needscoverage>");
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
+                        "<specdocument>\n" + //
+                        "  <specobjects doctype=\"impl\">\n" + //
+                        "    <specobject>\n" + //
+                        "      <id>exampleB-3454416016</id>\n" + //
+                        "      <status>approved</status>\n" + //
+                        "      <version>0</version>\n", //
+
+                "      <sourceline>1</sourceline>\n" + //
+                        "      <providescoverage>\n" + //
+                        "        <provcov>\n" + //
+                        "          <linksto>dsn:exampleB</linksto>\n" + //
+                        "          <dstversion>1</dstversion>\n" + //
+                        "        </provcov>\n" + //
+                        "      </providescoverage>\n" + //
+                        "    </specobject>\n" + //
+                        "  </specobjects>\n" + //
+                        "  <specobjects doctype=\"dsn\">\n" + //
+                        "    <specobject>\n" + //
+                        "      <id>exampleB</id>\n" + //
+                        "      <shortdesc>Tracing Example</shortdesc>\n" + //
+                        "      <status>approved</status>\n" + //
+                        "      <version>1</version>\n", //
+
+                "      <sourceline>2</sourceline>\n" + //
+                        "      <description>Example requirement</description>\n" + //
+                        "      <needscoverage>\n" + //
+                        "        <needsobj>utest</needsobj>\n" + //
+                        "        <needsobj>impl</needsobj>\n" + //
+                        "      </needscoverage>\n" + //
+                        "    </specobject>\n" + //
+                        "  </specobjects>\n" + //
+                        "</specdocument>");
     }
 
     @Test
@@ -137,9 +164,23 @@ public class OpenFastTracePluginTest
         try (ZipFile zip = new ZipFile(archive.toFile()))
         {
             final String entryContent = readEntry(zip, "requirements.xml");
-            assertThat(entryContent, containsString("<specobject><id>exampleB</id>" //
-                    + "<status>approved</status>" //
-                    + "<version>1</version>"));
+            assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
+                    "<specdocument>\n" + //
+                    "  <specobjects doctype=\"dsn\">\n" + //
+                    "    <specobject>\n" + //
+                    "      <id>exampleB</id>\n" + //
+                    "      <shortdesc>Tracing Example</shortdesc>\n" + //
+                    "      <status>approved</status>\n" + //
+                    "      <version>1</version>"));
+            assertThat(entryContent, containsString("      <sourceline>2</sourceline>\n" + //
+                    "      <description>Example requirement</description>\n" + //
+                    "      <needscoverage>\n" + //
+                    "        <needsobj>utest</needsobj>\n" + //
+                    "        <needsobj>impl</needsobj>\n" + //
+                    "      </needscoverage>\n" + //
+                    "    </specobject>\n" + //
+                    "  </specobjects>\n" + //
+                    "</specdocument>"));
         }
     }
 
