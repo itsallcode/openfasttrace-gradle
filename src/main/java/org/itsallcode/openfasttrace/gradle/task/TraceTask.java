@@ -35,7 +35,6 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.FilterSettings;
-import org.itsallcode.openfasttrace.ImportSettings;
 import org.itsallcode.openfasttrace.Oft;
 import org.itsallcode.openfasttrace.ReportSettings;
 import org.itsallcode.openfasttrace.core.LinkedSpecificationItem;
@@ -44,6 +43,7 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 import org.itsallcode.openfasttrace.core.SpecificationItem;
 import org.itsallcode.openfasttrace.core.Trace;
 import org.itsallcode.openfasttrace.gradle.util.DeprecationUtil;
+import org.itsallcode.openfasttrace.importer.ImportSettings;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 public class TraceTask extends DefaultTask

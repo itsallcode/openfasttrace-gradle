@@ -36,7 +36,6 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.ExportSettings;
-import org.itsallcode.openfasttrace.ImportSettings;
 import org.itsallcode.openfasttrace.Oft;
 import org.itsallcode.openfasttrace.core.Newline;
 import org.itsallcode.openfasttrace.core.OftRunner;
@@ -44,6 +43,7 @@ import org.itsallcode.openfasttrace.core.SpecificationItem;
 import org.itsallcode.openfasttrace.exporter.specobject.SpecobjectExporterFactory;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.util.DeprecationUtil;
+import org.itsallcode.openfasttrace.importer.ImportSettings;
 import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
 
 public class CollectTask extends DefaultTask
