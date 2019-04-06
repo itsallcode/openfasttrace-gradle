@@ -80,7 +80,8 @@ public class OpenFastTracePluginTest
                         "<specdocument>\n" + //
                         "  <specobjects doctype=\"impl\">\n" + //
                         "    <specobject>\n" + //
-                        "      <id>exampleB-3454416016</id>\n" + //
+                        "      <id>exampleB",
+                "</id>\n" + //
                         "      <status>approved</status>\n" + //
                         "      <version>0</version>\n", //
 
