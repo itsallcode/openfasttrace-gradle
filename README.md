@@ -8,6 +8,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 [![codecov](https://codecov.io/gh/itsallcode/openfasttrace-gradle/branch/develop/graph/badge.svg)](https://codecov.io/gh/itsallcode/openfasttrace-gradle)
 
 * [Blog](https://blog.itsallcode.org/)
+* [Changelog](CHANGELOG.md)
 * [Contributing guide](CONTRIBUTING.md)
 * [OpenFastTrace stories](https://github.com/itsallcode/openfasttrace/wiki/OFT-Stories)
 
