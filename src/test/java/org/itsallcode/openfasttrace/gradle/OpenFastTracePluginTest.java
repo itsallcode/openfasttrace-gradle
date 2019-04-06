@@ -17,6 +17,7 @@
  */
 package org.itsallcode.openfasttrace.gradle;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -30,6 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipException;
 
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -53,7 +56,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testTracingTaskAddedToProject()
     {
-        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "tasks", "--stacktrace");
+        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
     }
@@ -61,8 +64,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
-        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements", "--stacktrace",
-                "--info");
+        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
@@ -71,7 +73,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testCollectExampleProjectWithCustomConfig() throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements", "--info", "--stacktrace");
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
@@ -112,7 +114,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testHtmlReportConfig() throws IOException
     {
-        runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
+        runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>", //
@@ -122,7 +124,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testTraceExampleProjectWithCustomConfig() throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements", "--info", "--stacktrace");
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", //
@@ -132,7 +134,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testTraceMultiProject() throws IOException
     {
-        runBuild(MULTI_PROJECT_DIR, "clean", "traceRequirements", "--info", "--stacktrace");
+        runBuild(MULTI_PROJECT_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
@@ -140,11 +142,11 @@ public class OpenFastTracePluginTest
     @Test
     public void testTraceDependencyProject() throws IOException
     {
-        runBuild(DEPENDENCY_CONFIG_DIR, "clean", "--info", "--stacktrace");
+        runBuild(DEPENDENCY_CONFIG_DIR, "clean");
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
-        runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements", "--info", "--stacktrace");
+        runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
@@ -155,7 +157,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testPublishToMavenRepo() throws IOException
     {
-        runBuild(PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal", "--info", "--stacktrace");
+        runBuild(PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
 
         final Path archive = PUBLISH_CONFIG_DIR
@@ -221,11 +223,14 @@ public class OpenFastTracePluginTest
 
     private void runBuild(Path projectDir, String... arguments)
     {
+        final List<String> allArgs = new ArrayList<>();
+        allArgs.addAll(asList(arguments));
+        allArgs.addAll(asList("--info", "--stacktrace"));
         configureJacoco(projectDir);
         buildResult = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
                 .withPluginClasspath() //
-                .withArguments(arguments) //
+                .withArguments(allArgs) //
                 .forwardOutput() //
                 .build();
     }
