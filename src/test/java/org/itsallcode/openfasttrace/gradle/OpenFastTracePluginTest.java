@@ -77,8 +77,8 @@ public class OpenFastTracePluginTest
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-                        "<specdocument>\n" + //
-                        "  <specobjects doctype=\"impl\">\n" + //
+                        "<specdocument>", //
+                "  <specobjects doctype=\"impl\">\n" + //
                         "    <specobject>\n" + //
                         "      <id>exampleB",
                 "</id>\n" + //
@@ -91,10 +91,9 @@ public class OpenFastTracePluginTest
                         "          <linksto>dsn:exampleB</linksto>\n" + //
                         "          <dstversion>1</dstversion>\n" + //
                         "        </provcov>\n" + //
-                        "      </providescoverage>\n" + //
-                        "    </specobject>\n" + //
-                        "  </specobjects>\n" + //
-                        "  <specobjects doctype=\"dsn\">\n" + //
+                        "      </providescoverage>\n", //
+
+                "  <specobjects doctype=\"dsn\">\n" + //
                         "    <specobject>\n" + //
                         "      <id>exampleB</id>\n" + //
                         "      <shortdesc>Tracing Example</shortdesc>\n" + //
@@ -168,8 +167,8 @@ public class OpenFastTracePluginTest
         {
             final String entryContent = readEntry(zip, "requirements.xml");
             assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-                    "<specdocument>\n" + //
-                    "  <specobjects doctype=\"dsn\">\n" + //
+                    "<specdocument>\n"));
+            assertThat(entryContent, containsString("  <specobjects doctype=\"dsn\">\n" + //
                     "    <specobject>\n" + //
                     "      <id>exampleB</id>\n" + //
                     "      <shortdesc>Tracing Example</shortdesc>\n" + //
@@ -181,9 +180,7 @@ public class OpenFastTracePluginTest
                     "        <needsobj>utest</needsobj>\n" + //
                     "        <needsobj>impl</needsobj>\n" + //
                     "      </needscoverage>\n" + //
-                    "    </specobject>\n" + //
-                    "  </specobjects>\n" + //
-                    "</specdocument>"));
+                    "    </specobject>\n"));
         }
     }
 
