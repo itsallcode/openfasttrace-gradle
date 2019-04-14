@@ -26,17 +26,28 @@ ext {
     if(!useOftSources) {
       logger.warn "OFT source directory $oftSourceDir does not exist"
     }
-    oftMavenTargetDir = new File(oftSourceDir, 'target/classes')
   } else {
     oftSourceDir = 'oft-dir-not-found'
     useOftSources = false
   }
 }
 
+
+def compiledClassesFolders(File dir) {
+    def classDirs = new HashSet()
+    file(dir).eachFileRecurse(groovy.io.FileType.DIRECTORIES) {
+        String normalizedName = it.toString().replace('\\', '/')
+        if(normalizedName.endsWith('/target/classes') && !normalizedName.contains('testutil')) {
+        	classDirs.add(it)
+        }
+    }
+    return classDirs
+}
+
 dependencies {
     if(useOftSources) {
-        logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftMavenTargetDir"
-        compile files(oftMavenTargetDir) {
+        logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftSourceDir"
+        compile files(compiledClassesFolders(oftSourceDir)) {
             builtBy "compileOft"
         }
     } else {
