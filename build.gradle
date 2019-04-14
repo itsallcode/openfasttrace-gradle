@@ -12,7 +12,7 @@ repositories {
     maven { url "https://dl.bintray.com/itsallcode/itsallcode" }
 }
 
-version = '0.6.0'
+version = '0.6.2'
 group = 'org.itsallcode'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'

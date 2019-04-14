@@ -18,7 +18,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.6.0"
+      id "org.itsallcode.openfasttrace" version "0.6.2"
     }
     ```
 
@@ -136,9 +136,10 @@ gradle.publish.secret = <secret>
 
 #### Publish release
 
-1. Make sure that property `oftSourceDir` in file `gradle.properties` is commented out, i.e. openfasttrace is not used from source.
-1. Update version number in `build.gradle` and `README.md`
-1. Commit and push changes
+1. Make sure that property `oftSourceDir` in file `gradle.properties` is commented out, i.e. OpenFastTrace is not used from source.
+1. Update version number in `build.gradle` and `README.md`.
+1. Add changes in new version to `CHANGELOG.md`.
+1. Commit and push changes.
 1. Run
 
     ```bash
