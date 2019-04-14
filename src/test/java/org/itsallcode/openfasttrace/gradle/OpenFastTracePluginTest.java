@@ -106,8 +106,9 @@ public class OpenFastTracePluginTest
                         "        <needsobj>utest</needsobj>\n" + //
                         "        <needsobj>impl</needsobj>\n" + //
                         "      </needscoverage>\n" + //
-                        "    </specobject>\n" + //
-                        "  </specobjects>\n" + //
+                        "    </specobject>\n", //
+
+                "  </specobjects>\n" + //
                         "</specdocument>");
     }
 
