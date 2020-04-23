@@ -47,13 +47,13 @@ def compiledClassesFolders(File dir) {
 dependencies {
     if(useOftSources) {
         logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftSourceDir"
-        compile files(compiledClassesFolders(oftSourceDir)) {
+        implementation files(compiledClassesFolders(oftSourceDir)) {
             builtBy "compileOft"
         }
     } else {
-        compile "org.itsallcode.openfasttrace:openfasttrace:$oftVersion"
+        implementation "org.itsallcode.openfasttrace:openfasttrace:$oftVersion"
     }
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 
 task compileOft(type: Exec) {
