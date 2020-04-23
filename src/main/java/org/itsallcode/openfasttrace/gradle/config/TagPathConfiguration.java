@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.gradle.api.Project;
-import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
+import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 
 import groovy.lang.Closure;
 

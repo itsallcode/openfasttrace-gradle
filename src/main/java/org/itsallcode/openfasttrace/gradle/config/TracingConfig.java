@@ -27,7 +27,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.Property;
-import org.itsallcode.openfasttrace.report.ReportVerbosity;
+import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 
 // Public fields are required for configuration via gradle
 @SuppressWarnings("squid:ClassVariableVisibilityCheck")

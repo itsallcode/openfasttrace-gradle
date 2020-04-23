@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.FileTree;
-import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
+import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 
 // Public fields are required for configuration via gradle
 @SuppressWarnings("squid:ClassVariableVisibilityCheck")
