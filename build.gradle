@@ -19,7 +19,7 @@ targetCompatibility = '1.8'
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
-  oftVersion = '2.3.5'
+  oftVersion = '3.0.1'
   if(project.hasProperty('oftSourceDir')) {
     oftSourceDir = file(project.oftSourceDir)
     useOftSources = oftSourceDir.exists()
@@ -51,7 +51,10 @@ dependencies {
             builtBy "compileOft"
         }
     } else {
-        implementation "org.itsallcode.openfasttrace:openfasttrace:$oftVersion"
+        implementation "org.itsallcode.openfasttrace:openfasttrace-api:$oftVersion"
+        implementation "org.itsallcode.openfasttrace:openfasttrace-core:$oftVersion"
+        implementation "org.itsallcode.openfasttrace:openfasttrace-exporter-specobject:$oftVersion"
+        runtimeOnly "org.itsallcode.openfasttrace:openfasttrace:$oftVersion"
     }
     testImplementation 'junit:junit:4.12'
 }
