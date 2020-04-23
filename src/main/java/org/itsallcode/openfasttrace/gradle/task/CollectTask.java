@@ -42,7 +42,6 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 import org.itsallcode.openfasttrace.core.SpecificationItem;
 import org.itsallcode.openfasttrace.exporter.specobject.SpecobjectExporterFactory;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
-import org.itsallcode.openfasttrace.gradle.util.DeprecationUtil;
 import org.itsallcode.openfasttrace.importer.ImportSettings;
 import org.itsallcode.openfasttrace.importer.tag.config.PathConfig;
 
@@ -51,7 +50,7 @@ public class CollectTask extends DefaultTask
     @InputDirectory
     public Supplier<Set<File>> inputDirectories = Collections::emptySet;
     @OutputFile
-    public final RegularFileProperty outputFile = DeprecationUtil.createFileProperty(getProject());
+    public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
 
     @Input
     public Supplier<List<TagPathConfiguration>> pathConfig = Collections::emptyList;

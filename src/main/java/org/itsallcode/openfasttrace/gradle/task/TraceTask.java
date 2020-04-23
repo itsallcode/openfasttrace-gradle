@@ -42,17 +42,15 @@ import org.itsallcode.openfasttrace.core.Newline;
 import org.itsallcode.openfasttrace.core.OftRunner;
 import org.itsallcode.openfasttrace.core.SpecificationItem;
 import org.itsallcode.openfasttrace.core.Trace;
-import org.itsallcode.openfasttrace.gradle.util.DeprecationUtil;
 import org.itsallcode.openfasttrace.importer.ImportSettings;
 import org.itsallcode.openfasttrace.report.ReportVerbosity;
 
 public class TraceTask extends DefaultTask
 {
     @InputFile
-    public final RegularFileProperty requirementsFile = DeprecationUtil
-            .createFileProperty(getProject());
+    public final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
     @OutputFile
-    public final RegularFileProperty outputFile = DeprecationUtil.createFileProperty(getProject());
+    public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
     @Input
     public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
