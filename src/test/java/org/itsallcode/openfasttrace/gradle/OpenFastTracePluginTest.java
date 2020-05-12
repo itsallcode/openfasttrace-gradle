@@ -224,7 +224,7 @@ public class OpenFastTracePluginTest
     {
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
-        allArgs.addAll(asList("--info", "--stacktrace"));
+        allArgs.addAll(asList("--info", "--stacktrace", "--warning-mode", "all"));
         configureJacoco(projectDir);
         buildResult = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //

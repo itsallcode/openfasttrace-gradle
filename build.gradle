@@ -14,12 +14,12 @@ repositories {
 
 version = '0.6.2'
 group = 'org.itsallcode'
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = 11
+targetCompatibility = 11
 
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
-  oftVersion = '3.0.1'
+  oftVersion = '3.0.2'
   if(project.hasProperty('oftSourceDir')) {
     oftSourceDir = file(project.oftSourceDir)
     useOftSources = oftSourceDir.exists()
