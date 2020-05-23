@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -35,6 +36,7 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
+import org.gradle.api.tasks.TaskProvider;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.CollectTask;
@@ -73,14 +75,26 @@ public class OpenFastTracePlugin implements Plugin<Project>
 
     private CollectTask createCollectTask(Project rootProject)
     {
-        final CollectTask collectTask = createTask(rootProject, "collectRequirements",
-                CollectTask.class);
-        collectTask.setGroup(TASK_GROUP_NAME);
-        collectTask.setDescription("Collect requirements and generate specobject file");
+        final TracingConfig tracingConfig = rootProject.getExtensions()
+                .getByType(TracingConfig.class);
+        final TaskProvider<CollectTask> collectTask = rootProject.getTasks()
+                .register("collectRequirements", CollectTask.class, new Action<CollectTask>()
+                {
 
-        collectTask.outputFile.set(new File(rootProject.getBuildDir(), "reports/requirements.xml"));
-        collectTask.inputDirectories = () -> getAllInputDirectories(rootProject.getAllprojects());
-        collectTask.pathConfig = () -> getPathConfig(rootProject.getAllprojects());
+                    @Override
+                    public void execute(CollectTask task)
+                    {
+                        task.getInputDirectories()
+                                .set(getAllInputDirectories(rootProject.getAllprojects()));
+                        task.getOutputFile().set(
+                                new File(rootProject.getBuildDir(), "reports/requirements.xml"));
+                        task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
+                    }
+                });
+
+        collectTask.get().setGroup(TASK_GROUP_NAME);
+        collectTask.get().setDescription("Collect requirements and generate specobject file");
+
         return collectTask;
     }
 
@@ -92,9 +106,9 @@ public class OpenFastTracePlugin implements Plugin<Project>
         traceTask.dependsOn(collectTask);
         final TracingConfig config = getConfig(rootProject);
         traceTask.requirementsFile.set(collectTask.outputFile);
-        traceTask.outputFile.set(config.reportFile);
-        traceTask.reportVerbosity.set(config.reportVerbosity);
-        traceTask.reportFormat = () -> config.reportFormat;
+        traceTask.getOutputFile().set(config.getReportFile());
+        traceTask.getReportVerbosity().set(config.getReportVerbosity());
+        traceTask.getReportFormat().set(config.getReportFormat());
         traceTask.importedRequirements = () -> getImportedRequirements(
                 rootProject.getAllprojects());
         traceTask.filteredArtifactTypes = () -> getFilteredArtifactTypes(rootProject);
@@ -104,18 +118,18 @@ public class OpenFastTracePlugin implements Plugin<Project>
 
     private Set<String> getFilteredTags(Project rootProject)
     {
-        return new HashSet<>(getConfig(rootProject).filteredTags);
+        return new HashSet<>(getConfig(rootProject).getFilteredTags());
     }
 
     private Set<String> getFilteredArtifactTypes(Project rootProject)
     {
-        return new HashSet<>(getConfig(rootProject).filteredArtifactTypes);
+        return new HashSet<>(getConfig(rootProject).getFilteredArtifactTypes());
     }
 
     private Set<File> getAllInputDirectories(Set<Project> allProjects)
     {
         return allProjects.stream() //
-                .map(project -> getConfig(project).inputDirectories.getFiles()) //
+                .map(project -> getConfig(project).getInputDirectories().getFiles()) //
                 .flatMap(Set::stream) //
                 .collect(toSet());
     }

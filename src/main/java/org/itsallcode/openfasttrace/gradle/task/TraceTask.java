@@ -23,13 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
@@ -47,15 +46,19 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 
 public class TraceTask extends DefaultTask
 {
-    public final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
-    public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
-    public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
+    private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
+    private final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
+    private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
-    public Supplier<String> reportFormat;
-    public Supplier<Set<File>> importedRequirements;
-    public Supplier<Set<String>> filteredArtifactTypes;
-    public Supplier<Set<String>> filteredTags;
-    public Supplier<Boolean> filterAcceptsItemsWithoutTag;
+    private final Property<String> reportFormat = getProject().getObjects().property(String.class);
+    private final SetProperty<File> importedRequirements = getProject().getObjects()
+            .setProperty(File.class);
+    private final SetProperty<String> filteredArtifactTypes = getProject().getObjects()
+            .setProperty(String.class);
+    private final SetProperty<String> filteredTags = getProject().getObjects()
+            .setProperty(String.class);
+    private final Property<Boolean> filterAcceptsItemsWithoutTag = getProject().getObjects()
+            .property(Boolean.class);
 
     @InputFile
     public RegularFileProperty getRequirementsFile()
@@ -76,33 +79,33 @@ public class TraceTask extends DefaultTask
     }
 
     @Input
-    public String getReportFormat()
+    public Property<String> getReportFormat()
     {
-        return reportFormat.get();
+        return reportFormat;
     }
 
     @Input
-    public Set<File> getImportedRequirements()
+    public SetProperty<File> getImportedRequirements()
     {
-        return importedRequirements.get();
+        return importedRequirements;
     }
 
     @Input
-    public Set<String> getFilteredArtifactTypes()
+    public SetProperty<String> getFilteredArtifactTypes()
     {
-        return filteredArtifactTypes.get();
+        return filteredArtifactTypes;
     }
 
     @Input
-    public Set<String> getFilteredTags()
+    public SetProperty<String> getFilteredTags()
     {
-        return filteredTags.get();
+        return filteredTags;
     }
 
     @Input
-    public Boolean getFilterAcceptsItemsWithoutTag()
+    public Property<Boolean> getFilterAcceptsItemsWithoutTag()
     {
-        return filterAcceptsItemsWithoutTag.get();
+        return filterAcceptsItemsWithoutTag;
     }
 
     @TaskAction

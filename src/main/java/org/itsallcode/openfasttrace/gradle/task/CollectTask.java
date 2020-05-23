@@ -23,14 +23,13 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
@@ -47,14 +46,16 @@ import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 
 public class CollectTask extends DefaultTask
 {
-    public Supplier<Set<File>> inputDirectories = Collections::emptySet;
+    public final SetProperty<File> inputDirectories = getProject().getObjects()
+            .setProperty(File.class);
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
-    public Supplier<List<TagPathConfiguration>> pathConfig = Collections::emptyList;
+    public final ListProperty<TagPathConfiguration> pathConfig = getProject().getObjects()
+            .listProperty(TagPathConfiguration.class);
 
     @InputFiles
-    public Set<File> getInputDirectories()
+    public SetProperty<File> getInputDirectories()
     {
-        return inputDirectories.get();
+        return inputDirectories;
     }
 
     @OutputFile
@@ -64,9 +65,9 @@ public class CollectTask extends DefaultTask
     }
 
     @Input
-    public List<TagPathConfiguration> getPathConfig()
+    public ListProperty<TagPathConfiguration> getPathConfig()
     {
-        return pathConfig.get();
+        return pathConfig;
     }
 
     @TaskAction
