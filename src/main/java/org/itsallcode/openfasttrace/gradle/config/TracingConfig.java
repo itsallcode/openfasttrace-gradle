@@ -17,6 +17,8 @@
  */
 package org.itsallcode.openfasttrace.gradle.config;
 
+import java.util.List;
+
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
@@ -94,6 +96,51 @@ public class TracingConfig
     public Property<Boolean> getFilterAcceptsItemsWithoutTag()
     {
         return filterAcceptsItemsWithoutTag;
+    }
+
+    public void setReportVerbosity(String reportVerbosity)
+    {
+        setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity));
+    }
+
+    public void setReportVerbosity(ReportVerbosity reportVerbosity)
+    {
+        this.reportVerbosity.set(reportVerbosity);
+    }
+
+    public void setReportFormat(String reportFormat)
+    {
+        this.reportFormat.set(reportFormat);
+    }
+
+    public void setInputDirectories(ConfigurableFileCollection inputDirectories)
+    {
+        this.inputDirectories.setFrom(inputDirectories);
+    }
+
+    public void setReportFile(RegularFileProperty reportFile)
+    {
+        this.reportFile.set(reportFile);
+    }
+
+    public void setImportedRequirements(List<Object> importedRequirements)
+    {
+        this.importedRequirements.set(importedRequirements);
+    }
+
+    public void setFilteredTags(List<String> filteredTags)
+    {
+        this.filteredTags.set(filteredTags);
+    }
+
+    public void setFilteredArtifactTypes(List<String> filteredArtifactTypes)
+    {
+        this.filteredArtifactTypes.set(filteredArtifactTypes);
+    }
+
+    public void setFilterAcceptsItemsWithoutTag(boolean filterAcceptsItemsWithoutTag)
+    {
+        this.filterAcceptsItemsWithoutTag.set(filterAcceptsItemsWithoutTag);
     }
 
     public TagPathConfiguration getTagPathConfig()

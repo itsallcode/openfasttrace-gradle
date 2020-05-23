@@ -17,15 +17,11 @@
  */
 package org.itsallcode.openfasttrace.gradle.config;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
-
-import groovy.lang.Closure;
 
 public class TagPathConfiguration
 {
@@ -37,21 +33,16 @@ public class TagPathConfiguration
         this.project = project;
     }
 
-    public void tag(Closure<?> closure)
+    public void tag(Action<TagConfig> action)
     {
-        final TagConfig tag = new TagConfig(project);
-        project.configure(tag, closure);
-        tagConfigs.add(tag);
+        final TagConfig tagConfig = new TagConfig(project);
+        action.execute(tagConfig);
+        tagConfigs.add(tagConfig);
     }
 
-    public Stream<PathConfig> getPathConfig()
+    public List<TagConfig> getPathConfig()
     {
-        return tagConfigs.stream().map(TagConfig::convert);
-    }
-
-    public Stream<Path> getPaths()
-    {
-        return tagConfigs.stream().map(TagConfig::getPaths).flatMap(List::stream);
+        return tagConfigs;
     }
 
     @Override

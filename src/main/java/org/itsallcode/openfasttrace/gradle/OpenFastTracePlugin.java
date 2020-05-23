@@ -17,22 +17,16 @@
  */
 package org.itsallcode.openfasttrace.gradle;
 
-import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.gradle.api.Action;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
@@ -41,6 +35,7 @@ import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.CollectTask;
 import org.itsallcode.openfasttrace.gradle.task.TraceTask;
+import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 import org.slf4j.Logger;
 
 public class OpenFastTracePlugin implements Plugin<Project>
@@ -69,61 +64,49 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private void createTasks(Project rootProject)
     {
         LOG.info("Creating tasks for project '{}'", rootProject.getName());
-        final CollectTask collectTask = createCollectTask(rootProject);
+        final TaskProvider<CollectTask> collectTask = createCollectTask(rootProject);
         createTracingTask(rootProject, collectTask);
     }
 
-    private CollectTask createCollectTask(Project rootProject)
+    private TaskProvider<CollectTask> createCollectTask(Project rootProject)
     {
-        final TracingConfig tracingConfig = rootProject.getExtensions()
-                .getByType(TracingConfig.class);
-        final TaskProvider<CollectTask> collectTask = rootProject.getTasks()
-                .register("collectRequirements", CollectTask.class, new Action<CollectTask>()
-                {
-
-                    @Override
-                    public void execute(CollectTask task)
-                    {
-                        task.getInputDirectories()
-                                .set(getAllInputDirectories(rootProject.getAllprojects()));
-                        task.getOutputFile().set(
-                                new File(rootProject.getBuildDir(), "reports/requirements.xml"));
-                        task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
-                    }
-                });
-
-        collectTask.get().setGroup(TASK_GROUP_NAME);
-        collectTask.get().setDescription("Collect requirements and generate specobject file");
-
-        return collectTask;
+        return rootProject.getTasks().register("collectRequirements", CollectTask.class, task -> {
+            task.setGroup(TASK_GROUP_NAME);
+            task.setDescription("Collect requirements and generate specobject file");
+            task.getInputDirectories().set(getAllInputDirectories(rootProject.getAllprojects()));
+            task.getOutputFile()
+                    .set(new File(rootProject.getBuildDir(), "reports/requirements.xml"));
+            task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
+        });
     }
 
-    private void createTracingTask(Project rootProject, CollectTask collectTask)
+    private void createTracingTask(Project rootProject, TaskProvider<CollectTask> collectTask)
     {
-        final TraceTask traceTask = createTask(rootProject, "traceRequirements", TraceTask.class);
-        traceTask.setGroup(TASK_GROUP_NAME);
-        traceTask.setDescription("Trace requirements and generate tracing report");
-        traceTask.dependsOn(collectTask);
-        final TracingConfig config = getConfig(rootProject);
-        traceTask.requirementsFile.set(collectTask.outputFile);
-        traceTask.getOutputFile().set(config.getReportFile());
-        traceTask.getReportVerbosity().set(config.getReportVerbosity());
-        traceTask.getReportFormat().set(config.getReportFormat());
-        traceTask.importedRequirements = () -> getImportedRequirements(
-                rootProject.getAllprojects());
-        traceTask.filteredArtifactTypes = () -> getFilteredArtifactTypes(rootProject);
-        traceTask.filteredTags = () -> getFilteredTags(rootProject);
-        traceTask.filterAcceptsItemsWithoutTag = () -> config.filterAcceptsItemsWithoutTag;
-    }
-
-    private Set<String> getFilteredTags(Project rootProject)
-    {
-        return new HashSet<>(getConfig(rootProject).getFilteredTags());
-    }
-
-    private Set<String> getFilteredArtifactTypes(Project rootProject)
-    {
-        return new HashSet<>(getConfig(rootProject).getFilteredArtifactTypes());
+        rootProject.getTasks().register("traceRequirements", TraceTask.class, task -> {
+            task.setGroup(TASK_GROUP_NAME);
+            task.setDescription("Trace requirements and generate tracing report");
+            task.dependsOn(collectTask);
+            final TracingConfig config = getConfig(rootProject);
+            task.getRequirementsFile().set(collectTask.get().getOutputFile());
+            if (config.getReportFile().isPresent())
+            {
+                task.getOutputFile().set(config.getReportFile());
+            }
+            else
+            {
+                final String extension = config.getReportFormat().get().equals("html") ? "html"
+                        : "txt";
+                task.getOutputFile()
+                        .set(new File(rootProject.getBuildDir(), "reports/tracing." + extension));
+            }
+            task.getReportVerbosity().set(config.getReportVerbosity());
+            task.getReportFormat().set(config.getReportFormat());
+            task.getImportedRequirements()
+                    .set(getImportedRequirements(rootProject.getAllprojects()));
+            task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
+            task.getFilteredTags().set(config.getFilteredTags());
+            task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
+        });
     }
 
     private Set<File> getAllInputDirectories(Set<Project> allProjects)
@@ -136,6 +119,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
 
     private Set<File> getImportedRequirements(Set<Project> allProjects)
     {
+
         return allProjects.stream() //
                 .flatMap(this::getImportedRequirements) //
                 .collect(toSet());
@@ -145,7 +129,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         final String configurationName = "oftRequirementConfig";
         final Configuration configuration = project.getConfigurations().create(configurationName);
-        getConfig(project).importedRequirements.forEach(dependency -> {
+        getConfig(project).getImportedRequirements().get().forEach(dependency -> {
             LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
                     configurationName, project);
             project.getDependencies().add(configurationName, dependency);
@@ -155,28 +139,20 @@ public class OpenFastTracePlugin implements Plugin<Project>
         return files.stream();
     }
 
-    private List<TagPathConfiguration> getPathConfig(Set<Project> allProjects)
+    private List<SerializableTagPathConfig> getPathConfig(Set<Project> allProjects)
     {
         return allProjects.stream() //
                 .map(this::getTagPathConfig) //
                 .collect(toList());
     }
 
-    private TagPathConfiguration getTagPathConfig(Project project)
+    private SerializableTagPathConfig getTagPathConfig(Project project)
     {
-        return getConfig(project).getTagPathConfig();
+        return new SerializableTagPathConfig(getConfig(project).getTagPathConfig());
     }
 
     private TracingConfig getConfig(Project project)
     {
         return project.getExtensions().getByType(TracingConfig.class);
-    }
-
-    private <T extends DefaultTask> T createTask(Project project, String taskName,
-            Class<T> taskType)
-    {
-        final Map<String, Class<T>> taskConfig = singletonMap("type", taskType);
-        final Task task = project.task(taskConfig, taskName);
-        return taskType.cast(task);
     }
 }

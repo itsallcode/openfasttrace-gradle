@@ -17,55 +17,28 @@
  */
 package org.itsallcode.openfasttrace.gradle.config;
 
-import static java.util.stream.Collectors.toList;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.List;
-
 import org.gradle.api.Project;
-import org.gradle.api.file.FileTree;
-import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
+import org.gradle.api.file.FileCollection;
 
 // Public fields are required for configuration via gradle
 @SuppressWarnings("squid:ClassVariableVisibilityCheck")
 public class TagConfig
 {
-    private final Project project;
+    private final transient Project project;
 
-    public FileTree paths;
+    public FileCollection paths;
     public String coveredItemArtifactType;
     public String tagArtifactType;
     public String coveredItemNamePrefix;
 
-    public TagConfig(Project project)
+    TagConfig(Project project)
     {
         this.project = project;
     }
 
-    public PathConfig convert()
+    public String getProjectName()
     {
-        return PathConfig.builder() //
-                .coveredItemArtifactType(coveredItemArtifactType)
-                .coveredItemNamePrefix(getItemNamePrefix()) //
-                .tagArtifactType(tagArtifactType).pathListMatcher(getPaths()) //
-                .build();
-    }
-
-    public List<Path> getPaths()
-    {
-        return paths.getFiles().stream() //
-                .map(File::toPath) //
-                .collect(toList());
-    }
-
-    private String getItemNamePrefix()
-    {
-        if (coveredItemNamePrefix == null)
-        {
-            return project.getName() + ".";
-        }
-        return coveredItemNamePrefix;
+        return project.getName();
     }
 
     @Override
