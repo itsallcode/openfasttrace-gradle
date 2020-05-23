@@ -44,6 +44,7 @@ import org.junit.Test;
 
 public class OpenFastTracePluginTest
 {
+    private static final boolean ENABLE_WARNINGS = false;
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
     private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
@@ -224,9 +225,11 @@ public class OpenFastTracePluginTest
     {
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
-        allArgs.addAll(asList("--info", "--stacktrace" //
-                , "--warning-mode", "all" //
-        ));
+        allArgs.addAll(asList("--info", "--stacktrace"));
+        if (ENABLE_WARNINGS)
+        {
+            allArgs.addAll(asList("--warning-mode", "all"));
+        }
         buildResult = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
                 .withPluginClasspath() //
