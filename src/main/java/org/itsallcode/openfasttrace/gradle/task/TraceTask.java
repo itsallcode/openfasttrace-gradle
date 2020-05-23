@@ -47,23 +47,63 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 
 public class TraceTask extends DefaultTask
 {
-    @InputFile
     public final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
-    @OutputFile
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
-    @Input
     public final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
-    @Input
     public Supplier<String> reportFormat;
-    @Input
     public Supplier<Set<File>> importedRequirements;
-    @Input
     public Supplier<Set<String>> filteredArtifactTypes;
-    @Input
     public Supplier<Set<String>> filteredTags;
-    @Input
     public Supplier<Boolean> filterAcceptsItemsWithoutTag;
+
+    @InputFile
+    public RegularFileProperty getRequirementsFile()
+    {
+        return requirementsFile;
+    }
+
+    @OutputFile
+    public RegularFileProperty getOutputFile()
+    {
+        return outputFile;
+    }
+
+    @Input
+    public Property<ReportVerbosity> getReportVerbosity()
+    {
+        return reportVerbosity;
+    }
+
+    @Input
+    public String getReportFormat()
+    {
+        return reportFormat.get();
+    }
+
+    @Input
+    public Set<File> getImportedRequirements()
+    {
+        return importedRequirements.get();
+    }
+
+    @Input
+    public Set<String> getFilteredArtifactTypes()
+    {
+        return filteredArtifactTypes.get();
+    }
+
+    @Input
+    public Set<String> getFilteredTags()
+    {
+        return filteredTags.get();
+    }
+
+    @Input
+    public Boolean getFilterAcceptsItemsWithoutTag()
+    {
+        return filterAcceptsItemsWithoutTag.get();
+    }
 
     @TaskAction
     public void trace() throws IOException

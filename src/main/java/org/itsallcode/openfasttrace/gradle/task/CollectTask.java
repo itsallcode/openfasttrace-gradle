@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.itsallcode.openfasttrace.api.core.Newline;
@@ -47,13 +47,27 @@ import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 
 public class CollectTask extends DefaultTask
 {
-    @InputDirectory
     public Supplier<Set<File>> inputDirectories = Collections::emptySet;
-    @OutputFile
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
+    public Supplier<List<TagPathConfiguration>> pathConfig = Collections::emptyList;
+
+    @InputFiles
+    public Set<File> getInputDirectories()
+    {
+        return inputDirectories.get();
+    }
+
+    @OutputFile
+    public RegularFileProperty getOutputFile()
+    {
+        return outputFile;
+    }
 
     @Input
-    public Supplier<List<TagPathConfiguration>> pathConfig = Collections::emptyList;
+    public List<TagPathConfiguration> getPathConfig()
+    {
+        return pathConfig.get();
+    }
 
     @TaskAction
     public void collectRequirements() throws IOException
