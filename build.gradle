@@ -107,9 +107,19 @@ test {
     testLogging {
         showStandardStreams = logger.isEnabled(LogLevel.INFO)
     }
+    finalizedBy jacocoTestReport
 }
 
 test.onlyIf { rootProject.name == 'openfasttrace-gradle' }
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled true
+    }
+}
+
+project.tasks["sonarqube"].dependsOn jacocoTestReport
 
 publishPlugins.dependsOn check
 
