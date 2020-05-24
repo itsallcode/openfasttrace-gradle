@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.Serializable;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -30,13 +29,12 @@ public class SerializableTagPathConfig implements Serializable
 
     public Stream<PathConfig> getPathConfig()
     {
-        tagConfigs.stream().map(SerializableTagConfig::convert);
-        return new ArrayList<PathConfig>().stream();
+        return tagConfigs.stream().map(SerializableTagConfig::convert);
     }
 
     @Override
     public String toString()
     {
-        return "SerializableTagPathConfig [tagConfigs=" + tagConfigs + "]";
+        return "SerializableTagPathConfig [" + tagConfigs + "]";
     }
 }

@@ -76,8 +76,14 @@ public class CollectTask extends DefaultTask
         createReportOutputDir();
 
         final Oft oft = new OftRunner();
-        final List<SpecificationItem> importedItems = oft.importItems(getImportSettings());
-        oft.exportToPath(importedItems, getOuputFileInternal().toPath(), getExportSettings());
+        final ImportSettings settings = getImportSettings();
+        getLogger().info("Importing from {} locations {} and {} path configurations: {}",
+                settings.getInputs().size(), settings.getInputs(), settings.getPathConfigs().size(),
+                settings.getPathConfigs());
+        final List<SpecificationItem> importedItems = oft.importItems(settings);
+        final Path output = getOuputFileInternal().toPath();
+        getLogger().info("Imported {} spec items, writing to {}", importedItems.size(), output);
+        oft.exportToPath(importedItems, output, getExportSettings());
     }
 
     private ExportSettings getExportSettings()
@@ -100,8 +106,12 @@ public class CollectTask extends DefaultTask
     {
         final Stream<Path> inputDirPaths = inputDirectories.get().stream() //
                 .map(File::toPath);
+        getLogger().info("Importing from {} input directories: {}", inputDirectories.get().size(),
+                inputDirectories.get());
         final Stream<Path> inputTagPaths = pathConfig.get().stream()
                 .flatMap(SerializableTagPathConfig::getPaths);
+        getLogger().info("Importing from {} configured paths: {}", pathConfig.get().size(),
+                pathConfig.get());
         return Stream.concat(inputDirPaths, inputTagPaths).collect(toList());
     }
 

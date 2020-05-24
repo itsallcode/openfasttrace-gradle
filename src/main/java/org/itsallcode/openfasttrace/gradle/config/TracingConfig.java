@@ -55,7 +55,7 @@ public class TracingConfig
         this.filteredTags = project.getObjects().listProperty(String.class);
         this.filteredArtifactTypes = project.getObjects().listProperty(String.class);
         this.filterAcceptsItemsWithoutTag = project.getObjects().property(Boolean.class);
-        this.filterAcceptsItemsWithoutTag.set(false);
+        this.filterAcceptsItemsWithoutTag.set(true);
     }
 
     public Property<ReportVerbosity> getReportVerbosity()

@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -143,12 +144,19 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         return allProjects.stream() //
                 .map(this::getTagPathConfig) //
+                .filter(Optional::isPresent) //
+                .map(Optional::get) //
                 .collect(toList());
     }
 
-    private SerializableTagPathConfig getTagPathConfig(Project project)
+    private Optional<SerializableTagPathConfig> getTagPathConfig(Project project)
     {
-        return new SerializableTagPathConfig(getConfig(project).getTagPathConfig());
+        final TagPathConfiguration tagPathConfig = getConfig(project).getTagPathConfig();
+        if (tagPathConfig.getPathConfig().isEmpty())
+        {
+            return Optional.empty();
+        }
+        return Optional.of(new SerializableTagPathConfig(tagPathConfig));
     }
 
     private TracingConfig getConfig(Project project)

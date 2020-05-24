@@ -212,7 +212,7 @@ public class OpenFastTracePluginTest
         final String fileContent = fileContent(file);
         for (final String line : lines)
         {
-            assertThat(fileContent, containsString(line));
+            assertThat("Content of file " + file, fileContent, containsString(line));
         }
     }
 

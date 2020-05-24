@@ -113,10 +113,16 @@ public class TraceTask extends DefaultTask
     {
         createReportOutputDir();
         final Oft oft = new OftRunner();
-        final List<SpecificationItem> importedItems = oft.importItems(getImportSettings());
+        final ImportSettings importSettings = getImportSettings();
+        final List<SpecificationItem> importedItems = oft.importItems(importSettings);
+        getLogger().info("Read {} spec items from {}", importedItems.size(),
+                importSettings.getInputs());
         final List<LinkedSpecificationItem> linkedItems = oft.link(importedItems);
         final Trace trace = oft.trace(linkedItems);
-        oft.reportToPath(trace, getOuputFileInternal().toPath(), getReportSettings());
+        final Path report = getOutputFileInternal().toPath();
+        getLogger().info("Tracing result: {} total items, {} defects. Writing report to {}",
+                trace.count(), trace.countDefects(), report);
+        oft.reportToPath(trace, report, getReportSettings());
     }
 
     private ReportSettings getReportSettings()
@@ -139,6 +145,9 @@ public class TraceTask extends DefaultTask
 
     private FilterSettings getFilterSettings()
     {
+        getLogger().info("Filter: artifactTypes={}, tags={}, acceptItemsWithoutTag={}",
+                filteredArtifactTypes.get(), filteredTags.get(),
+                filterAcceptsItemsWithoutTag.get());
         return new FilterSettings.Builder() //
                 .artifactTypes(filteredArtifactTypes.get()) //
                 .tags(filteredTags.get()) //
@@ -155,7 +164,7 @@ public class TraceTask extends DefaultTask
 
     private void createReportOutputDir() throws IOException
     {
-        final File outputDir = getOuputFileInternal().getParentFile();
+        final File outputDir = getOutputFileInternal().getParentFile();
         if (outputDir.exists())
         {
             return;
@@ -166,7 +175,7 @@ public class TraceTask extends DefaultTask
         }
     }
 
-    private File getOuputFileInternal()
+    private File getOutputFileInternal()
     {
         return outputFile.getAsFile().get();
     }
