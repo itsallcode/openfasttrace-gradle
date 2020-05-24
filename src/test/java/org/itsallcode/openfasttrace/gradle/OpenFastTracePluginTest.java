@@ -74,7 +74,7 @@ public class OpenFastTracePluginTest
     @Test
     public void testCollectExampleProjectWithCustomConfig() throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
@@ -114,13 +114,31 @@ public class OpenFastTracePluginTest
     }
 
     @Test
+    public void testCollectIsUpToDateWhenAlreadyRunBefore() throws IOException
+    {
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
+        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
+        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":collectRequirements").getOutcome());
+    }
+
+    @Test
     public void testHtmlReportConfig() throws IOException
     {
-        runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements");
+        runBuild(HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>", //
                 "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>");
+    }
+
+    @Test
+    public void testTraceTaskUpToDateWhenAlreadyRun() throws IOException
+    {
+        runBuild(HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements");
+        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
     }
 
     @Test
