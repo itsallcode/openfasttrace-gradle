@@ -150,11 +150,10 @@ gradle.publish.secret = <secret>
 1. Update version number in `build.gradle` and `README.md`.
 1. Add changes in new version to `CHANGELOG.md`.
 1. Commit and push changes.
-1. Create a release in GitHub.
 1. Run
 
     ```bash
-    $ ./gradlew clean publishPlugins
+    $ ./gradlew clean publishPlugins --info
     ```
 
    Plugin will be published at https://plugins.gradle.org/m2/org/itsallcode/openfasttrace/org.itsallcode.openfasttrace.gradle.plugin/
