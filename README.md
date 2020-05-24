@@ -124,6 +124,15 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 $ ./gradlew licenseFormat
 ```
 
+### Run local sonar analysis
+
+```bash
+./gradlew clean sonarqube --info \
+    -Dsonar.host.url=https://sonarcloud.io \
+    -Dsonar.organization=itsallcode \
+    -Dsonar.login=[token]
+```
+
 ### Publish to `plugins.gradle.org`
 
 #### Preparations
