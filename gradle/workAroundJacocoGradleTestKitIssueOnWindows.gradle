@@ -1,0 +1,18 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+// WORKAROUND FOR: https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9
+if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+  def isLocked = { file -> !file.renameTo(file) }
+  def waitUntilJacocoTestExecIsUnlocked = tasks.create('waitUntilJacocoTestExecIsUnlocked') {
+    doLast {
+      def jacocoTestExec = test.jacoco.destinationFile
+      def waitMillis = 100L
+      while (isLocked(jacocoTestExec)) {
+        logger.info("Waiting $waitMillis ms (${jacocoTestExec} is locked)...")
+        Thread.sleep(waitMillis)
+      }
+      logger.info("Done waiting (${jacocoTestExec} is unlocked).")
+    }
+  }
+  tasks['test'].finalizedBy(waitUntilJacocoTestExecIsUnlocked)
+}

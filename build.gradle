@@ -13,6 +13,8 @@ repositories {
 }
 
 version = '0.6.2'
+apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
+
 group = 'org.itsallcode'
 sourceCompatibility = 11
 targetCompatibility = 11
