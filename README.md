@@ -14,12 +14,12 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ## Usage
 
-1. Preconditions: Java 11 and Gradle 6.3
+1. Preconditions: Java 11 and Gradle 6.0
 1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.6.2"
+      id "org.itsallcode.openfasttrace" version "0.7.0"
     }
     ```
 

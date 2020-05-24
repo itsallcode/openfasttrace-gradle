@@ -12,9 +12,9 @@ repositories {
     maven { url "https://dl.bintray.com/itsallcode/itsallcode" }
 }
 
-version = '0.6.2'
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
+version = '0.7.0'
 group = 'org.itsallcode'
 sourceCompatibility = 11
 targetCompatibility = 11
