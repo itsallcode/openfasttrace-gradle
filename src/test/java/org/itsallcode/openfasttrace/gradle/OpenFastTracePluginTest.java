@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipException;
 
+import org.gradle.api.logging.Logging;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.testkit.runner.BuildResult;
@@ -263,6 +264,7 @@ class OpenFastTracePluginTest
     private static BuildResult runBuild(GradleTestConfig config, Path projectDir,
             String... arguments)
     {
+        configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
         allArgs.addAll(asList("--info", "--stacktrace"));
@@ -280,5 +282,15 @@ class OpenFastTracePluginTest
             runner.withGradleVersion(config.gradleVersion);
         }
         return runner.build();
+    }
+
+    private static void configureJacoco(Path projectDir)
+    {
+        final String testkitGradleConfig = TestUtil.readResource(OpenFastTracePluginTest.class,
+                "/testkit-gradle.properties");
+        LOG.info("Found testkit gradle config: {}", testkitGradleConfig);
+        final Path gradleProperties = projectDir.resolve("gradle.properties");
+        LOG.info("Writing testkit gradle config to {}", gradleProperties);
+        TestUtil.writeFile(gradleProperties, testkitGradleConfig);
     }
 }
