@@ -42,9 +42,12 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.slf4j.Logger;
 
 class OpenFastTracePluginTest
 {
+    private static final Logger LOG = Logging.getLogger(OpenFastTracePluginTest.class);
+
     private static final boolean ENABLE_WARNINGS = true;
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
     private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
@@ -53,13 +56,12 @@ class OpenFastTracePluginTest
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
-    private BuildResult buildResult;
 
     @ParameterizedTest
     @EnumSource
     void testTracingTaskAddedToProject(GradleTestConfig config)
     {
-        runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
+        final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
     }
@@ -68,7 +70,8 @@ class OpenFastTracePluginTest
     @EnumSource
     void testTraceExampleProjectWithDefaultConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements");
+        final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "clean",
+                "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
@@ -78,7 +81,8 @@ class OpenFastTracePluginTest
     @EnumSource
     void testCollectExampleProjectWithCustomConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
+        final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
@@ -121,9 +125,10 @@ class OpenFastTracePluginTest
     @EnumSource
     void testCollectIsUpToDateWhenAlreadyRunBefore(GradleTestConfig config) throws IOException
     {
-        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
+        BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
-        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
+        buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":collectRequirements").getOutcome());
     }
 
@@ -131,7 +136,8 @@ class OpenFastTracePluginTest
     @EnumSource
     void testHtmlReportConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(config, HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
+        final BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
+                "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>", //
@@ -142,9 +148,10 @@ class OpenFastTracePluginTest
     @EnumSource
     void testTraceTaskUpToDateWhenAlreadyRun(GradleTestConfig config) throws IOException
     {
-        runBuild(config, HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
+        BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
+                "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
-        runBuild(config, HTML_REPORT_CONFIG_DIR, "traceRequirements");
+        buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
     }
 
@@ -152,7 +159,8 @@ class OpenFastTracePluginTest
     @EnumSource
     void testTraceExampleProjectWithCustomConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements");
+        final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", //
@@ -163,7 +171,8 @@ class OpenFastTracePluginTest
     @EnumSource
     void testTraceMultiProject(GradleTestConfig config) throws IOException
     {
-        runBuild(config, MULTI_PROJECT_DIR, "clean", "traceRequirements");
+        final BuildResult buildResult = runBuild(config, MULTI_PROJECT_DIR, "clean",
+                "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
@@ -172,11 +181,11 @@ class OpenFastTracePluginTest
     @EnumSource
     void testTraceDependencyProject(GradleTestConfig config) throws IOException
     {
-        runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
+        BuildResult buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
-        runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
+        buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
@@ -188,7 +197,8 @@ class OpenFastTracePluginTest
     @EnumSource
     void testPublishToMavenRepo(GradleTestConfig config) throws IOException
     {
-        runBuild(config, PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal");
+        final BuildResult buildResult = runBuild(config, PUBLISH_CONFIG_DIR, "clean",
+                "publishToMavenLocal");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
 
         final Path archive = PUBLISH_CONFIG_DIR
@@ -215,7 +225,7 @@ class OpenFastTracePluginTest
         }
     }
 
-    private String readEntry(ZipFile zip, String entryName) throws IOException, ZipException
+    private static String readEntry(ZipFile zip, String entryName) throws IOException, ZipException
     {
         final ZipArchiveEntry reqirementsEntry = zip.getEntry(entryName);
         try (BufferedReader reader = new BufferedReader(
@@ -225,7 +235,7 @@ class OpenFastTracePluginTest
         }
     }
 
-    private void createDependencyZip(final Path dependencyZip) throws IOException
+    private static void createDependencyZip(final Path dependencyZip) throws IOException
     {
         Files.createDirectories(dependencyZip.getParent());
         try (ZipFileBuilder zipBuilder = ZipFileBuilder.create(dependencyZip))
@@ -236,7 +246,7 @@ class OpenFastTracePluginTest
         }
     }
 
-    private void assertFileContent(Path file, String... lines) throws IOException
+    private static void assertFileContent(Path file, String... lines) throws IOException
     {
         final String fileContent = fileContent(file);
         for (final String line : lines)
@@ -245,12 +255,13 @@ class OpenFastTracePluginTest
         }
     }
 
-    private String fileContent(Path file) throws IOException
+    private static String fileContent(Path file) throws IOException
     {
         return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
     }
 
-    private void runBuild(GradleTestConfig config, Path projectDir, String... arguments)
+    private static BuildResult runBuild(GradleTestConfig config, Path projectDir,
+            String... arguments)
     {
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
@@ -268,6 +279,6 @@ class OpenFastTracePluginTest
         {
             runner.withGradleVersion(config.gradleVersion);
         }
-        buildResult = runner.build();
+        return runner.build();
     }
 }

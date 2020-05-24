@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class TestUtil
 {
@@ -47,7 +48,7 @@ public class TestUtil
         }
         catch (final IOException e)
         {
-            throw new AssertionError("Error reading from resource " + resourceName);
+            throw new AssertionError("Error reading from resource " + resourceName, e);
         }
     }
 
@@ -55,11 +56,11 @@ public class TestUtil
     {
         try
         {
-            Files.write(file, content.getBytes(StandardCharsets.UTF_8));
+            Files.write(file, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
         }
         catch (final IOException e)
         {
-            throw new AssertionError("Error writing to file " + file);
+            throw new AssertionError("Error writing to file " + file, e);
         }
     }
 }
