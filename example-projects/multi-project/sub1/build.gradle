@@ -1,5 +1,4 @@
 requirementTracing {
-  inputDirectories = files('custom-dir1')
   tags {
     tag {
       paths = fileTree(dir: 'src/').include '*.test.*'

@@ -1,1 +1,1 @@
-[[tagname2:2]]
+// [[tagname2:2]]
