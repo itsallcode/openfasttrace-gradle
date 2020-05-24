@@ -20,9 +20,9 @@ package org.itsallcode.openfasttrace.gradle;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,11 +40,11 @@ import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.Zip
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class OpenFastTracePluginTest
+class OpenFastTracePluginTest
 {
-    private static final boolean ENABLE_WARNINGS = false;
+    private static final boolean ENABLE_WARNINGS = true;
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
     private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
@@ -55,7 +55,7 @@ public class OpenFastTracePluginTest
     private BuildResult buildResult;
 
     @Test
-    public void testTracingTaskAddedToProject()
+    void testTracingTaskAddedToProject()
     {
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
@@ -63,7 +63,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testTraceExampleProjectWithDefaultConfig() throws IOException
+    void testTraceExampleProjectWithDefaultConfig() throws IOException
     {
         runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
@@ -72,7 +72,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testCollectExampleProjectWithCustomConfig() throws IOException
+    void testCollectExampleProjectWithCustomConfig() throws IOException
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
@@ -114,7 +114,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testCollectIsUpToDateWhenAlreadyRunBefore() throws IOException
+    void testCollectIsUpToDateWhenAlreadyRunBefore() throws IOException
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
@@ -123,7 +123,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testHtmlReportConfig() throws IOException
+    void testHtmlReportConfig() throws IOException
     {
         runBuild(HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
@@ -133,7 +133,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testTraceTaskUpToDateWhenAlreadyRun() throws IOException
+    void testTraceTaskUpToDateWhenAlreadyRun() throws IOException
     {
         runBuild(HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
@@ -142,7 +142,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testTraceExampleProjectWithCustomConfig() throws IOException
+    void testTraceExampleProjectWithCustomConfig() throws IOException
     {
         runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
@@ -152,7 +152,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testTraceMultiProject() throws IOException
+    void testTraceMultiProject() throws IOException
     {
         runBuild(MULTI_PROJECT_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
@@ -160,7 +160,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testTraceDependencyProject() throws IOException
+    void testTraceDependencyProject() throws IOException
     {
         runBuild(DEPENDENCY_CONFIG_DIR, "clean");
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
@@ -175,7 +175,7 @@ public class OpenFastTracePluginTest
     }
 
     @Test
-    public void testPublishToMavenRepo() throws IOException
+    void testPublishToMavenRepo() throws IOException
     {
         runBuild(PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());

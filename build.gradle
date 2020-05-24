@@ -18,6 +18,7 @@ targetCompatibility = 11
 ext {
   gradlePluginId = 'org.itsallcode.openfasttrace'
   oftVersion = '3.0.2'
+  junitVersion = '5.6.2'
   if(project.hasProperty('oftSourceDir')) {
     oftSourceDir = file(project.oftSourceDir)
     useOftSources = oftSourceDir.exists()
@@ -53,7 +54,10 @@ dependencies {
         implementation "org.itsallcode.openfasttrace:openfasttrace-exporter-specobject:$oftVersion"
         runtimeOnly "org.itsallcode.openfasttrace:openfasttrace:$oftVersion"
     }
-    testImplementation 'junit:junit:4.12'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation "org.hamcrest:hamcrest-core:2.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
 
 task compileOft(type: Exec) {
