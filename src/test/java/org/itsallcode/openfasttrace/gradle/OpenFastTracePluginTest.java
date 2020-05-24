@@ -40,7 +40,8 @@ import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.Zip
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class OpenFastTracePluginTest
 {
@@ -54,27 +55,30 @@ class OpenFastTracePluginTest
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
     private BuildResult buildResult;
 
-    @Test
-    void testTracingTaskAddedToProject()
+    @ParameterizedTest
+    @EnumSource
+    void testTracingTaskAddedToProject(GradleTestConfig config)
     {
-        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "tasks");
+        runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
     }
 
-    @Test
-    void testTraceExampleProjectWithDefaultConfig() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testTraceExampleProjectWithDefaultConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements");
+        runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
     }
 
-    @Test
-    void testCollectExampleProjectWithCustomConfig() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testCollectExampleProjectWithCustomConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
+        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
@@ -113,60 +117,66 @@ class OpenFastTracePluginTest
                         "</specdocument>");
     }
 
-    @Test
-    void testCollectIsUpToDateWhenAlreadyRunBefore() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testCollectIsUpToDateWhenAlreadyRunBefore(GradleTestConfig config) throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
+        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "collectRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
+        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":collectRequirements").getOutcome());
     }
 
-    @Test
-    void testHtmlReportConfig() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testHtmlReportConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
+        runBuild(config, HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>", //
                 "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>");
     }
 
-    @Test
-    void testTraceTaskUpToDateWhenAlreadyRun() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testTraceTaskUpToDateWhenAlreadyRun(GradleTestConfig config) throws IOException
     {
-        runBuild(HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
+        runBuild(config, HTML_REPORT_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
-        runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements");
+        runBuild(config, HTML_REPORT_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
     }
 
-    @Test
-    void testTraceExampleProjectWithCustomConfig() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testTraceExampleProjectWithCustomConfig(GradleTestConfig config) throws IOException
     {
-        runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements");
+        runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", //
                 "not ok - 2 total, 1 defect");
     }
 
-    @Test
-    void testTraceMultiProject() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testTraceMultiProject(GradleTestConfig config) throws IOException
     {
-        runBuild(MULTI_PROJECT_DIR, "clean", "traceRequirements");
+        runBuild(config, MULTI_PROJECT_DIR, "clean", "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
-    @Test
-    void testTraceDependencyProject() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testTraceDependencyProject(GradleTestConfig config) throws IOException
     {
-        runBuild(DEPENDENCY_CONFIG_DIR, "clean");
+        runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
-        runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements");
+        runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
@@ -174,10 +184,11 @@ class OpenFastTracePluginTest
                 "not ok - 2 total, 1 defect");
     }
 
-    @Test
-    void testPublishToMavenRepo() throws IOException
+    @ParameterizedTest
+    @EnumSource
+    void testPublishToMavenRepo(GradleTestConfig config) throws IOException
     {
-        runBuild(PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal");
+        runBuild(config, PUBLISH_CONFIG_DIR, "clean", "publishToMavenLocal");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
 
         final Path archive = PUBLISH_CONFIG_DIR
@@ -239,7 +250,7 @@ class OpenFastTracePluginTest
         return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
     }
 
-    private void runBuild(Path projectDir, String... arguments)
+    private void runBuild(GradleTestConfig config, Path projectDir, String... arguments)
     {
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
@@ -248,11 +259,15 @@ class OpenFastTracePluginTest
         {
             allArgs.addAll(asList("--warning-mode", "all"));
         }
-        buildResult = GradleRunner.create() //
+        final GradleRunner runner = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
                 .withPluginClasspath() //
                 .withArguments(allArgs) //
-                .forwardOutput() //
-                .build();
+                .forwardOutput();
+        if (config.gradleVersion != null)
+        {
+            runner.withGradleVersion(config.gradleVersion);
+        }
+        buildResult = runner.build();
     }
 }
