@@ -24,7 +24,7 @@ import org.gradle.api.file.FileCollection;
 @SuppressWarnings("squid:ClassVariableVisibilityCheck")
 public class TagConfig
 {
-    private final transient Project project;
+    private final Project project;
 
     public FileCollection paths;
     public String coveredItemArtifactType;
