@@ -14,7 +14,7 @@ before_script:
   - git fetch --unshallow
 
 script:
-  - ./gradlew clean check sonarqube --info --stacktrace
+  - ./gradlew clean check build sonarqube --info --stacktrace
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -24,7 +24,3 @@ cache:
     - $HOME/.sonar/cache/
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-
-after_success:
-  - ./gradlew jacocoTestReport --info --stacktrace
-  - bash <(curl -s https://codecov.io/bash)
