@@ -5,6 +5,7 @@
 /.settings/org.eclipse.buildship.core.prefs
 /bin/
 /build/
+/.idea/
 /example-projects/*/.gradle
 /example-projects/*/build
 /example-projects/*/gradle.properties
