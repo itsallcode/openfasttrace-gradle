@@ -3,7 +3,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ## Project Information
 
-[![Build Status](https://travis-ci.org/itsallcode/openfasttrace-gradle.svg?branch=develop)](https://travis-ci.org/itsallcode/openfasttrace-gradle)
+[![Java CI with Gradle](https://github.com/itsallcode/openfasttrace-gradle/workflows/Java%20CI%20with%20Gradle/badge.svg)](https://github.com/itsallcode/openfasttrace-gradle/actions?query=workflow%3A%22Java+CI+with+Gradle%22)
 [![Sonarcloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=org.itsallcode%3Aopenfasttrace-gradle&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.itsallcode%3Aopenfasttrace-gradle&metric=coverage)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle)
 
