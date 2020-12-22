@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Upgrade to Gradle 6.7.1
+
 ## [0.7.0] - 2019-05-24
 
 ### Changed
