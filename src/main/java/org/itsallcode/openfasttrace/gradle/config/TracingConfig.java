@@ -27,8 +27,6 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 
-// Public fields are required for configuration via gradle
-@SuppressWarnings("squid:ClassVariableVisibilityCheck")
 public class TracingConfig
 {
     private static final ReportVerbosity DEFAULT_REPORT_VERBOSITY = ReportVerbosity.FAILURE_DETAILS;
