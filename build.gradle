@@ -8,8 +8,7 @@ plugins {
 }
 
 repositories {
-    jcenter()
-    maven { url "https://dl.bintray.com/itsallcode/itsallcode" }
+    mavenCentral()
 }
 
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
