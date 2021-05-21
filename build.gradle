@@ -21,7 +21,7 @@ targetCompatibility = 11
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
     oftVersion = '3.0.2'
-    junitVersion = '5.7.1'
+    junitVersion = '5.7.2'
     if (project.hasProperty('oftSourceDir')) {
         oftSourceDir = file(project.oftSourceDir)
         useOftSources = oftSourceDir.exists()
