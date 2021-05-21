@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Upgrade to Gradle 6.8
+- Upgrade to Gradle 7.0, tested with Gradle 6.0
 
 ## [0.7.0] - 2019-05-24
 
