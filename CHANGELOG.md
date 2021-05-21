@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0]
+
 ### Changed
 
+- [#16](https://github.com/itsallcode/openfasttrace-gradle/pull/16) Upgrade to [OpenFastTrace 3.1.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.1.0), adding support for JVM languages Clojure, Kotlin and Scala.
 - Upgrade to Gradle 7.0, tested with Gradle 6.0
 
 ## [0.7.0] - 2019-05-24
