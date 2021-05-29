@@ -4,11 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.0] - 2021-05-30
 
 ### Changed
 
-- Upgrade to Gradle 6.8
+- Upgrade to Gradle 7.0.2
+- Upgrade to OpenFastTrace 3.2.0 adding:
+  - [Pull Request #271](https://github.com/itsallcode/openfasttrace/issues/271)
+  - [Pull Request #258](https://github.com/itsallcode/openfasttrace/pull/258)
 
 ## [0.7.0] - 2019-05-24
 

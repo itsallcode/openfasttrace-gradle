@@ -1,0 +1,25 @@
+buildscript {
+  dependencies {
+    classpath files('../../../openfasttrace/product/target/openfasttrace-3.2.0.jar')
+    classpath files('../../build/libs/openfasttrace-gradle-0.9.0.jar')
+  }
+}
+plugins {
+    id "base"
+}
+repositories {
+  flatDir {
+    dirs 'repository'
+  }
+}
+
+apply plugin: 'org.itsallcode.openfasttrace'
+
+requirementTracing {
+  inputDirectories = files('documents')
+  importedRequirements = [':requirements:1.0@zip']
+
+  reportFile = file('build/reports/aspec-report.xml')
+  reportFormat = 'aspec'
+  reportVerbosity = 'ALL'
+}

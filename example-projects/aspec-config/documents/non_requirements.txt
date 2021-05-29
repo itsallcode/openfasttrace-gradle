@@ -1,0 +1,2 @@
+This file is not compatible with openfasttrace and is expected to be
+ignored.
