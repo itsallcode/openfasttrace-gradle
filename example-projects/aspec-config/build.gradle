@@ -1,19 +1,13 @@
-buildscript {
-  dependencies {
-    classpath files('../../../openfasttrace/product/target/openfasttrace-3.2.0.jar')
-    classpath files('../../build/libs/openfasttrace-gradle-0.9.0.jar')
-  }
-}
 plugins {
     id "base"
+    id 'org.itsallcode.openfasttrace' version '0.9.0'
 }
+
 repositories {
   flatDir {
     dirs 'repository'
   }
 }
-
-apply plugin: 'org.itsallcode.openfasttrace'
 
 requirementTracing {
   inputDirectories = files('documents')
