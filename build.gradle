@@ -109,7 +109,7 @@ test {
     finalizedBy jacocoTestReport
 }
 
-test.onlyIf { rootProject.name == 'openfasttrace-gradle-none' }
+test.onlyIf { rootProject.name == 'openfasttrace-gradle' }
 
 jacocoTestReport {
     dependsOn test
