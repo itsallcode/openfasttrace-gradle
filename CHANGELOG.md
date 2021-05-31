@@ -6,12 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.0] - 2021-05-30
 
+## [0.9.0] - 2021-05-30
+
 ### Changed
 
-- Upgrade to Gradle 7.0.2
+- Upgrade to [OpenFastTrace 3.2.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.2.0)
+
+## [0.8.0] - 2021-05-22
+
+### Changed
+
+- Upgrade to Gradle 7.0.2, tested with Gradle 6.0 
+- Upgrade to [OpenFastTrace 3.1.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.1.0) adding:
+  - [#19](https://github.com/itsallcode/openfasttrace-gradle/pull/19) support for JVM languages Clojure, Kotlin and Scala.  
 - Upgrade to OpenFastTrace 3.2.0 adding:
-  - [Pull Request #271](https://github.com/itsallcode/openfasttrace/issues/271)
-  - [Pull Request #258](https://github.com/itsallcode/openfasttrace/pull/258)
+  - [#271](https://github.com/itsallcode/openfasttrace/issues/271) support for aspec reporter
+  - [#258](https://github.com/itsallcode/openfasttrace/pull/258) support for non requirements in imported zip files
 
 ## [0.7.0] - 2019-05-24
 
