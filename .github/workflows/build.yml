@@ -18,13 +18,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Fetch all history for all tags and branches
       run: git fetch --prune --unshallow
+
     - uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
         java-version: ${{ matrix.java }}
+
     - uses: gradle/wrapper-validation-action@v1
+
     - name: Cache Gradle packages and wrapper
       uses: actions/cache@v2
       with:
@@ -33,21 +37,25 @@ jobs:
           ~/.gradle/wrapper
         key: ${{ runner.os }}-java-${{ matrix.java }}-gradle-${{ hashFiles('**/*.gradle*') }}
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-gradle-
+
     - name: Cache SonarQube packages
       uses: actions/cache@v2
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-java-${{ matrix.java }}-sonar
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
+
     - name: Build with Gradle
       run: |
         ./gradlew build --info --warning-mode=summary
+
     - name: Publish Test Report for Java ${{ matrix.java }}
       uses: scacap/action-surefire-report@v1
       if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
       with:
         report_paths: '**/build/test-results/*/TEST-*.xml'
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
       run: |
