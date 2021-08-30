@@ -124,6 +124,12 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 $ ./gradlew licenseFormat
 ```
 
+### Check if dependencies are up-to-date
+
+```bash
+$ ./gradlew dependencyUpdates
+```
+
 ### Run local sonar analysis
 
 ```bash

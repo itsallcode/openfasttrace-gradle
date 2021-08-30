@@ -27,4 +27,11 @@ public enum GradleTestConfig
     {
         this.gradleVersion = gradleVersion;
     }
+
+    public boolean supportedWithJvm() {
+        if(this == SIX_ZERO) {
+            return System.getProperty("java.version").startsWith("11");
+        }
+        return true;
+    }
 }

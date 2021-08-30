@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -264,6 +265,7 @@ class OpenFastTracePluginTest
     private static BuildResult runBuild(GradleTestConfig config, Path projectDir,
             String... arguments)
     {
+        assumeTrue(config.supportedWithJvm());
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
