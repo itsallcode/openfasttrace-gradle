@@ -19,7 +19,7 @@ package org.itsallcode.openfasttrace.gradle;
 
 public enum GradleTestConfig
 {
-    CURRENT_VERSION(null), SIX_ZERO("6.0");
+    CURRENT_VERSION(null), SIX_ZERO("6.0"), SEVEN_ZERO("7.0");
 
     public final String gradleVersion;
 
