@@ -24,7 +24,7 @@ jobs:
 
     - uses: actions/setup-java@v2
       with:
-        distribution: 'adopt'
+        distribution: 'temurin'
         java-version: ${{ matrix.java }}
 
     - uses: gradle/wrapper-validation-action@v1
