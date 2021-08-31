@@ -7,6 +7,10 @@
 /build/
 /.idea/
 /example-projects/*/.gradle
+/example-projects/*/gradle
+/example-projects/*/gradlew
+/example-projects/*/gradlew.bat
 /example-projects/*/build
 /example-projects/*/gradle.properties
+/example-projects/*/.idea
 /example-projects/multi-project/*/build
