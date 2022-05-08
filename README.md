@@ -32,6 +32,36 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 1. Report is written to `build/reports/tracing.txt` by default.
 
+### Configuring the short tag importer
+
+The short tag importer allows omitting artifact type and the covered artifact type. Optionally you can add a prefix to the item name, e.g. a common module name.
+
+```gradle
+requirementTracing {
+  tags {
+    tag {
+      paths = fileTree(dir: 'src/').include '*.impl.*'
+      coveredItemNamePrefix = 'prefix'
+      tagArtifactType = 'impl'
+      coveredItemArtifactType = 'dsn'
+    }
+    tag {
+      paths = fileTree(dir: 'src/').include '*.test.*'
+      tagArtifactType = 'utest'
+      coveredItemArtifactType = 'dsn'
+    }
+  }
+}
+```
+
+As a benefit the tags are much shorter and contain only the name and revision:
+
+```java
+// [[tagname:1]]
+```
+
+See [multi-project/sub1](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects/multi-project/sub1) for a basic example.
+
 ### Sharing requirements
 
 In bigger setups you might want to share requirements between multiple projects.
@@ -71,7 +101,7 @@ publishing {
 }
 ```
 
-See [publish-config](example-projects\publish-config) for a basic example.
+See [publish-config](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects/publish-config) for a basic example.
 
 #### Importing external requirements
 
@@ -88,7 +118,7 @@ requirementTracing {
 }
 ```
 
-See [dependency-config](example-projects\dependency-config) for a basic example.
+See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects/dependency-config) for a basic example.
 
 ## Development
 
