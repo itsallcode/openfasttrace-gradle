@@ -27,7 +27,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 1. Run
 
     ```bash
-    $ ./gradlew traceRequirements
+    ./gradlew traceRequirements
     ```
 
 1. Report is written to `build/reports/tracing.txt` by default.
@@ -151,13 +151,13 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 ### Generate license header for added files:
 
 ```bash
-$ ./gradlew licenseFormat
+./gradlew licenseFormat
 ```
 
 ### Check if dependencies are up-to-date
 
 ```bash
-$ ./gradlew dependencyUpdates
+./gradlew dependencyUpdates
 ```
 
 ### Run local sonar analysis
@@ -189,7 +189,7 @@ gradle.publish.secret = <secret>
 1. Run
 
     ```bash
-    $ ./gradlew clean publishPlugins --info
+    ./gradlew clean publishPlugins --info
     ```
 
    Plugin will be published at https://plugins.gradle.org/m2/org/itsallcode/openfasttrace/org.itsallcode.openfasttrace.gradle.plugin/
