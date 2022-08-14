@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Build and test with Java 16. Please note that Java 16 is only supported with Gradle 7.0+.
 - [PR #25](https://github.com/itsallcode/openfasttrace-gradle/pull/25): Upgrade build to Gradle 7.2, test with 7.0.
 - [PR #32](https://github.com/itsallcode/openfasttrace-gradle/pull/32): Upgrade dependencies
+  - Upgrade to [OpenFastTrace 3.5.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.5.0)
+  - Gradle 6.0 is no longer supported.
+  - Build and test with Java 17. Please note that Java 17 is only supported with Gradle 7.5+.
 
 ## [0.9.0] - 2021-05-30
 
