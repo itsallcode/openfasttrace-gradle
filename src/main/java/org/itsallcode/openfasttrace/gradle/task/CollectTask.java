@@ -41,7 +41,6 @@ import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.core.ExportSettings;
 import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
-import org.itsallcode.openfasttrace.exporter.specobject.SpecobjectExporterFactory;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
 public class CollectTask extends DefaultTask
@@ -89,7 +88,7 @@ public class CollectTask extends DefaultTask
     private ExportSettings getExportSettings()
     {
         return ExportSettings.builder() //
-                .outputFormat(SpecobjectExporterFactory.SUPPORTED_FORMAT) //
+                .outputFormat("specobject") //
                 .newline(Newline.UNIX) //
                 .build();
     }
