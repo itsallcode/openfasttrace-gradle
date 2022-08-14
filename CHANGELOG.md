@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Pull request [#24](https://github.com/itsallcode/openfasttrace-gradle/pull/24):
+- [PR #24](https://github.com/itsallcode/openfasttrace-gradle/pull/24):
   - Upgrade to [OpenFastTrace 3.2.1](https://github.com/itsallcode/openfasttrace/releases/tag/3.2.1)
   - Upgrade other dependencies
   - Build and test with Java 16. Please note that Java 16 is only supported with Gradle 7.0+.
-- [25](https://github.com/itsallcode/openfasttrace-gradle/pull/25): Upgrade build to Gradle 7.2, test with 7.0.
+- [PR #25](https://github.com/itsallcode/openfasttrace-gradle/pull/25): Upgrade build to Gradle 7.2, test with 7.0.
+- [PR #32](https://github.com/itsallcode/openfasttrace-gradle/pull/32): Upgrade dependencies
 
 ## [0.9.0] - 2021-05-30
 
