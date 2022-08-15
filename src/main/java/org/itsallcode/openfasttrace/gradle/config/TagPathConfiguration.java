@@ -11,12 +11,12 @@ public class TagPathConfiguration
     private final Project project;
     private final List<TagConfig> tagConfigs = new ArrayList<>();
 
-    public TagPathConfiguration(Project project)
+    public TagPathConfiguration(final Project project)
     {
         this.project = project;
     }
 
-    public void tag(Action<TagConfig> action)
+    public void tag(final Action<TagConfig> action)
     {
         final TagConfig tagConfig = new TagConfig(project);
         action.execute(tagConfig);

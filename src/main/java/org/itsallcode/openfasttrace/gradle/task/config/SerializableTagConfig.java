@@ -20,7 +20,7 @@ public class SerializableTagConfig implements Serializable
     private final String tagArtifactType;
     private final String coveredItemNamePrefix;
 
-    public SerializableTagConfig(TagConfig tagConfig)
+    public SerializableTagConfig(final TagConfig tagConfig)
     {
         paths = tagConfig.paths.getFiles();
         coveredItemArtifactType = tagConfig.coveredItemArtifactType;

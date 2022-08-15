@@ -11,7 +11,7 @@ import java.nio.file.StandardOpenOption;
 
 public class TestUtil
 {
-    public static String readResource(Class<?> clazz, String resourceName)
+    public static String readResource(final Class<?> clazz, final String resourceName)
     {
         final URL resource = clazz.getResource(resourceName);
         if (resource == null)
@@ -35,7 +35,7 @@ public class TestUtil
         }
     }
 
-    public static void writeFile(Path file, String content)
+    public static void writeFile(final Path file, final String content)
     {
         try
         {

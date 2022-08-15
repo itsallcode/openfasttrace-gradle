@@ -16,7 +16,7 @@ public class SerializableTagPathConfig implements Serializable
 
     private final List<SerializableTagConfig> tagConfigs;
 
-    public SerializableTagPathConfig(TagPathConfiguration tagPathConfig)
+    public SerializableTagPathConfig(final TagPathConfiguration tagPathConfig)
     {
         tagConfigs = tagPathConfig.getPathConfig().stream().map(SerializableTagConfig::new)
                 .collect(toList());

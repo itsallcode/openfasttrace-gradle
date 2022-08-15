@@ -109,7 +109,7 @@ public class CollectTask extends DefaultTask
         return paths;
     }
 
-    private String formatPathConfig(PathConfig config)
+    private String formatPathConfig(final PathConfig config)
     {
         return " - " + config.getDescription() + " (type " + config.getTagArtifactType()
                 + "): covers '" + config.getCoveredItemArtifactType() + "', prefix: '"

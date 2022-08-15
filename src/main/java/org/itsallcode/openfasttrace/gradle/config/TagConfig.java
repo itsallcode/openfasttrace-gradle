@@ -14,7 +14,7 @@ public class TagConfig
     public String tagArtifactType;
     public String coveredItemNamePrefix;
 
-    TagConfig(Project project)
+    TagConfig(final Project project)
     {
         this.project = project;
     }
