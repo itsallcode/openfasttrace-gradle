@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2022-08-21
+
 ### Changed
 
 - [PR #24](https://github.com/itsallcode/openfasttrace-gradle/pull/24):
@@ -18,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Gradle 6.0 is no longer supported.
   - Build and test with Java 17. Please note that Java 17 is only supported with Gradle 7.5+.
 - [PR #33](https://github.com/itsallcode/openfasttrace-gradle/pull/33): Removed license header from sources
+- [PR #34](https://github.com/itsallcode/openfasttrace-gradle/pull/34): Prepare release
+  - This upgrades to [OpenFastTrace 3.6.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.6.0)
 
 ## [0.9.0] - 2021-05-30
 
