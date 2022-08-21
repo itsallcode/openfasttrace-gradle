@@ -19,7 +19,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "0.9.0"
+      id "org.itsallcode.openfasttrace" version "1.0.0"
     }
     ```
 
@@ -123,8 +123,8 @@ See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/
 ## Development
 
 ```bash
-$ git clone https://github.com/itsallcode/openfasttrace-gradle-gradle.git
-$ ./gradlew check
+git clone https://github.com/itsallcode/openfasttrace-gradle-gradle.git
+./gradlew check
 # Test report: build/reports/tests/index.html
 ```
 
