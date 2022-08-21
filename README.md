@@ -154,6 +154,12 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 ./gradlew dependencyUpdates
 ```
 
+### Check dependencies for vulnerabilities
+
+```bash
+./gradlew ossIndexAudit
+```
+
 ### Run local sonar analysis
 
 ```bash
