@@ -1,20 +1,3 @@
-/**
- * openfasttrace-gradle - Gradle plugin for tracing requirements using OpenFastTrace
- * Copyright (C) 2017 It's all code <christoph at users.sourceforge.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package org.itsallcode.openfasttrace.gradle;
 
 import java.io.BufferedReader;
@@ -28,7 +11,7 @@ import java.nio.file.StandardOpenOption;
 
 public class TestUtil
 {
-    public static String readResource(Class<?> clazz, String resourceName)
+    public static String readResource(final Class<?> clazz, final String resourceName)
     {
         final URL resource = clazz.getResource(resourceName);
         if (resource == null)
@@ -52,7 +35,7 @@ public class TestUtil
         }
     }
 
-    public static void writeFile(Path file, String content)
+    public static void writeFile(final Path file, final String content)
     {
         try
         {

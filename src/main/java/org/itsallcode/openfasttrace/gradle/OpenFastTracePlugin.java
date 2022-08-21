@@ -1,20 +1,3 @@
-/**
- * openfasttrace-gradle - Gradle plugin for tracing requirements using OpenFastTrace
- * Copyright (C) 2017 It's all code <christoph at users.sourceforge.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package org.itsallcode.openfasttrace.gradle;
 
 import static java.util.stream.Collectors.toList;
@@ -45,14 +28,14 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private static final String TASK_GROUP_NAME = "trace";
 
     @Override
-    public void apply(Project rootProject)
+    public void apply(final Project rootProject)
     {
         LOG.info("Initializing OpenFastTrack plugin for project '{}'", rootProject);
         rootProject.allprojects(this::createConfigDsl);
         createTasks(rootProject);
     }
 
-    private void createConfigDsl(Project project)
+    private void createConfigDsl(final Project project)
     {
         LOG.info("Setting up plugin configuration for project '{}'", project.getName());
 
@@ -62,14 +45,14 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 project);
     }
 
-    private void createTasks(Project rootProject)
+    private void createTasks(final Project rootProject)
     {
         LOG.info("Creating tasks for project '{}'", rootProject.getName());
         final TaskProvider<CollectTask> collectTask = createCollectTask(rootProject);
         createTracingTask(rootProject, collectTask);
     }
 
-    private TaskProvider<CollectTask> createCollectTask(Project rootProject)
+    private TaskProvider<CollectTask> createCollectTask(final Project rootProject)
     {
         return rootProject.getTasks().register("collectRequirements", CollectTask.class, task -> {
             task.setGroup(TASK_GROUP_NAME);
@@ -81,7 +64,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
         });
     }
 
-    private void createTracingTask(Project rootProject, TaskProvider<CollectTask> collectTask)
+    private void createTracingTask(final Project rootProject,
+            final TaskProvider<CollectTask> collectTask)
     {
         rootProject.getTasks().register("traceRequirements", TraceTask.class, task -> {
             task.setGroup(TASK_GROUP_NAME);
@@ -110,7 +94,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         });
     }
 
-    private Set<File> getAllInputDirectories(Set<Project> allProjects)
+    private Set<File> getAllInputDirectories(final Set<Project> allProjects)
     {
         return allProjects.stream() //
                 .map(project -> getConfig(project).getInputDirectories().getFiles()) //
@@ -118,15 +102,14 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 .collect(toSet());
     }
 
-    private Set<File> getImportedRequirements(Set<Project> allProjects)
+    private Set<File> getImportedRequirements(final Set<Project> allProjects)
     {
-
         return allProjects.stream() //
                 .flatMap(this::getImportedRequirements) //
                 .collect(toSet());
     }
 
-    private Stream<File> getImportedRequirements(Project project)
+    private Stream<File> getImportedRequirements(final Project project)
     {
         final String configurationName = "oftRequirementConfig";
         final Configuration configuration = project.getConfigurations().create(configurationName);
@@ -140,7 +123,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         return files.stream();
     }
 
-    private List<SerializableTagPathConfig> getPathConfig(Set<Project> allProjects)
+    private List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)
     {
         return allProjects.stream() //
                 .map(this::getTagPathConfig) //
@@ -149,7 +132,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 .collect(toList());
     }
 
-    private Optional<SerializableTagPathConfig> getTagPathConfig(Project project)
+    private Optional<SerializableTagPathConfig> getTagPathConfig(final Project project)
     {
         final TagPathConfiguration tagPathConfig = getConfig(project).getTagPathConfig();
         if (tagPathConfig.getPathConfig().isEmpty())
@@ -159,7 +142,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         return Optional.of(new SerializableTagPathConfig(tagPathConfig));
     }
 
-    private TracingConfig getConfig(Project project)
+    private TracingConfig getConfig(final Project project)
     {
         return project.getExtensions().getByType(TracingConfig.class);
     }

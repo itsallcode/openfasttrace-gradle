@@ -1,20 +1,3 @@
-/**
- * openfasttrace-gradle - Gradle plugin for tracing requirements using OpenFastTrace
- * Copyright (C) 2017 It's all code <christoph at users.sourceforge.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package org.itsallcode.openfasttrace.gradle.config;
 
 import java.util.List;
@@ -41,7 +24,7 @@ public class TracingConfig
     private final ListProperty<String> filteredArtifactTypes;
     private final Property<Boolean> filterAcceptsItemsWithoutTag;
 
-    public TracingConfig(Project project)
+    public TracingConfig(final Project project)
     {
         this.inputDirectories = project.files();
         this.reportFile = project.getObjects().fileProperty();
@@ -96,47 +79,47 @@ public class TracingConfig
         return filterAcceptsItemsWithoutTag;
     }
 
-    public void setReportVerbosity(String reportVerbosity)
+    public void setReportVerbosity(final String reportVerbosity)
     {
         setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity));
     }
 
-    public void setReportVerbosity(ReportVerbosity reportVerbosity)
+    public void setReportVerbosity(final ReportVerbosity reportVerbosity)
     {
         this.reportVerbosity.set(reportVerbosity);
     }
 
-    public void setReportFormat(String reportFormat)
+    public void setReportFormat(final String reportFormat)
     {
         this.reportFormat.set(reportFormat);
     }
 
-    public void setInputDirectories(ConfigurableFileCollection inputDirectories)
+    public void setInputDirectories(final ConfigurableFileCollection inputDirectories)
     {
         this.inputDirectories.setFrom(inputDirectories);
     }
 
-    public void setReportFile(RegularFileProperty reportFile)
+    public void setReportFile(final RegularFileProperty reportFile)
     {
         this.reportFile.set(reportFile);
     }
 
-    public void setImportedRequirements(List<Object> importedRequirements)
+    public void setImportedRequirements(final List<Object> importedRequirements)
     {
         this.importedRequirements.set(importedRequirements);
     }
 
-    public void setFilteredTags(List<String> filteredTags)
+    public void setFilteredTags(final List<String> filteredTags)
     {
         this.filteredTags.set(filteredTags);
     }
 
-    public void setFilteredArtifactTypes(List<String> filteredArtifactTypes)
+    public void setFilteredArtifactTypes(final List<String> filteredArtifactTypes)
     {
         this.filteredArtifactTypes.set(filteredArtifactTypes);
     }
 
-    public void setFilterAcceptsItemsWithoutTag(boolean filterAcceptsItemsWithoutTag)
+    public void setFilterAcceptsItemsWithoutTag(final boolean filterAcceptsItemsWithoutTag)
     {
         this.filterAcceptsItemsWithoutTag.set(filterAcceptsItemsWithoutTag);
     }

@@ -1,20 +1,3 @@
-/**
- * openfasttrace-gradle - Gradle plugin for tracing requirements using OpenFastTrace
- * Copyright (C) 2017 It's all code <christoph at users.sourceforge.net>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package org.itsallcode.openfasttrace.gradle;
 
 import static java.util.Arrays.asList;
@@ -61,7 +44,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTracingTaskAddedToProject(GradleTestConfig config)
+    void testTracingTaskAddedToProject(final GradleTestConfig config)
     {
         final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
@@ -70,7 +53,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTraceExampleProjectWithDefaultConfig(GradleTestConfig config) throws IOException
+    void testTraceExampleProjectWithDefaultConfig(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "clean",
                 "traceRequirements");
@@ -81,7 +64,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testCollectExampleProjectWithCustomConfig(GradleTestConfig config) throws IOException
+    void testCollectExampleProjectWithCustomConfig(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
@@ -125,7 +108,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testCollectIsUpToDateWhenAlreadyRunBefore(GradleTestConfig config) throws IOException
+    void testCollectIsUpToDateWhenAlreadyRunBefore(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
@@ -136,7 +119,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testHtmlReportConfig(GradleTestConfig config) throws IOException
+    void testHtmlReportConfig(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
@@ -148,7 +131,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTraceTaskUpToDateWhenAlreadyRun(GradleTestConfig config) throws IOException
+    void testTraceTaskUpToDateWhenAlreadyRun(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
@@ -159,7 +142,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTraceExampleProjectWithCustomConfig(GradleTestConfig config) throws IOException
+    void testTraceExampleProjectWithCustomConfig(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements");
@@ -171,7 +154,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTraceMultiProject(GradleTestConfig config) throws IOException
+    void testTraceMultiProject(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, MULTI_PROJECT_DIR, "clean",
                 "traceRequirements");
@@ -181,7 +164,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTraceDependencyProject(GradleTestConfig config) throws IOException
+    void testTraceDependencyProject(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
@@ -197,7 +180,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testPublishToMavenRepo(GradleTestConfig config) throws IOException
+    void testPublishToMavenRepo(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
@@ -227,7 +210,8 @@ class OpenFastTracePluginTest
         }
     }
 
-    private static String readEntry(ZipFile zip, String entryName) throws IOException, ZipException
+    private static String readEntry(final ZipFile zip, final String entryName)
+            throws IOException, ZipException
     {
         final ZipArchiveEntry reqirementsEntry = zip.getEntry(entryName);
         try (BufferedReader reader = new BufferedReader(
@@ -248,7 +232,7 @@ class OpenFastTracePluginTest
         }
     }
 
-    private static void assertFileContent(Path file, String... lines) throws IOException
+    private static void assertFileContent(final Path file, final String... lines) throws IOException
     {
         final String fileContent = fileContent(file);
         for (final String line : lines)
@@ -257,13 +241,13 @@ class OpenFastTracePluginTest
         }
     }
 
-    private static String fileContent(Path file) throws IOException
+    private static String fileContent(final Path file) throws IOException
     {
         return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
     }
 
-    private static BuildResult runBuild(GradleTestConfig config, Path projectDir,
-            String... arguments)
+    private static BuildResult runBuild(final GradleTestConfig config, final Path projectDir,
+            final String... arguments)
     {
         assumeTrue(config.supportedWithJvm());
         configureJacoco(projectDir);
@@ -286,7 +270,7 @@ class OpenFastTracePluginTest
         return runner.build();
     }
 
-    private static void configureJacoco(Path projectDir)
+    private static void configureJacoco(final Path projectDir)
     {
         final String testkitGradleConfig = TestUtil.readResource(OpenFastTracePluginTest.class,
                 "/testkit-gradle.properties");

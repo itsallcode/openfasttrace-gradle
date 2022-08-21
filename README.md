@@ -148,16 +148,16 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 1. Select Project root directory
 1. Click "Finish"
 
-### Generate license header for added files:
-
-```bash
-./gradlew licenseFormat
-```
-
 ### Check if dependencies are up-to-date
 
 ```bash
 ./gradlew dependencyUpdates
+```
+
+### Check dependencies for vulnerabilities
+
+```bash
+./gradlew ossIndexAudit
 ```
 
 ### Run local sonar analysis
