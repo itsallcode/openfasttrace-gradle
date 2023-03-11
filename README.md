@@ -23,7 +23,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
     }
     ```
 
-1. Configure your project, see [examples](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects)
+1. Configure your project, see [examples](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects)
 1. Run
 
     ```bash
@@ -60,7 +60,7 @@ As a benefit the tags are much shorter and contain only the name and revision:
 // [[tagname:1]]
 ```
 
-See [multi-project/sub1](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects/multi-project/sub1) for a basic example.
+See [multi-project/sub1](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects/multi-project/sub1) for a basic example.
 
 ### Sharing requirements
 
@@ -101,7 +101,7 @@ publishing {
 }
 ```
 
-See [publish-config](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects/publish-config) for a basic example.
+See [publish-config](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects/publish-config) for a basic example.
 
 #### Importing external requirements
 
@@ -118,7 +118,7 @@ requirementTracing {
 }
 ```
 
-See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/develop/example-projects/dependency-config) for a basic example.
+See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects/dependency-config) for a basic example.
 
 ## Development
 
