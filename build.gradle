@@ -79,20 +79,16 @@ clean {
     propertyFiles.each { delete it }
 }
 
-pluginBundle {
+gradlePlugin {
     website = 'https://github.com/itsallcode/openfasttrace-gradle'
     vcsUrl = 'https://github.com/itsallcode/openfasttrace-gradle.git'
-    tags = ['requirementstracing', 'requirements', 'tracing', 'reqtracing', 'openfasttrace', 'oft']
-}
-
-gradlePlugin {
-    description = 'Gradle plugin for tracing requirements using OpenFastTrace'
     plugins {
         openFastTracePlugin {
             id = gradlePluginId
             implementationClass = 'org.itsallcode.openfasttrace.gradle.OpenFastTracePlugin'
             displayName = 'OpenFastTrace requirements tracing plugin'
             description = 'Gradle plugin for tracing requirements using OpenFastTrace'
+            tags.addAll(['requirementstracing', 'requirements', 'tracing', 'reqtracing', 'openfasttrace', 'oft'])
         }
     }
 }
