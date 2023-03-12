@@ -131,7 +131,7 @@ public class TraceTask extends DefaultTask
         getLogger().info("Filter: artifactTypes={}, tags={}, acceptItemsWithoutTag={}",
                 filteredArtifactTypes.get(), filteredTags.get(),
                 filterAcceptsItemsWithoutTag.get());
-        return new FilterSettings.Builder() //
+        return FilterSettings.builder() //
                 .artifactTypes(filteredArtifactTypes.get()) //
                 .tags(filteredTags.get()) //
                 .withoutTags(filterAcceptsItemsWithoutTag.get()).build();
