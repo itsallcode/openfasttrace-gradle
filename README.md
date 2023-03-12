@@ -163,7 +163,7 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 ### Run local sonar analysis
 
 ```bash
-./gradlew clean sonarqube --info \
+./gradlew clean sonar --info \
     -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=itsallcode \
     -Dsonar.login=[token]
