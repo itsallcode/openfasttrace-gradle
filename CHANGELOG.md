@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - 2023-03-11
 
-- [PR]():
+- [PR #35](https://github.com/itsallcode/openfasttrace-gradle/pull/35):
   - Upgrade to [OpenFastTrace 3.7.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.7.0)
   - Upgrade other dependencies
 
