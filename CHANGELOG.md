@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2023-03-11
+
+- [PR]():
+  - Upgrade to [OpenFastTrace 3.7.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.7.0)
+  - Upgrade other dependencies
+
 ## [1.0.0] - 2022-08-21
 
 ### Changed
