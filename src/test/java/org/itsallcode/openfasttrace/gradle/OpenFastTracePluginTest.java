@@ -148,7 +148,7 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok - 0/1>0>0/0 - dsn~exampleB~1 (impl, -utest)", //
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
                 "not ok - 2 total, 1 defect");
     }
 
