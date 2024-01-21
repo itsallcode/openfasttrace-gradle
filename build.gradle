@@ -74,7 +74,7 @@ java {
 javadoc {
     failOnError = true
     options.addBooleanOption('html5', true)
-    options.addStringOption('Xwerror', '-quiet')
+    //options.addStringOption('Xwerror', '-quiet')
 }
 
 task compileOft(type: Exec) {
