@@ -4,9 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.gradle.api.Plugin;
@@ -59,7 +57,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
             task.setDescription("Collect requirements and generate specobject file");
             task.getInputDirectories().set(getAllInputDirectories(rootProject.getAllprojects()));
             task.getOutputFile()
-                    .set(new File(rootProject.getBuildDir(), "reports/requirements.xml"));
+                    .set(new File(rootProject.getLayout().getBuildDirectory().getAsFile().get(),
+                            "reports/requirements.xml"));
             task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
         });
     }
@@ -82,7 +81,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 final String extension = config.getReportFormat().get().equals("html") ? "html"
                         : "txt";
                 task.getOutputFile()
-                        .set(new File(rootProject.getBuildDir(), "reports/tracing." + extension));
+                        .set(new File(rootProject.getLayout().getBuildDirectory().getAsFile().get(),
+                                "reports/tracing." + extension));
             }
             task.getReportVerbosity().set(config.getReportVerbosity());
             task.getReportFormat().set(config.getReportFormat());
