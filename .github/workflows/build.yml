@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [11, 17]
+        java: [11, 17, 21]
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-java-${{ matrix.java }}
       cancel-in-progress: true
@@ -28,21 +28,24 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: ${{ matrix.java }}
+        java-version: |
+          11
+          17
+          21
         cache: 'gradle'
 
     - uses: gradle/wrapper-validation-action@v1
 
     - name: Cache SonarQube packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-java-${{ matrix.java }}-sonar
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
-    - name: Build with Gradle
+    - name: Build with Java ${{ matrix.java }}
       run: |
-        ./gradlew build --warning-mode=summary
+        ./gradlew build --warning-mode=summary -PjavaVersion=${{ matrix.java }}
 
     - name: Publish Test Report for Java ${{ matrix.java }}
       uses: scacap/action-surefire-report@v1
@@ -54,7 +57,7 @@ jobs:
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
       run: |
-        ./gradlew sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=itsallcode -Dsonar.login=$SONAR_TOKEN --warning-mode=summary
+        ./gradlew sonar -Dsonar.token=$SONAR_TOKEN --warning-mode=summary
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

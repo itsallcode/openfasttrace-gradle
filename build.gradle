@@ -125,6 +125,13 @@ jacocoTestReport {
 
 project.tasks["sonar"].dependsOn jacocoTestReport
 
+sonarqube {
+    properties {
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.organization", "itsallcode"
+    }
+}
+
 publishPlugins.dependsOn check
 
 def isNonStable = { String version ->
