@@ -71,6 +71,12 @@ java {
     modularity.inferModulePath = false
 }
 
+javadoc {
+    failOnError = true
+    options.addBooleanOption('html5', true)
+    options.addStringOption('Xwerror', '-quiet')
+}
+
 task compileOft(type: Exec) {
     workingDir oftSourceDir
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
