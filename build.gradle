@@ -2,11 +2,11 @@ plugins {
     id 'java-gradle-plugin'
     id 'jacoco'
     id 'signing'
-    id 'com.gradle.plugin-publish' version '1.1.0'
-    id 'org.sonarqube' version '4.0.0.2929'
-    id 'pl.droidsonroids.jacoco.testkit' version '1.0.9'
-    id 'com.github.ben-manes.versions' version '0.46.0'
-    id 'org.sonatype.gradle.plugins.scan' version '2.5.5'
+    id 'com.gradle.plugin-publish' version '1.2.1'
+    id 'org.sonarqube' version '4.4.1.3373'
+    id 'pl.droidsonroids.jacoco.testkit' version '1.0.12'
+    id 'com.github.ben-manes.versions' version '0.50.0'
+    id 'org.sonatype.gradle.plugins.scan' version '2.7.0'
 }
 
 repositories {
@@ -17,13 +17,11 @@ apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
 version = '1.1.0'
 group = 'org.itsallcode'
-sourceCompatibility = 11
-targetCompatibility = 11
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
-    oftVersion = '3.7.0'
-    junitVersion = '5.9.2'
+    oftVersion = '3.7.1'
+    junitVersion = '5.10.1'
     if (project.hasProperty('oftSourceDir')) {
         oftSourceDir = file(project.oftSourceDir)
         useOftSources = oftSourceDir.exists()
@@ -63,6 +61,20 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testImplementation "org.hamcrest:hamcrest-core:2.2"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+java {
+    toolchain {
+        def javaVersion = project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 11
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
+    modularity.inferModulePath = false
+}
+
+javadoc {
+    failOnError = true
+    options.addBooleanOption('html5', true)
+    //options.addStringOption('Xwerror', '-quiet')
 }
 
 task compileOft(type: Exec) {
@@ -112,6 +124,13 @@ jacocoTestReport {
 }
 
 project.tasks["sonar"].dependsOn jacocoTestReport
+
+sonarqube {
+    properties {
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.organization", "itsallcode"
+    }
+}
 
 publishPlugins.dependsOn check
 

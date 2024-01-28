@@ -160,13 +160,10 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 ./gradlew ossIndexAudit
 ```
 
-### Run local sonar analysis
+### Run sonar analysis
 
 ```bash
-./gradlew clean sonar --info \
-    -Dsonar.host.url=https://sonarcloud.io \
-    -Dsonar.organization=itsallcode \
-    -Dsonar.login=[token]
+./gradlew clean sonar --info -Dsonar.token=[token]
 ```
 
 ### Publish to `plugins.gradle.org`
