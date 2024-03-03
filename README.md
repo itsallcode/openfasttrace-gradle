@@ -26,7 +26,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 1. Configure your project, see [examples](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects)
 1. Run
 
-    ```bash
+    ```sh
     ./gradlew traceRequirements
     ```
 
@@ -122,7 +122,7 @@ See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/
 
 ## Development
 
-```bash
+```sh
 git clone https://github.com/itsallcode/openfasttrace-gradle-gradle.git
 ./gradlew check
 # Test report: build/reports/tests/index.html
@@ -150,19 +150,19 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 
 ### Check if dependencies are up-to-date
 
-```bash
+```sh
 ./gradlew dependencyUpdates
 ```
 
 ### Check dependencies for vulnerabilities
 
-```bash
+```sh
 ./gradlew ossIndexAudit
 ```
 
 ### Run sonar analysis
 
-```bash
+```sh
 ./gradlew clean sonar --info -Dsonar.token=[token]
 ```
 
@@ -185,7 +185,7 @@ gradle.publish.secret = <secret>
 1. Commit and push changes.
 1. Run
 
-    ```bash
+    ```sh
     ./gradlew clean publishPlugins --info
     ```
 
