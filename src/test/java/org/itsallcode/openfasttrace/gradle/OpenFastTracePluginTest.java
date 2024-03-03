@@ -8,13 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipException;
@@ -22,9 +18,7 @@ import java.util.zip.ZipException;
 import org.gradle.api.logging.Logging;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipFile;
-import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.GradleRunner;
-import org.gradle.testkit.runner.TaskOutcome;
+import org.gradle.testkit.runner.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.Logger;
@@ -125,8 +119,9 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
-                "<!DOCTYPE html>", //
-                "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>");
+                "<!DOCTYPE html>",
+                "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
+                "<details open>");
     }
 
     @ParameterizedTest
