@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - unreleased
+
+- [Issue #41](https://github.com/itsallcode/openfasttrace-gradle/issues/41)
+  - Upgrade to [OpenFastTrace 3.8.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.8.0)
+  - Add support for `detailsSectionDisplay` configuration
+
+
 ## [1.1.0] - 2023-03-11
 
 - [PR #35](https://github.com/itsallcode/openfasttrace-gradle/pull/35):
