@@ -68,14 +68,14 @@ In bigger setups you might want to share requirements between multiple projects.
 
 Example: The Software Architecture Design project `swad` contains overall requirements that must be fulfilled by projects `component-a` and `component-b`.
 
-1. The `swad` project publishes its requirements as a zip file `swad-req` to a maven repository.
+1. The `swad` project publishes its requirements as a zip file `swad-req` to a Maven repository.
 1. Both components import these requirements and cover them in their Software Detailed Design (swdd).
-1. Both components publish their requirements as artefacts `component-a-req` and `component-b-req` to the shared maven repository.
+1. Both components publish their requirements as artefacts `component-a-req` and `component-b-req` to the shared Maven repository.
 1. A regular job check that all requirements from `swad` are covered by tracing `swad-req`, `component-a-req` and `component-b-req`.
 
-#### Publishing requirements to a maven repository
+#### Publishing requirements to a Maven repository
 
-If you want to publish requirements to a maven repository you can use the following configuration in your `build.gradle`:
+If you want to publish requirements to a Maven repository you can use the following configuration in your `build.gradle`:
 
 ```gradle
 plugins {
