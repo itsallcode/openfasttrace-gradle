@@ -40,6 +40,7 @@ public class TracingConfig
         this.filterAcceptsItemsWithoutTag = project.getObjects().property(Boolean.class);
         this.filterAcceptsItemsWithoutTag.set(true);
         this.detailsSectionDisplay = project.getObjects().property(DetailsSectionDisplay.class);
+        this.detailsSectionDisplay.set(DetailsSectionDisplay.COLLAPSE);
     }
 
     public Property<ReportVerbosity> getReportVerbosity()
