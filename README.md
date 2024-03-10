@@ -32,6 +32,37 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 1. Report is written to `build/reports/tracing.txt` by default.
 
+### General Configuration
+
+```gradle
+requirementTracing {
+  inputDirectories = files('custom-dir')
+  reportFile = file('build/custom-report.txt')
+  reportFormat = 'plain'
+  reportVerbosity = 'failure_details'
+  detailsSectionDisplay = 'collapse'
+}
+```
+
+You can configure the following properties:
+
+* `inputDirectories`: Files or directories to import
+* `reportFile`: Path to the report file
+* `reportFormat`: Format of the report
+  * `plain` - Plain Text (default)
+  * `html` - HTML
+* `reportVerbosity`: Report verbosity
+  * `quiet` - no output (in case only the return code is used)
+  * `minimal` - display ok or not ok
+  * `summary` - display only the summary, not individual specification items
+  * `failures` - list of defect specification items
+  * `failure_summaries` - list of summaries for defect specification items
+  * `failure_details` - summaries and details for defect specification items (default)
+  * `all` - summaries and details for all specification items
+* `detailsSectionDisplay`: Initial display status of the details section in the HTML report
+  * `collapse` - hide details (default)
+  * `expand` - show details
+
 ### Configuring the short tag importer
 
 The short tag importer allows omitting artifact type and the covered artifact type. Optionally you can add a prefix to the item name, e.g. a common module name.
