@@ -10,6 +10,9 @@ jobs:
   matrix-build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: "bash"
     strategy:
       matrix:
         java: [11, 17, 21]
