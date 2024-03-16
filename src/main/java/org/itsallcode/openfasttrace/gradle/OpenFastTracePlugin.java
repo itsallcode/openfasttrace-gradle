@@ -91,6 +91,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
             task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
             task.getFilteredTags().set(config.getFilteredTags());
             task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
+            task.getDetailsSectionDisplay().set(config.getDetailsSectionDisplay());
         });
     }
 

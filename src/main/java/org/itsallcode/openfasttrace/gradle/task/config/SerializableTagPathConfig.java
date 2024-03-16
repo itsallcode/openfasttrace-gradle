@@ -35,6 +35,6 @@ public class SerializableTagPathConfig implements Serializable
     @Override
     public String toString()
     {
-        return "SerializableTagPathConfig [" + tagConfigs + "]";
+        return "SerializableTagPathConfig [tagConfigs=" + tagConfigs + "]";
     }
 }
