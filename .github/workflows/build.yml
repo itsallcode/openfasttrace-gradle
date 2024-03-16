@@ -9,6 +9,9 @@ on:
 jobs:
   matrix-build:
 
+    permissions:
+      contents: read
+
     runs-on: ubuntu-latest
     defaults:
       run:
