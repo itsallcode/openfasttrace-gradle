@@ -3,7 +3,6 @@ package org.itsallcode.openfasttrace.gradle.task;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
@@ -20,6 +19,7 @@ import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
 
+@SuppressWarnings("this-escape")
 public class TraceTask extends DefaultTask
 {
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
@@ -93,7 +93,7 @@ public class TraceTask extends DefaultTask
     }
 
     @TaskAction
-    public void trace() throws IOException
+    public void trace()
     {
         createReportOutputDir();
         final Oft oft = new OftRunner();
@@ -147,7 +147,7 @@ public class TraceTask extends DefaultTask
         return Stream.concat(importedRequirementPaths, inputDirPaths).collect(toList());
     }
 
-    private void createReportOutputDir() throws IOException
+    private void createReportOutputDir()
     {
         final File outputDir = getOutputFileInternal().getParentFile();
         if (outputDir.exists())
@@ -156,7 +156,7 @@ public class TraceTask extends DefaultTask
         }
         if (!outputDir.mkdirs())
         {
-            throw new IOException("Error creating directory " + outputDir);
+            throw new IllegalStateException("Error creating directory " + outputDir);
         }
     }
 
