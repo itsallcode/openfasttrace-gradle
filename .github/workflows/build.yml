@@ -40,7 +40,7 @@ jobs:
           21
         cache: 'gradle'
 
-    - uses: gradle/wrapper-validation-action@v2
+    - uses: gradle/actions/wrapper-validation@v3
 
     - name: Cache SonarQube packages
       uses: actions/cache@v4
