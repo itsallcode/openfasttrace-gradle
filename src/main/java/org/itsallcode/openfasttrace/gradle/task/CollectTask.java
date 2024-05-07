@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
@@ -13,24 +12,26 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.SetProperty;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 import org.itsallcode.openfasttrace.api.core.Newline;
 import org.itsallcode.openfasttrace.api.core.SpecificationItem;
 import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
-import org.itsallcode.openfasttrace.core.ExportSettings;
-import org.itsallcode.openfasttrace.core.Oft;
-import org.itsallcode.openfasttrace.core.OftRunner;
+import org.itsallcode.openfasttrace.core.*;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
 public class CollectTask extends DefaultTask
 {
+    // Possible 'this' escape before subclass is fully initialized
+    @SuppressWarnings("this-escape")
     public final SetProperty<File> inputDirectories = getProject().getObjects()
             .setProperty(File.class);
+    @SuppressWarnings("this-escape")
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
+    // non-transient instance field of a serializable class declared with a
+    // non-serializable type
+    // We use only serializable types
+    @SuppressWarnings({ "serial", "this-escape" })
     public final ListProperty<SerializableTagPathConfig> pathConfig = getProject().getObjects()
             .listProperty(SerializableTagPathConfig.class);
 
@@ -53,7 +54,7 @@ public class CollectTask extends DefaultTask
     }
 
     @TaskAction
-    public void collectRequirements() throws IOException
+    public void collectRequirements()
     {
         createReportOutputDir();
 
@@ -68,7 +69,7 @@ public class CollectTask extends DefaultTask
         oft.exportToPath(importedItems, output, getExportSettings());
     }
 
-    private ExportSettings getExportSettings()
+    private static ExportSettings getExportSettings()
     {
         return ExportSettings.builder() //
                 .outputFormat("specobject") //
@@ -104,19 +105,19 @@ public class CollectTask extends DefaultTask
         if (getLogger().isInfoEnabled())
         {
             getLogger().info("Got {} path configurations:\n{}", paths.size(),
-                    paths.stream().map(this::formatPathConfig).collect(joining("\n")));
+                    paths.stream().map(CollectTask::formatPathConfig).collect(joining("\n")));
         }
         return paths;
     }
 
-    private String formatPathConfig(final PathConfig config)
+    private static String formatPathConfig(final PathConfig config)
     {
         return " - " + config.getDescription() + " (type " + config.getTagArtifactType()
                 + "): covers '" + config.getCoveredItemArtifactType() + "', prefix: '"
                 + config.getCoveredItemNamePrefix() + "'";
     }
 
-    private void createReportOutputDir() throws IOException
+    private void createReportOutputDir()
     {
         final File outputDir = getOuputFileInternal().getParentFile();
         if (outputDir.exists())
@@ -125,7 +126,7 @@ public class CollectTask extends DefaultTask
         }
         if (!outputDir.mkdirs())
         {
-            throw new IOException("Error creating directory " + outputDir);
+            throw new IllegalStateException("Error creating directory " + outputDir);
         }
     }
 

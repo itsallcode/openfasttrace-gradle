@@ -14,23 +14,54 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ## Usage
 
-1. Preconditions: Java 11 and Gradle 7.0
+1. Preconditions: Java 11 and Gradle 8.5
 1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "1.1.0"
+      id "org.itsallcode.openfasttrace" version "1.2.0"
     }
     ```
 
 1. Configure your project, see [examples](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects)
 1. Run
 
-    ```bash
+    ```sh
     ./gradlew traceRequirements
     ```
 
 1. Report is written to `build/reports/tracing.txt` by default.
+
+### General Configuration
+
+```gradle
+requirementTracing {
+  inputDirectories = files('custom-dir')
+  reportFile = file('build/custom-report.txt')
+  reportFormat = 'plain'
+  reportVerbosity = 'failure_details'
+  detailsSectionDisplay = 'collapse'
+}
+```
+
+You can configure the following properties:
+
+* `inputDirectories`: Files or directories to import
+* `reportFile`: Path to the report file
+* `reportFormat`: Format of the report
+  * `plain` - Plain Text (default)
+  * `html` - HTML
+* `reportVerbosity`: Report verbosity
+  * `quiet` - no output (in case only the return code is used)
+  * `minimal` - display ok or not ok
+  * `summary` - display only the summary, not individual specification items
+  * `failures` - list of defect specification items
+  * `failure_summaries` - list of summaries for defect specification items
+  * `failure_details` - summaries and details for defect specification items (default)
+  * `all` - summaries and details for all specification items
+* `detailsSectionDisplay`: Initial display status of the details section in the HTML report
+  * `collapse` - hide details (default)
+  * `expand` - show details
 
 ### Configuring the short tag importer
 
@@ -68,14 +99,14 @@ In bigger setups you might want to share requirements between multiple projects.
 
 Example: The Software Architecture Design project `swad` contains overall requirements that must be fulfilled by projects `component-a` and `component-b`.
 
-1. The `swad` project publishes its requirements as a zip file `swad-req` to a maven repository.
+1. The `swad` project publishes its requirements as a zip file `swad-req` to a Maven repository.
 1. Both components import these requirements and cover them in their Software Detailed Design (swdd).
-1. Both components publish their requirements as artefacts `component-a-req` and `component-b-req` to the shared maven repository.
+1. Both components publish their requirements as artefacts `component-a-req` and `component-b-req` to the shared Maven repository.
 1. A regular job check that all requirements from `swad` are covered by tracing `swad-req`, `component-a-req` and `component-b-req`.
 
-#### Publishing requirements to a maven repository
+#### Publishing requirements to a Maven repository
 
-If you want to publish requirements to a maven repository you can use the following configuration in your `build.gradle`:
+If you want to publish requirements to a Maven repository you can use the following configuration in your `build.gradle`:
 
 ```gradle
 plugins {
@@ -122,7 +153,7 @@ See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/
 
 ## Development
 
-```bash
+```sh
 git clone https://github.com/itsallcode/openfasttrace-gradle-gradle.git
 ./gradlew check
 # Test report: build/reports/tests/index.html
@@ -150,19 +181,19 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 
 ### Check if dependencies are up-to-date
 
-```bash
+```sh
 ./gradlew dependencyUpdates
 ```
 
 ### Check dependencies for vulnerabilities
 
-```bash
+```sh
 ./gradlew ossIndexAudit
 ```
 
 ### Run sonar analysis
 
-```bash
+```sh
 ./gradlew clean sonar --info -Dsonar.token=[token]
 ```
 
@@ -185,7 +216,7 @@ gradle.publish.secret = <secret>
 1. Commit and push changes.
 1. Run
 
-    ```bash
+    ```sh
     ./gradlew clean publishPlugins --info
     ```
 

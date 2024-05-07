@@ -8,6 +8,7 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.itsallcode.openfasttrace.api.DetailsSectionDisplay;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 
 public class TracingConfig
@@ -23,6 +24,7 @@ public class TracingConfig
     private final ListProperty<String> filteredTags;
     private final ListProperty<String> filteredArtifactTypes;
     private final Property<Boolean> filterAcceptsItemsWithoutTag;
+    private final Property<DetailsSectionDisplay> detailsSectionDisplay;
 
     public TracingConfig(final Project project)
     {
@@ -37,6 +39,8 @@ public class TracingConfig
         this.filteredArtifactTypes = project.getObjects().listProperty(String.class);
         this.filterAcceptsItemsWithoutTag = project.getObjects().property(Boolean.class);
         this.filterAcceptsItemsWithoutTag.set(true);
+        this.detailsSectionDisplay = project.getObjects().property(DetailsSectionDisplay.class);
+        this.detailsSectionDisplay.set(DetailsSectionDisplay.COLLAPSE);
     }
 
     public Property<ReportVerbosity> getReportVerbosity()
@@ -77,6 +81,11 @@ public class TracingConfig
     public Property<Boolean> getFilterAcceptsItemsWithoutTag()
     {
         return filterAcceptsItemsWithoutTag;
+    }
+
+    public Property<DetailsSectionDisplay> getDetailsSectionDisplay()
+    {
+        return detailsSectionDisplay;
     }
 
     public void setReportVerbosity(final String reportVerbosity)
@@ -122,6 +131,11 @@ public class TracingConfig
     public void setFilterAcceptsItemsWithoutTag(final boolean filterAcceptsItemsWithoutTag)
     {
         this.filterAcceptsItemsWithoutTag.set(filterAcceptsItemsWithoutTag);
+    }
+
+    public void setDetailsSectionDisplay(final String detailsSectionDisplay)
+    {
+        this.detailsSectionDisplay.set(DetailsSectionDisplay.valueOf(detailsSectionDisplay));
     }
 
     public TagPathConfiguration getTagPathConfig()

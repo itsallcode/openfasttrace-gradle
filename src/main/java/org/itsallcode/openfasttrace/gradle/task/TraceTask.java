@@ -3,7 +3,6 @@ package org.itsallcode.openfasttrace.gradle.task;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,21 +11,15 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-import org.itsallcode.openfasttrace.api.FilterSettings;
-import org.itsallcode.openfasttrace.api.ReportSettings;
-import org.itsallcode.openfasttrace.api.core.LinkedSpecificationItem;
-import org.itsallcode.openfasttrace.api.core.Newline;
-import org.itsallcode.openfasttrace.api.core.SpecificationItem;
-import org.itsallcode.openfasttrace.api.core.Trace;
+import org.gradle.api.tasks.*;
+import org.itsallcode.openfasttrace.api.*;
+import org.itsallcode.openfasttrace.api.core.*;
 import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
 
+@SuppressWarnings("this-escape")
 public class TraceTask extends DefaultTask
 {
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
@@ -34,6 +27,8 @@ public class TraceTask extends DefaultTask
     private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
     private final Property<String> reportFormat = getProject().getObjects().property(String.class);
+    private final Property<DetailsSectionDisplay> detailsSectionDisplay = getProject().getObjects()
+            .property(DetailsSectionDisplay.class);
     private final SetProperty<File> importedRequirements = getProject().getObjects()
             .setProperty(File.class);
     private final SetProperty<String> filteredArtifactTypes = getProject().getObjects()
@@ -91,8 +86,14 @@ public class TraceTask extends DefaultTask
         return filterAcceptsItemsWithoutTag;
     }
 
+    @Input
+    public Property<DetailsSectionDisplay> getDetailsSectionDisplay()
+    {
+        return detailsSectionDisplay;
+    }
+
     @TaskAction
-    public void trace() throws IOException
+    public void trace()
     {
         createReportOutputDir();
         final Oft oft = new OftRunner();
@@ -115,6 +116,7 @@ public class TraceTask extends DefaultTask
                 .outputFormat(reportFormat.get()) //
                 .showOrigin(true) //
                 .newline(Newline.UNIX) //
+                .detailsSectionDisplay(detailsSectionDisplay.get()) //
                 .build();
     }
 
@@ -145,7 +147,7 @@ public class TraceTask extends DefaultTask
         return Stream.concat(importedRequirementPaths, inputDirPaths).collect(toList());
     }
 
-    private void createReportOutputDir() throws IOException
+    private void createReportOutputDir()
     {
         final File outputDir = getOutputFileInternal().getParentFile();
         if (outputDir.exists())
@@ -154,7 +156,7 @@ public class TraceTask extends DefaultTask
         }
         if (!outputDir.mkdirs())
         {
-            throw new IOException("Error creating directory " + outputDir);
+            throw new IllegalStateException("Error creating directory " + outputDir);
         }
     }
 
