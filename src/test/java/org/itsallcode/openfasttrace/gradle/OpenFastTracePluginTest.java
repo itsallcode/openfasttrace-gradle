@@ -244,7 +244,6 @@ class OpenFastTracePluginTest
     private static BuildResult runBuild(final GradleTestConfig config, final Path projectDir,
             final String... arguments)
     {
-        assumeTrue(config.supportedWithJvm());
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
