@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -184,7 +183,7 @@ class OpenFastTracePluginTest
         final Path archive = PUBLISH_CONFIG_DIR
                 .resolve("build/distributions/publish-config-1.0.zip");
         assertTrue(Files.exists(archive));
-        try (ZipFile zip = new ZipFile(archive.toFile()))
+        try (ZipFile zip = ZipFile.builder().setFile(archive.toFile()).get())
         {
             final String entryContent = readEntry(zip, "requirements.xml");
             assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
