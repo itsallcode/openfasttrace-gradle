@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2024-06-11
 
+- [PR #44](https://github.com/itsallcode/openfasttrace-gradle/pull/35)
+  - Upgrade to [OpenFastTrace 4.0.0](https://github.com/itsallcode/openfasttrace/releases/tag/4.0.0)
+  - **Breaking change** The plugin now requires Java 17 at runtime.
 - [Issue #41](https://github.com/itsallcode/openfasttrace-gradle/issues/41)
   - Upgrade to [OpenFastTrace 3.8.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.8.0)
   - Add support for `detailsSectionDisplay` configuration
