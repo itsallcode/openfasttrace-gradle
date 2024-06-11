@@ -18,13 +18,13 @@ jobs:
         shell: "bash"
     strategy:
       matrix:
-        java: [11, 17, 21]
+        java: [17, 21]
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-java-${{ matrix.java }}
       cancel-in-progress: true
     name: "Build with Java ${{ matrix.java }}"
     env:
-      DEFAULT_JAVA: 11
+      DEFAULT_JAVA: 17
 
     steps:
     - uses: actions/checkout@v4
@@ -35,7 +35,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: |
-          11
           17
           21
         cache: 'gradle'
@@ -50,13 +49,11 @@ jobs:
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
     - name: Build with Java ${{ matrix.java }}
-      run: |
-        ./gradlew build --warning-mode=summary -PjavaVersion=${{ matrix.java }}
+      run: ./gradlew build --warning-mode all -PjavaVersion=${{ matrix.java }}
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
-      run: |
-        ./gradlew sonar -Dsonar.token=$SONAR_TOKEN --warning-mode=summary
+      run: ./gradlew sonar --warning-mode all -Dsonar.token=$SONAR_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip-deploy-gradle-plugin:
+        description: "Skip deployment to plugins.gradle.org"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: "bash"
+    concurrency:
+      group: ${{ github.workflow }}
+      cancel-in-progress: false
+    permissions:
+      contents: write # Required for creating GitHub release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fail if not running on main branch
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.setFailed('Not running on main branch, github.ref is ${{ github.ref }}. Please start this workflow only on main')
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 17
+          cache: "gradle"
+
+      - name: Build
+        run: ./gradlew build --warning-mode all
+
+      - name: Configure credentials for plugins.gradle.org
+        run: echo "$GRADLE_PLUGINS_CREDENTIALS" >> $HOME/.gradle/gradle.properties
+        env:
+          GRADLE_PLUGINS_CREDENTIALS: ${{ secrets.GRADLE_PLUGINS_CREDENTIALS }}
+
+      - name: Publish to plugins.gradle.org
+        if: ${{ !inputs.skip-deploy-gradle-plugin }}
+        run: ./gradlew publishPlugins --warning-mode all --info
+
+      - name: Create GitHub Release
+        run: ./.github/workflows/github_release.sh
+        env:
+          GH_TOKEN: ${{ github.token }}

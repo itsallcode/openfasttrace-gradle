@@ -28,10 +28,7 @@ public class CollectTask extends DefaultTask
             .setProperty(File.class);
     @SuppressWarnings("this-escape")
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
-    // non-transient instance field of a serializable class declared with a
-    // non-serializable type
-    // We use only serializable types
-    @SuppressWarnings({ "serial", "this-escape" })
+    @SuppressWarnings({ "this-escape" })
     public final ListProperty<SerializableTagPathConfig> pathConfig = getProject().getObjects()
             .listProperty(SerializableTagPathConfig.class);
 

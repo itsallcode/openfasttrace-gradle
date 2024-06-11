@@ -15,7 +15,7 @@ public class SerializableTagConfig implements Serializable
 {
     private static final long serialVersionUID = 1L;
     // non-transient instance field of a serializable class declared with a
-    // non-serializable type
+    // non-serializable type (Java 21)
     // We use only serializable types
     @SuppressWarnings("serial")
     private final Set<File> paths;
