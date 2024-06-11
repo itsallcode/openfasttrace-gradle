@@ -13,11 +13,6 @@ import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 public class SerializableTagPathConfig implements Serializable
 {
     private static final long serialVersionUID = 1L;
-
-    // non-transient instance field of a serializable class declared with a
-    // non-serializable type
-    // We use only serializable types
-    @SuppressWarnings("serial")
     private final List<SerializableTagConfig> tagConfigs;
 
     public SerializableTagPathConfig(final TagPathConfiguration tagPathConfig)

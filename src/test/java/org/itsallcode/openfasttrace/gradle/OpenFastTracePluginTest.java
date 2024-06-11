@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipException;
 
 import org.gradle.api.logging.Logging;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -65,35 +64,44 @@ class OpenFastTracePluginTest
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
                         "<specdocument>", //
-                "  <specobjects doctype=\"impl\">\n" + //
-                        "    <specobject>\n" + //
-                        "      <id>exampleB",
-                "</id>\n" + //
-                        "      <status>approved</status>\n" + //
-                        "      <version>0</version>\n", //
+                        """
+                                          <specobjects doctype="impl">
+                                            <specobject>
+                                              <id>exampleB\
+                                        """, """
+                                        </id>
+                                              <status>approved</status>
+                                              <version>0</version>
+                                        """, //
 
-                "      <sourceline>1</sourceline>\n" + //
-                        "      <providescoverage>\n" + //
-                        "        <provcov>\n" + //
-                        "          <linksto>dsn:exampleB</linksto>\n" + //
-                        "          <dstversion>1</dstversion>\n" + //
-                        "        </provcov>\n" + //
-                        "      </providescoverage>\n", //
+                        """
+                                              <sourceline>1</sourceline>
+                                              <providescoverage>
+                                                <provcov>
+                                                  <linksto>dsn:exampleB</linksto>
+                                                  <dstversion>1</dstversion>
+                                                </provcov>
+                                              </providescoverage>
+                                        """, //
 
-                "  <specobjects doctype=\"dsn\">\n" + //
-                        "    <specobject>\n" + //
-                        "      <id>exampleB</id>\n" + //
-                        "      <shortdesc>Tracing Example</shortdesc>\n" + //
-                        "      <status>approved</status>\n" + //
-                        "      <version>1</version>\n", //
+                        """
+                                          <specobjects doctype="dsn">
+                                            <specobject>
+                                              <id>exampleB</id>
+                                              <shortdesc>Tracing Example</shortdesc>
+                                              <status>approved</status>
+                                              <version>1</version>
+                                        """, //
 
-                "      <sourceline>2</sourceline>\n" + //
-                        "      <description>Example requirement</description>\n" + //
-                        "      <needscoverage>\n" + //
-                        "        <needsobj>utest</needsobj>\n" + //
-                        "        <needsobj>impl</needsobj>\n" + //
-                        "      </needscoverage>\n" + //
-                        "    </specobject>\n", //
+                        """
+                                              <sourceline>2</sourceline>
+                                              <description>Example requirement</description>
+                                              <needscoverage>
+                                                <needsobj>utest</needsobj>
+                                                <needsobj>impl</needsobj>
+                                              </needscoverage>
+                                            </specobject>
+                                        """, //
 
                 "  </specobjects>\n" + //
                         "</specdocument>");
@@ -101,7 +109,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testCollectIsUpToDateWhenAlreadyRunBefore(final GradleTestConfig config) throws IOException
+    void testCollectIsUpToDateWhenAlreadyRunBefore(final GradleTestConfig config)
     {
         BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
@@ -125,7 +133,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest
     @EnumSource
-    void testTraceTaskUpToDateWhenAlreadyRun(final GradleTestConfig config) throws IOException
+    void testTraceTaskUpToDateWhenAlreadyRun(final GradleTestConfig config)
     {
         BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
@@ -188,24 +196,28 @@ class OpenFastTracePluginTest
             final String entryContent = readEntry(zip, "requirements.xml");
             assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
                     "<specdocument>\n"));
-            assertThat(entryContent, containsString("  <specobjects doctype=\"dsn\">\n" + //
-                    "    <specobject>\n" + //
-                    "      <id>exampleB</id>\n" + //
-                    "      <shortdesc>Tracing Example</shortdesc>\n" + //
-                    "      <status>approved</status>\n" + //
-                    "      <version>1</version>"));
-            assertThat(entryContent, containsString("      <sourceline>2</sourceline>\n" + //
-                    "      <description>Example requirement</description>\n" + //
-                    "      <needscoverage>\n" + //
-                    "        <needsobj>utest</needsobj>\n" + //
-                    "        <needsobj>impl</needsobj>\n" + //
-                    "      </needscoverage>\n" + //
-                    "    </specobject>\n"));
+            assertThat(entryContent, containsString("""
+                              <specobjects doctype="dsn">
+                                <specobject>
+                                  <id>exampleB</id>
+                                  <shortdesc>Tracing Example</shortdesc>
+                                  <status>approved</status>
+                                  <version>1</version>\
+                            """));
+            assertThat(entryContent, containsString("""
+                                  <sourceline>2</sourceline>
+                                  <description>Example requirement</description>
+                                  <needscoverage>
+                                    <needsobj>utest</needsobj>
+                                    <needsobj>impl</needsobj>
+                                  </needscoverage>
+                                </specobject>
+                            """));
         }
     }
 
     private static String readEntry(final ZipFile zip, final String entryName)
-            throws IOException, ZipException
+                    throws IOException
     {
         final ZipArchiveEntry reqirementsEntry = zip.getEntry(entryName);
         try (BufferedReader reader = new BufferedReader(
