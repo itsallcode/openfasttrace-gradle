@@ -201,24 +201,18 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 
 #### Preparations
 
-Add your API key to `~/.gradle/gradle.properties`:
+1. Checkout the `main` branch, create a new branch.
+2. Make sure that property `oftSourceDir` in file `gradle.properties` is commented out, i.e. OpenFastTrace is not used from source.
+3. Update version number in `build.gradle` and `README.md`.
+4. Add changes in new version to `CHANGELOG.md`.
+5. Commit and push changes.
+6. Create a new pull request, have it reviewed and merged to `main`.
 
-```properties
-gradle.publish.key = <key>
-gradle.publish.secret = <secret>
-```
 
-#### Publish release
+#### Perform the Release
 
-1. Make sure that property `oftSourceDir` in file `gradle.properties` is commented out, i.e. OpenFastTrace is not used from source.
-1. Update version number in `build.gradle` and `README.md`.
-1. Add changes in new version to `CHANGELOG.md`.
-1. Commit and push changes.
-1. Run
-
-    ```sh
-    ./gradlew clean publishPlugins --info
-    ```
-
-   Plugin will be published at https://plugins.gradle.org/m2/org/itsallcode/openfasttrace/org.itsallcode.openfasttrace.gradle.plugin/
-1. Create a [release](https://github.com/itsallcode/openfasttrace-gradle/releases) in GitHub
+1. Start the release workflow
+  * Run command `gh workflow run release.yml --repo itsallcode/openfasttrace-gradle --ref main`
+  * or go to [GitHub Actions](https://github.com/itsallcode/openfasttrace-gradle/actions/workflows/release.yml) and start the `release.yml` workflow on branch `main`.
+2. Update title and description of the newly created [GitHub release](https://github.com/itsallcode/openfasttrace-gradle/releases).
+3. Plugin will be published at https://plugins.gradle.org/m2/org/itsallcode/openfasttrace/org.itsallcode.openfasttrace.gradle.plugin/
