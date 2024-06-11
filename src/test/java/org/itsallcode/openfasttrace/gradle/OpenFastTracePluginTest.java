@@ -34,7 +34,7 @@ class OpenFastTracePluginTest
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testTracingTaskAddedToProject {0}")
     @EnumSource
     void testTracingTaskAddedToProject(final GradleTestConfig config)
     {
@@ -43,7 +43,7 @@ class OpenFastTracePluginTest
                 "traceRequirements - Trace requirements and generate tracing report"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testTraceExampleProjectWithDefaultConfig {0}")
     @EnumSource
     void testTraceExampleProjectWithDefaultConfig(final GradleTestConfig config) throws IOException
     {
@@ -54,7 +54,7 @@ class OpenFastTracePluginTest
                 "ok - 0 total");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testCollectExampleProjectWithCustomConfig {0}")
     @EnumSource
     void testCollectExampleProjectWithCustomConfig(final GradleTestConfig config) throws IOException
     {
@@ -107,7 +107,7 @@ class OpenFastTracePluginTest
                         "</specdocument>");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testCollectIsUpToDateWhenAlreadyRunBefore {0}")
     @EnumSource
     void testCollectIsUpToDateWhenAlreadyRunBefore(final GradleTestConfig config)
     {
@@ -118,7 +118,7 @@ class OpenFastTracePluginTest
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":collectRequirements").getOutcome());
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testHtmlReportConfig {0}")
     @EnumSource
     void testHtmlReportConfig(final GradleTestConfig config) throws IOException
     {
@@ -131,7 +131,7 @@ class OpenFastTracePluginTest
                 "<details open>");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testTraceTaskUpToDateWhenAlreadyRun {0}")
     @EnumSource
     void testTraceTaskUpToDateWhenAlreadyRun(final GradleTestConfig config)
     {
@@ -142,7 +142,7 @@ class OpenFastTracePluginTest
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfig {0}")
     @EnumSource
     void testTraceExampleProjectWithCustomConfig(final GradleTestConfig config) throws IOException
     {
@@ -154,7 +154,7 @@ class OpenFastTracePluginTest
                 "not ok - 2 total, 1 defect");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testTraceMultiProject {0}")
     @EnumSource
     void testTraceMultiProject(final GradleTestConfig config) throws IOException
     {
@@ -164,7 +164,7 @@ class OpenFastTracePluginTest
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testTraceDependencyProject {0}")
     @EnumSource
     void testTraceDependencyProject(final GradleTestConfig config) throws IOException
     {
@@ -180,7 +180,7 @@ class OpenFastTracePluginTest
                 "not ok - 2 total, 1 defect");
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "testPublishToMavenRepo {0}")
     @EnumSource
     void testPublishToMavenRepo(final GradleTestConfig config) throws IOException
     {
