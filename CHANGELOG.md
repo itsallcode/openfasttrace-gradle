@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.0] - 2024-06-09
+## [2.0.0] - 2024-06-11
 
 - [Issue #41](https://github.com/itsallcode/openfasttrace-gradle/issues/41)
   - Upgrade to [OpenFastTrace 3.8.0](https://github.com/itsallcode/openfasttrace/releases/tag/3.8.0)
