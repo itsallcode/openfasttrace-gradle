@@ -159,7 +159,7 @@ git clone https://github.com/itsallcode/openfasttrace-gradle-gradle.git
 # Test report: build/reports/tests/index.html
 ```
 
-### Use `openfasttrace` from source
+### Use `openfasttrace` from Source
 
 To use `openfasttrace` from source during development:
 
@@ -169,15 +169,6 @@ To use `openfasttrace` from source during development:
     ```properties
     oftSourceDir = ../openfasttrace
     ```
-
-### Using eclipse
-
-Import into eclipse using [buildship](https://projects.eclipse.org/projects/tools.buildship) plugin:
-
-1. Select File > Import... > Gradle > Gradle Project
-1. Click "Next"
-1. Select Project root directory
-1. Click "Finish"
 
 ### Check if dependencies are up-to-date
 
@@ -202,12 +193,10 @@ Import into eclipse using [buildship](https://projects.eclipse.org/projects/tool
 #### Preparations
 
 1. Checkout the `main` branch, create a new branch.
-2. Make sure that property `oftSourceDir` in file `gradle.properties` is commented out, i.e. OpenFastTrace is not used from source.
-3. Update version number in `build.gradle` and `README.md`.
-4. Add changes in new version to `CHANGELOG.md`.
-5. Commit and push changes.
-6. Create a new pull request, have it reviewed and merged to `main`.
-
+2. Update version number in `build.gradle` and `README.md`.
+3. Add changes in new version to `CHANGELOG.md`.
+4. Commit and push changes.
+5. Create a new pull request, have it reviewed and merged to `main`.
 
 #### Perform the Release
 
