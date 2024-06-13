@@ -40,14 +40,14 @@ jobs:
       - name: Build
         run: ./gradlew build --warning-mode all
 
-      - name: Configure credentials for plugins.gradle.org
-        run: echo "$GRADLE_PLUGINS_CREDENTIALS" >> $HOME/.gradle/gradle.properties
-        env:
-          GRADLE_PLUGINS_CREDENTIALS: ${{ secrets.GRADLE_PLUGINS_CREDENTIALS }}
-
       - name: Publish to plugins.gradle.org
         if: ${{ !inputs.skip-deploy-gradle-plugin }}
-        run: ./gradlew publishPlugins --warning-mode all --info
+        run: ./gradlew publishPlugins --warning-mode all
+        env:
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
 
       - name: Create GitHub Release
         run: ./.github/workflows/github_release.sh
