@@ -119,6 +119,13 @@ gradlePlugin {
     }
 }
 
+signing {
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+}
+
 test {
     useJUnitPlatform()
     testLogging {
