@@ -37,6 +37,9 @@ jobs:
           java-version: 17
           cache: "gradle"
 
+      - name: Build
+        run: ./gradlew build --warning-mode all
+
       - name: Publish to plugins.gradle.org
         if: ${{ !inputs.skip-deploy-gradle-plugin }}
         run: ./gradlew publishPlugins --warning-mode all --info --validate-only
