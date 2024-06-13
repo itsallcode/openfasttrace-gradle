@@ -49,11 +49,11 @@ jobs:
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
     - name: Build with Java ${{ matrix.java }}
-      run: ./gradlew build --warning-mode all -PjavaVersion=${{ matrix.java }}
+      run: ./gradlew build --warning-mode all --info -PjavaVersion=${{ matrix.java }}
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
-      run: ./gradlew sonar --warning-mode all -Dsonar.token=$SONAR_TOKEN
+      run: ./gradlew sonar --warning-mode all --info -Dsonar.token=$SONAR_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
