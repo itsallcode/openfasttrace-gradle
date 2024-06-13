@@ -57,11 +57,6 @@ dependencies {
         implementation "org.itsallcode.openfasttrace:openfasttrace-exporter-specobject:$oftVersion"
         runtimeOnly "org.itsallcode.openfasttrace:openfasttrace:$oftVersion"
     }
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-    testImplementation "org.hamcrest:hamcrest-core:2.2"
-    testImplementation "com.jparams:to-string-verifier:1.4.8"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
 
 def getJavaVersion = {
@@ -125,12 +120,17 @@ signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        showStandardStreams = logger.isEnabled(LogLevel.INFO)
+testing {
+    suites {
+        test {
+            useJUnitJupiter(junitVersion)
+            dependencies {
+                implementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+                implementation "org.hamcrest:hamcrest-core:2.2"
+                implementation "com.jparams:to-string-verifier:1.4.8"
+            }
+        }
     }
-    finalizedBy jacocoTestReport
 }
 
 test.onlyIf { rootProject.name == 'openfasttrace-gradle' }
@@ -140,6 +140,10 @@ jacocoTestReport {
     reports {
         xml.required = true
     }
+}
+
+test {
+    finalizedBy jacocoTestReport
 }
 
 project.tasks["sonar"].dependsOn jacocoTestReport
