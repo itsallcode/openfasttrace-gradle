@@ -4,6 +4,7 @@ plugins {
 }
 
 requirementTracing {
+  failBuild = findProperty('failBuild') == 'true'
   inputDirectories = files('custom-dir')
   reportFile = file('build/custom-report.txt')
   reportFormat = 'plain'

@@ -4,6 +4,7 @@ plugins {
 }
 
 requirementTracing {
+  failBuild = false
   inputDirectories = files('custom-dir')
   reportFormat = 'html'
   detailsSectionDisplay = 'EXPAND'

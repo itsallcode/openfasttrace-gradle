@@ -77,6 +77,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.setDescription("Trace requirements and generate tracing report");
         task.dependsOn(collectTask);
         final TracingConfig config = getConfig(rootProject);
+        task.getFailBuild().set(config.getFailBuild());
         task.getRequirementsFile().set(collectTask.get().getOutputFile());
         if (config.getReportFile().isPresent())
         {
