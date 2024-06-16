@@ -25,6 +25,7 @@ public class TracingConfig
     private final ListProperty<String> filteredArtifactTypes;
     private final Property<Boolean> filterAcceptsItemsWithoutTag;
     private final Property<DetailsSectionDisplay> detailsSectionDisplay;
+    private final Property<Boolean> failBuild;
 
     public TracingConfig(final Project project)
     {
@@ -41,6 +42,8 @@ public class TracingConfig
         this.filterAcceptsItemsWithoutTag.set(true);
         this.detailsSectionDisplay = project.getObjects().property(DetailsSectionDisplay.class);
         this.detailsSectionDisplay.set(DetailsSectionDisplay.COLLAPSE);
+        this.failBuild = project.getObjects().property(Boolean.class);
+        this.failBuild.set(true);
     }
 
     public Property<ReportVerbosity> getReportVerbosity()
@@ -143,11 +146,21 @@ public class TracingConfig
         return ((ExtensionAware) this).getExtensions().getByType(TagPathConfiguration.class);
     }
 
+    public Property<Boolean> getFailBuild()
+    {
+        return failBuild;
+    }
+
+    public void setFailBuild(final boolean failBuild)
+    {
+        this.failBuild.set(failBuild);
+    }
+
     @Override
     public String toString()
     {
         return "TracingConfig [reportVerbosity=" + reportVerbosity + ", inputDirectories="
                 + inputDirectories + ", reportFile=" + reportFile + ", pathConfig="
-                + getTagPathConfig() + "]";
+                + getTagPathConfig() + ", failBuild=" + failBuild + "]";
     }
 }

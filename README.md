@@ -19,7 +19,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "2.0.0"
+      id "org.itsallcode.openfasttrace" version "3.0.0"
     }
     ```
 
@@ -36,6 +36,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ```gradle
 requirementTracing {
+  failBuild = true
   inputDirectories = files('custom-dir')
   reportFile = file('build/custom-report.txt')
   reportFormat = 'plain'
@@ -46,6 +47,7 @@ requirementTracing {
 
 You can configure the following properties:
 
+* `failBuild`: Fail build when tracing finds any issues (default: `true`)
 * `inputDirectories`: Files or directories to import
 * `reportFile`: Path to the report file
 * `reportFormat`: Format of the report
@@ -63,7 +65,7 @@ You can configure the following properties:
   * `collapse` - hide details (default)
   * `expand` - show details
 
-### Configuring the short tag importer
+### Configuring the Short Tag Importer
 
 The short tag importer allows omitting artifact type and the covered artifact type. Optionally you can add a prefix to the item name, e.g. a common module name.
 
@@ -93,7 +95,7 @@ As a benefit the tags are much shorter and contain only the name and revision:
 
 See [multi-project/sub1](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects/multi-project/sub1) for a basic example.
 
-### Sharing requirements
+### Sharing Requirements
 
 In bigger setups you might want to share requirements between multiple projects.
 
@@ -104,7 +106,7 @@ Example: The Software Architecture Design project `swad` contains overall requir
 1. Both components publish their requirements as artefacts `component-a-req` and `component-b-req` to the shared Maven repository.
 1. A regular job check that all requirements from `swad` are covered by tracing `swad-req`, `component-a-req` and `component-b-req`.
 
-#### Publishing requirements to a Maven repository
+#### Publishing Requirements to a Maven Repository
 
 If you want to publish requirements to a Maven repository you can use the following configuration in your `build.gradle`:
 
@@ -134,7 +136,7 @@ publishing {
 
 See [publish-config](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects/publish-config) for a basic example.
 
-#### Importing external requirements
+#### Importing External Requirements
 
 You can import requirements from another project using the `importedRequirements` configuration. The requirements must be published to a repository as a zip file and can be referenced using the usual gradle dependency syntax:
 
@@ -154,7 +156,8 @@ See [dependency-config](https://github.com/itsallcode/openfasttrace-gradle/tree/
 ## Development
 
 ```sh
-git clone https://github.com/itsallcode/openfasttrace-gradle-gradle.git
+git clone https://github.com/itsallcode/openfasttrace-gradle.git
+cd openfasttrace-gradle
 ./gradlew check
 # Test report: build/reports/tests/index.html
 ```

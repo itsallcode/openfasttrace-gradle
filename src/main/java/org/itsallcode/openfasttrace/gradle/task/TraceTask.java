@@ -37,6 +37,7 @@ public class TraceTask extends DefaultTask
             .setProperty(String.class);
     private final Property<Boolean> filterAcceptsItemsWithoutTag = getProject().getObjects()
             .property(Boolean.class);
+    private final Property<Boolean> failBuild = getProject().getObjects().property(Boolean.class);
 
     @InputFile
     public RegularFileProperty getRequirementsFile()
@@ -92,6 +93,17 @@ public class TraceTask extends DefaultTask
         return detailsSectionDisplay;
     }
 
+    @Input
+    public Property<Boolean> getFailBuild()
+    {
+        return failBuild;
+    }
+
+    private boolean shouldFailBuild()
+    {
+        return failBuild.getOrElse(true);
+    }
+
     @TaskAction
     public void trace()
     {
@@ -103,10 +115,15 @@ public class TraceTask extends DefaultTask
                 importSettings.getInputs());
         final List<LinkedSpecificationItem> linkedItems = oft.link(importedItems);
         final Trace trace = oft.trace(linkedItems);
-        final Path report = getOutputFileInternal().toPath();
+        final Path reportPath = getOutputFileInternal().toPath();
         getLogger().info("Tracing result: {} total items, {} defects. Writing report to {}",
-                trace.count(), trace.countDefects(), report);
-        oft.reportToPath(trace, report, getReportSettings());
+                trace.count(), trace.countDefects(), reportPath);
+        oft.reportToPath(trace, reportPath, getReportSettings());
+        if (trace.countDefects() > 0 && shouldFailBuild())
+        {
+            throw new IllegalStateException("Requirement tracing found " + trace.countDefects()
+                    + " defects. See report at " + reportPath + " for details.");
+        }
     }
 
     private ReportSettings getReportSettings()

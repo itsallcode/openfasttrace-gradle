@@ -3,9 +3,9 @@ package org.itsallcode.openfasttrace.gradle;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -154,6 +154,40 @@ class OpenFastTracePluginTest
                 "not ok - 2 total, 1 defect");
     }
 
+    @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
+    @EnumSource
+    void testTraceExampleProjectWithCustomConfigFailBuild(final GradleTestConfig config)
+            throws IOException
+    {
+        final BuildResult buildResult = runBuildExpectFailure(config, PROJECT_CUSTOM_CONFIG_DIR,
+                "clean", "traceRequirements", "-PfailBuild=true");
+        assertEquals(TaskOutcome.FAILED, buildResult.task(":traceRequirements").getOutcome());
+        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
+                "not ok - 2 total, 1 defect");
+    }
+
+    @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
+    @EnumSource
+    void testTraceExampleProjectWithCustomConfigFailBuildErrorMessage(final GradleTestConfig config)
+    {
+        try
+        {
+            runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean", "traceRequirements",
+                    "-PfailBuild=true");
+        }
+        catch (final UnexpectedBuildFailure e)
+        {
+            assertAll(
+                    () -> assertEquals(TaskOutcome.FAILED,
+                            e.getBuildResult().task(":traceRequirements").getOutcome()),
+                    () -> assertThat(e.getMessage(),
+                            startsWith("Unexpected build execution failure")),
+                    () -> assertThat(e.getMessage(),
+                            containsString("Requirement tracing found 1 defects. See report at")));
+        }
+    }
+
     @ParameterizedTest(name = "testTraceMultiProject {0}")
     @EnumSource
     void testTraceMultiProject(final GradleTestConfig config) throws IOException
@@ -252,8 +286,20 @@ class OpenFastTracePluginTest
         return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
     }
 
+    private static BuildResult runBuildExpectFailure(final GradleTestConfig config,
+            final Path projectDir, final String... arguments)
+    {
+        return createGradleRunner(config, projectDir, arguments).buildAndFail();
+    }
+
     private static BuildResult runBuild(final GradleTestConfig config, final Path projectDir,
             final String... arguments)
+    {
+        return createGradleRunner(config, projectDir, arguments).build();
+    }
+
+    private static GradleRunner createGradleRunner(final GradleTestConfig config,
+            final Path projectDir, final String... arguments)
     {
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
@@ -272,7 +318,7 @@ class OpenFastTracePluginTest
         {
             runner.withGradleVersion(config.gradleVersion);
         }
-        return runner.build();
+        return runner;
     }
 
     private static void configureJacoco(final Path projectDir)

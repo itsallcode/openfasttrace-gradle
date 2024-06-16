@@ -10,6 +10,7 @@ repositories {
 }
 
 requirementTracing {
+  failBuild = false
   reportFormat = 'plain'
   reportVerbosity = 'ALL'
   importedRequirements = [':requirements:1.0@zip']
