@@ -19,7 +19,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```gradle
     plugins {
-      id "org.itsallcode.openfasttrace" version "2.0.0"
+      id "org.itsallcode.openfasttrace" version "3.0.0"
     }
     ```
 
