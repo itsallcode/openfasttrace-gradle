@@ -6,7 +6,7 @@ public enum GradleTestConfig
     /**
      * We support the latest Gradle version and the previous two.
      */
-    EIGHT_SIX("8.6"), EIGHT_SEVEN("8.7"), EIGHT_EIGHT("8.8");
+    EIGHT_EIGHT("8.8"), EIGHT_NINE("8.9"), EIGHT_TEN("8.10");
 
     public final String gradleVersion;
 

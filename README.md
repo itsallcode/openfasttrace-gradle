@@ -17,9 +17,9 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 1. Preconditions: Java 17 and Gradle 8.6
 1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
 
-    ```gradle
+    ```groovy
     plugins {
-      id "org.itsallcode.openfasttrace" version "3.0.0"
+      id "org.itsallcode.openfasttrace" version "3.0.1"
     }
     ```
 
@@ -34,7 +34,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ### General Configuration
 
-```gradle
+```groovy
 requirementTracing {
   failBuild = true
   inputDirectories = files('custom-dir')
@@ -42,6 +42,7 @@ requirementTracing {
   reportFormat = 'plain'
   reportVerbosity = 'failure_details'
   detailsSectionDisplay = 'collapse'
+  filteredArtifactTypes = ["req", "dsn"]
 }
 ```
 
@@ -64,12 +65,13 @@ You can configure the following properties:
 * `detailsSectionDisplay`: Initial display status of the details section in the HTML report
   * `collapse` - hide details (default)
   * `expand` - show details
+* `filteredArtifactTypes`: Use only the listed artifact types during tracing
 
 ### Configuring the Short Tag Importer
 
 The short tag importer allows omitting artifact type and the covered artifact type. Optionally you can add a prefix to the item name, e.g. a common module name.
 
-```gradle
+```groovy
 requirementTracing {
   tags {
     tag {
@@ -110,7 +112,7 @@ Example: The Software Architecture Design project `swad` contains overall requir
 
 If you want to publish requirements to a Maven repository you can use the following configuration in your `build.gradle`:
 
-```gradle
+```groovy
 plugins {
   id 'org.itsallcode.openfasttrace'
   id 'maven-publish'
@@ -140,7 +142,7 @@ See [publish-config](https://github.com/itsallcode/openfasttrace-gradle/tree/mai
 
 You can import requirements from another project using the `importedRequirements` configuration. The requirements must be published to a repository as a zip file and can be referenced using the usual gradle dependency syntax:
 
-```gradle
+```groovy
 repositories {
   maven {
     url "http://repo.example.com/maven2"
