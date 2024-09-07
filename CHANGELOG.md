@@ -6,11 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2024-09-07
+
+- [PR #48](https://github.com/itsallcode/openfasttrace-gradle/pull/48)
+  - Fixed option `filteredArtifactTypes`
+  - Upgrade dependencies
+
 ## [3.0.0] - 2024-06-16
 
 - [Issue #26](https://github.com/itsallcode/openfasttrace-gradle/issues/26)
   - Added option `failBuild` that lets the build fail when it finds defects
-  - **Breaking Change:** `failBuild` is set to `true` by default. To keep the previous behaviour use `failBuild = false` in your build.
+  - **Breaking Change:** `failBuild` is set to `true` by default. To keep the previous behavior use `failBuild = false` in your build.
 
 ## [2.0.0] - 2024-06-13
 
