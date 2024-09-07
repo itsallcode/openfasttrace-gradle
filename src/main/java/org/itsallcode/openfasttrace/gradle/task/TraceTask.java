@@ -119,15 +119,26 @@ public class TraceTask extends DefaultTask
         getLogger().info("Tracing result: {} total items, {} defects. Writing report to {}",
                 trace.count(), trace.countDefects(), reportPath);
         oft.reportToPath(trace, reportPath, getReportSettings());
-        if (trace.countDefects() > 0 && shouldFailBuild())
+        if (trace.countDefects() > 0)
         {
-            throw new IllegalStateException("Requirement tracing found " + trace.countDefects()
-                    + " defects. See report at " + reportPath + " for details.");
+            final String message = "Requirement tracing found " + trace.countDefects()
+                    + " defects. See report at " + reportPath + " for details.";
+            if (shouldFailBuild())
+            {
+                throw new IllegalStateException(message);
+            }
+            getLogger().warn(message);
+        }
+        else
+        {
+            getLogger().info("Requirement tracing completed successfully.");
         }
     }
 
     private ReportSettings getReportSettings()
     {
+        getLogger().info("Report settings: verbosity={}, format={}, detailsSectionDisplay={}",
+                reportVerbosity.get(), reportFormat.get(), detailsSectionDisplay.get());
         return ReportSettings.builder() //
                 .verbosity(reportVerbosity.get()) //
                 .outputFormat(reportFormat.get()) //
@@ -147,13 +158,14 @@ public class TraceTask extends DefaultTask
 
     private FilterSettings getFilterSettings()
     {
-        getLogger().info("Filter: artifactTypes={}, tags={}, acceptItemsWithoutTag={}",
-                filteredArtifactTypes.get(), filteredTags.get(),
-                filterAcceptsItemsWithoutTag.get());
-        return FilterSettings.builder() //
+        final FilterSettings settings = FilterSettings.builder() //
                 .artifactTypes(filteredArtifactTypes.get()) //
                 .tags(filteredTags.get()) //
                 .withoutTags(filterAcceptsItemsWithoutTag.get()).build();
+        getLogger().info("Filter settings: artifactTypes={}, tags={}, acceptItemsWithoutTag={}",
+                settings.getArtifactTypes(), settings.getTags(),
+                settings.isArtifactTypeCriteriaSet());
+        return settings;
     }
 
     private List<Path> getAllImportFiles()

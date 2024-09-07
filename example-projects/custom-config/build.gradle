@@ -3,10 +3,13 @@ plugins {
     id 'org.itsallcode.openfasttrace'
 }
 
+def artifactTypes = findProperty('filteredArtifactTypes')
+artifactTypes = artifactTypes ? artifactTypes.split(',').toList() : null
 requirementTracing {
   failBuild = findProperty('failBuild') == 'true'
   inputDirectories = files('custom-dir')
   reportFile = file('build/custom-report.txt')
   reportFormat = 'plain'
   reportVerbosity = 'ALL'
+  filteredArtifactTypes = artifactTypes
 }

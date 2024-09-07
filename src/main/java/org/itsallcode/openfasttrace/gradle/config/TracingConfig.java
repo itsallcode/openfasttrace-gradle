@@ -6,8 +6,7 @@ import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Property;
+import org.gradle.api.provider.*;
 import org.itsallcode.openfasttrace.api.DetailsSectionDisplay;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 
@@ -21,8 +20,8 @@ public class TracingConfig
     private final ConfigurableFileCollection inputDirectories;
     private final RegularFileProperty reportFile;
     private final ListProperty<Object> importedRequirements;
-    private final ListProperty<String> filteredTags;
-    private final ListProperty<String> filteredArtifactTypes;
+    private final SetProperty<String> filteredTags;
+    private final SetProperty<String> filteredArtifactTypes;
     private final Property<Boolean> filterAcceptsItemsWithoutTag;
     private final Property<DetailsSectionDisplay> detailsSectionDisplay;
     private final Property<Boolean> failBuild;
@@ -36,8 +35,8 @@ public class TracingConfig
         this.reportFormat = project.getObjects().property(String.class);
         this.reportFormat.set(DEFAULT_REPORT_FORMAT);
         this.importedRequirements = project.getObjects().listProperty(Object.class);
-        this.filteredTags = project.getObjects().listProperty(String.class);
-        this.filteredArtifactTypes = project.getObjects().listProperty(String.class);
+        this.filteredTags = project.getObjects().setProperty(String.class);
+        this.filteredArtifactTypes = project.getObjects().setProperty(String.class);
         this.filterAcceptsItemsWithoutTag = project.getObjects().property(Boolean.class);
         this.filterAcceptsItemsWithoutTag.set(true);
         this.detailsSectionDisplay = project.getObjects().property(DetailsSectionDisplay.class);
@@ -71,12 +70,12 @@ public class TracingConfig
         return importedRequirements;
     }
 
-    public ListProperty<String> getFilteredTags()
+    public SetProperty<String> getFilteredTags()
     {
         return filteredTags;
     }
 
-    public ListProperty<String> getFilteredArtifactTypes()
+    public SetProperty<String> getFilteredArtifactTypes()
     {
         return filteredArtifactTypes;
     }
@@ -161,6 +160,7 @@ public class TracingConfig
     {
         return "TracingConfig [reportVerbosity=" + reportVerbosity + ", inputDirectories="
                 + inputDirectories + ", reportFile=" + reportFile + ", pathConfig="
-                + getTagPathConfig() + ", failBuild=" + failBuild + "]";
+                + getTagPathConfig() + ", failBuild=" + failBuild + ", filteredArtifactTypes="
+                + filteredArtifactTypes + "]";
     }
 }

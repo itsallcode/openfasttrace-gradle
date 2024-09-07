@@ -64,44 +64,44 @@ class OpenFastTracePluginTest
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
                         "<specdocument>", //
-                        """
-                                          <specobjects doctype="impl">
-                                            <specobject>
-                                              <id>exampleB\
-                                        """, """
-                                        </id>
-                                              <status>approved</status>
-                                              <version>0</version>
-                                        """, //
+                """
+                          <specobjects doctype="impl">
+                            <specobject>
+                              <id>exampleB\
+                        """, """
+                        </id>
+                              <status>approved</status>
+                              <version>0</version>
+                        """, //
 
-                        """
-                                              <sourceline>1</sourceline>
-                                              <providescoverage>
-                                                <provcov>
-                                                  <linksto>dsn:exampleB</linksto>
-                                                  <dstversion>1</dstversion>
-                                                </provcov>
-                                              </providescoverage>
-                                        """, //
+                """
+                              <sourceline>1</sourceline>
+                              <providescoverage>
+                                <provcov>
+                                  <linksto>dsn:exampleB</linksto>
+                                  <dstversion>1</dstversion>
+                                </provcov>
+                              </providescoverage>
+                        """, //
 
-                        """
-                                          <specobjects doctype="dsn">
-                                            <specobject>
-                                              <id>exampleB</id>
-                                              <shortdesc>Tracing Example</shortdesc>
-                                              <status>approved</status>
-                                              <version>1</version>
-                                        """, //
+                """
+                          <specobjects doctype="dsn">
+                            <specobject>
+                              <id>exampleB</id>
+                              <shortdesc>Tracing Example</shortdesc>
+                              <status>approved</status>
+                              <version>1</version>
+                        """, //
 
-                        """
-                                              <sourceline>2</sourceline>
-                                              <description>Example requirement</description>
-                                              <needscoverage>
-                                                <needsobj>utest</needsobj>
-                                                <needsobj>impl</needsobj>
-                                              </needscoverage>
-                                            </specobject>
-                                        """, //
+                """
+                              <sourceline>2</sourceline>
+                              <description>Example requirement</description>
+                              <needscoverage>
+                                <needsobj>utest</needsobj>
+                                <needsobj>impl</needsobj>
+                              </needscoverage>
+                            </specobject>
+                        """, //
 
                 "  </specobjects>\n" + //
                         "</specdocument>");
@@ -165,6 +165,17 @@ class OpenFastTracePluginTest
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
                 "not ok - 2 total, 1 defect");
+    }
+
+    @ParameterizedTest(name = "filteredArtifactTypes {0}")
+    @EnumSource
+    void filteredArtifactTypes(final GradleTestConfig config) throws IOException
+    {
+        final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+                "should be ok");
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
@@ -231,27 +242,26 @@ class OpenFastTracePluginTest
             assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
                     "<specdocument>\n"));
             assertThat(entryContent, containsString("""
-                              <specobjects doctype="dsn">
-                                <specobject>
-                                  <id>exampleB</id>
-                                  <shortdesc>Tracing Example</shortdesc>
-                                  <status>approved</status>
-                                  <version>1</version>\
-                            """));
+                      <specobjects doctype="dsn">
+                        <specobject>
+                          <id>exampleB</id>
+                          <shortdesc>Tracing Example</shortdesc>
+                          <status>approved</status>
+                          <version>1</version>\
+                    """));
             assertThat(entryContent, containsString("""
-                                  <sourceline>2</sourceline>
-                                  <description>Example requirement</description>
-                                  <needscoverage>
-                                    <needsobj>utest</needsobj>
-                                    <needsobj>impl</needsobj>
-                                  </needscoverage>
-                                </specobject>
-                            """));
+                          <sourceline>2</sourceline>
+                          <description>Example requirement</description>
+                          <needscoverage>
+                            <needsobj>utest</needsobj>
+                            <needsobj>impl</needsobj>
+                          </needscoverage>
+                        </specobject>
+                    """));
         }
     }
 
-    private static String readEntry(final ZipFile zip, final String entryName)
-                    throws IOException
+    private static String readEntry(final ZipFile zip, final String entryName) throws IOException
     {
         final ZipArchiveEntry reqirementsEntry = zip.getEntry(entryName);
         try (BufferedReader reader = new BufferedReader(
