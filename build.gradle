@@ -59,13 +59,9 @@ dependencies {
     }
 }
 
-def getJavaVersion = {
-  return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
-}
-
 java {
     toolchain {
-        def javaVersion = getJavaVersion()
+        def javaVersion = project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
         languageVersion = JavaLanguageVersion.of(javaVersion)
     }
     modularity.inferModulePath = false
