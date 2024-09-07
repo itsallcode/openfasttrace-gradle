@@ -1,5 +1,6 @@
 package org.itsallcode.openfasttrace.gradle.task;
 
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -70,6 +71,7 @@ public class TraceTask extends DefaultTask
     }
 
     @Input
+    @Optional
     public SetProperty<String> getFilteredArtifactTypes()
     {
         return filteredArtifactTypes;
@@ -159,7 +161,7 @@ public class TraceTask extends DefaultTask
     private FilterSettings getFilterSettings()
     {
         final FilterSettings settings = FilterSettings.builder() //
-                .artifactTypes(filteredArtifactTypes.get()) //
+                .artifactTypes(filteredArtifactTypes.getOrElse(emptySet())) //
                 .tags(filteredTags.get()) //
                 .withoutTags(filterAcceptsItemsWithoutTag.get()).build();
         getLogger().info("Filter settings: artifactTypes={}, tags={}, acceptItemsWithoutTag={}",

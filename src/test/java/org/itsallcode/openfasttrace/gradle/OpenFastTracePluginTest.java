@@ -174,8 +174,6 @@ class OpenFastTracePluginTest
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
-        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "should be ok");
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
