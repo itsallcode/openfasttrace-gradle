@@ -1,0 +1,31 @@
+plugins {
+    id "base"
+    id 'org.itsallcode.openfasttrace' version '3.2.0'
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+requirementTracing {
+    failBuild = false
+    if (project.hasProperty('oftSourceDir')) {
+        oftSourceDir = file(project.oftSourceDir)
+        if (!oftSourceDir.exists()) {
+            logger.warn "OFT source directory $oftSourceDir does not exist"
+        }
+        inputDirectories = files(
+                "$oftSourceDir/doc/spec",
+                "$oftSourceDir/api/src/main",
+                "$oftSourceDir/core/src/main",
+                "$oftSourceDir/exporter/**/src/main",
+                "$oftSourceDir/importer/**/src/main",
+                "'$oftSourceDir/reporter/**/src/main"
+        )
+    } else {
+        inputDirectories = files('custom-dir')
+    }
+    reportFormat = 'ux'
+}

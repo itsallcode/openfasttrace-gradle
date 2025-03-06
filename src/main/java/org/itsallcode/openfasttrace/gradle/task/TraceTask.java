@@ -4,9 +4,15 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
@@ -25,6 +31,7 @@ public class TraceTask extends DefaultTask
 {
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
+    private final Property<String> reportFile = getProject().getObjects().property(String.class);
     private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
     private final Property<String> reportFormat = getProject().getObjects().property(String.class);
@@ -39,6 +46,7 @@ public class TraceTask extends DefaultTask
     private final Property<Boolean> filterAcceptsItemsWithoutTag = getProject().getObjects()
             .property(Boolean.class);
     private final Property<Boolean> failBuild = getProject().getObjects().property(Boolean.class);
+    private final SetProperty<String> additionalResources = getProject().getObjects().setProperty(String.class);
 
     @InputFile
     public RegularFileProperty getRequirementsFile()
@@ -50,6 +58,12 @@ public class TraceTask extends DefaultTask
     public RegularFileProperty getOutputFile()
     {
         return outputFile;
+    }
+
+    @Input
+    @Optional
+    public Property<String> getReportFile() {
+        return reportFile;
     }
 
     @Input
@@ -101,15 +115,35 @@ public class TraceTask extends DefaultTask
         return failBuild;
     }
 
+    @Input
+    public SetProperty<String> getAdditionalResources()
+    {
+        return additionalResources;
+    }
+
     private boolean shouldFailBuild()
     {
         return failBuild.getOrElse(true);
+    }
+
+    private String reportFile()
+    {
+        return reportFile.getOrElse(getOutputFileInternal().toPath().toString());
     }
 
     @TaskAction
     public void trace()
     {
         createReportOutputDir();
+
+        final Path reportPath = getOutputFileInternal().toPath();
+        for( final String resourceName : additionalResources.get() ) {
+            final URL resourceURL = this.getClass().getClassLoader().getResource(resourceName);
+            if( resourceURL == null )
+                throw new IllegalStateException("Resource " + resourceName + " does not exist");
+            extractZipResource(resourceURL, reportPath.getParent().getParent().getParent().toFile());
+        }
+
         final Oft oft = new OftRunner();
         final ImportSettings importSettings = getImportSettings();
         final List<SpecificationItem> importedItems = oft.importItems(importSettings);
@@ -117,7 +151,6 @@ public class TraceTask extends DefaultTask
                 importSettings.getInputs());
         final List<LinkedSpecificationItem> linkedItems = oft.link(importedItems);
         final Trace trace = oft.trace(linkedItems);
-        final Path reportPath = getOutputFileInternal().toPath();
         getLogger().info("Tracing result: {} total items, {} defects. Writing report to {}",
                 trace.count(), trace.countDefects(), reportPath);
         oft.reportToPath(trace, reportPath, getReportSettings());
@@ -194,5 +227,37 @@ public class TraceTask extends DefaultTask
     private File getOutputFileInternal()
     {
         return outputFile.getAsFile().get();
+    }
+
+    private void extractZipResource(final URL resource, final File outputDir) {
+        getLogger().info("Extracting additional resource {}", resource.getPath());
+        try(final ZipInputStream zipStream = new ZipInputStream(resource.openStream())) {
+            if( !outputDir.isDirectory() && !outputDir.mkdirs() ) {
+                throw new IllegalStateException("Error creating directory " + outputDir);
+            }
+            while( true ) {
+                final ZipEntry entry = zipStream.getNextEntry();
+                if( entry == null )
+                    break;
+                File outputFile = new File(outputDir, entry.getName());
+
+                if( entry.isDirectory() ) {
+                    if( !outputFile.isDirectory() && !outputFile.mkdirs() ) {
+                        throw new IllegalStateException("Error creating directory " + outputFile);
+                    }
+                }
+                else {
+                    final File path = outputFile.getParentFile();
+                    if( !path.isDirectory() && !path.mkdirs() ) {
+                        throw new IllegalStateException("Error creating directory " + path);
+                    }
+                    Files.copy(zipStream, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                zipStream.closeEntry();
+            }
+        }
+        catch (IOException e) {
+            throw new IllegalStateException("Failed to extract resource " + resource.getPath(), e);
+        }
     }
 }
