@@ -1,25 +1,33 @@
 package org.itsallcode.openfasttrace.gradle;
 
+import org.gradle.api.logging.Logging;
+import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipFile;
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.testkit.runner.TaskOutcome;
+import org.gradle.testkit.runner.UnexpectedBuildFailure;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.slf4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.gradle.api.logging.Logging;
-import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipFile;
-import org.gradle.testkit.runner.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.slf4j.Logger;
 
 class OpenFastTracePluginTest
 {
@@ -33,6 +41,7 @@ class OpenFastTracePluginTest
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
+    private static final Path UX_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("ux-report");
 
     @ParameterizedTest(name = "testTracingTaskAddedToProject {0}")
     @EnumSource
@@ -140,6 +149,15 @@ class OpenFastTracePluginTest
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
         buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
+    }
+
+    @ParameterizedTest(name = "testUxReporter {0}")
+    @EnumSource
+    void testUxReporter(final GradleTestConfig config)
+    {
+        BuildResult buildResult = runBuild(config , UX_REPORT_CONFIG_DIR, "clean",
+                "traceRequirements");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfig {0}")
@@ -318,10 +336,10 @@ class OpenFastTracePluginTest
             allArgs.addAll(asList("--warning-mode", "all"));
         }
         final GradleRunner runner = GradleRunner.create() //
-                .withProjectDir(projectDir.toFile()) //
-                .withPluginClasspath() //
-                .withArguments(allArgs) //
-                .forwardOutput();
+                                                .withProjectDir(projectDir.toFile()) //
+                                                .withPluginClasspath() //
+                                                .withArguments(allArgs) //
+                                                .forwardOutput();
         if (config.gradleVersion != null)
         {
             runner.withGradleVersion(config.gradleVersion);
