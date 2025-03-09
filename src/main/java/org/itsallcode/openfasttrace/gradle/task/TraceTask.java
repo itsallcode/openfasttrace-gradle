@@ -126,8 +126,7 @@ public class TraceTask extends DefaultTask
         return failBuild.getOrElse(true);
     }
 
-    private String reportFile()
-    {
+    private String reportFile() {
         return reportFile.getOrElse(getOutputFileInternal().toPath().toString());
     }
 
@@ -157,7 +156,7 @@ public class TraceTask extends DefaultTask
         if (trace.countDefects() > 0)
         {
             final String message = "Requirement tracing found " + trace.countDefects()
-                    + " defects. See report at " + reportPath + " for details.";
+                    + " defects. See report at " + reportFile() + " for details.";
             if (shouldFailBuild())
             {
                 throw new IllegalStateException(message);

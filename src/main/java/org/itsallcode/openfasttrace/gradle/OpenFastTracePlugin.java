@@ -33,6 +33,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         LOG.info("Initializing OpenFastTrack plugin for project '{}'", rootProject);
         rootProject.allprojects(OpenFastTracePlugin::createConfigDsl);
+        System.setProperty( "oftProjectName", rootProject.getName() );
         createTasks(rootProject);
     }
 

@@ -1,6 +1,8 @@
 pluginManagement {
     repositories {
         mavenLocal()
+        mavenCentral()
         gradlePluginPortal()
     }
 }
+rootProject.name = 'UX Reporter Example'

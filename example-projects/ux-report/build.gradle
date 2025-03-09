@@ -4,11 +4,6 @@ plugins {
 }
 
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
 requirementTracing {
     failBuild = false
     if (project.hasProperty('oftSourceDir')) {
@@ -16,14 +11,16 @@ requirementTracing {
         if (!oftSourceDir.exists()) {
             logger.warn "OFT source directory $oftSourceDir does not exist"
         }
-        inputDirectories = files(
-                "$oftSourceDir/doc/spec",
-                "$oftSourceDir/api/src/main",
-                "$oftSourceDir/core/src/main",
-                "$oftSourceDir/exporter/**/src/main",
-                "$oftSourceDir/importer/**/src/main",
-                "'$oftSourceDir/reporter/**/src/main"
-        )
+        inputDirectories = files(project.fileTree(dir:oftSourceDir).matching {
+            include "doc/spec/**"
+            include "api/src/main/**"
+            include "api/src/test/**"
+            include "core/src/main/**"
+            include "core/src/test/java/**"
+            include "exporter/**/src/main/**"
+            include "importer/**/src/main/**"
+            include "reporter/**/src/main/**"
+        })
     } else {
         inputDirectories = files('custom-dir')
     }
