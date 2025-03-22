@@ -111,7 +111,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
             final URL resource = task.getClass().getClassLoader().getResource( resourceName );
             if( "ux".equals( reporterFormat ) )
             {
-                task.getReportFile().set( "build/reports/openfasttrace/html/openfasttrace.html" );
+                task.getReportFile().set( "build/reports/openfasttrace/openfasttrace.html" );
             }
             if( resource != null )
                 task.getAdditionalResources().add( resourceName );
