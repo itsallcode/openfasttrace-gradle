@@ -1,12 +1,5 @@
 package org.itsallcode.openfasttrace.gradle;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-
-import java.io.File;
-import java.util.*;
-import java.util.stream.Stream;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -20,6 +13,16 @@ import org.itsallcode.openfasttrace.gradle.task.TraceTask;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 import org.slf4j.Logger;
 
+import java.io.File;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+
 public class OpenFastTracePlugin implements Plugin<Project>
 {
     private static final Logger LOG = Logging.getLogger(OpenFastTracePlugin.class);
@@ -30,6 +33,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         LOG.info("Initializing OpenFastTrack plugin for project '{}'", rootProject);
         rootProject.allprojects(OpenFastTracePlugin::createConfigDsl);
+        System.setProperty( "oftProjectName", rootProject.getName() );
         createTasks(rootProject);
     }
 
@@ -79,17 +83,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         final TracingConfig config = getConfig(rootProject);
         task.getFailBuild().set(config.getFailBuild());
         task.getRequirementsFile().set(collectTask.get().getOutputFile());
-        if (config.getReportFile().isPresent())
-        {
-            task.getOutputFile().set(config.getReportFile());
-        }
-        else
-        {
-            final String extension = "html".equals(config.getReportFormat().get()) ? "html" : "txt";
-            task.getOutputFile()
-                    .set(new File(rootProject.getLayout().getBuildDirectory().getAsFile().get(),
-                            "reports/tracing." + extension));
-        }
+        configureOutputs(rootProject, task, config);
         task.getReportVerbosity().set(config.getReportVerbosity());
         task.getReportFormat().set(config.getReportFormat());
         task.getImportedRequirements().set(getImportedRequirements(rootProject.getAllprojects()));
@@ -97,6 +91,39 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
         task.getDetailsSectionDisplay().set(config.getDetailsSectionDisplay());
+    }
+
+    private static void configureOutputs( final Project rootProject,
+                                          final TraceTask task,
+                                          final TracingConfig config )
+    {
+        if( config.getReportFile().isPresent() )
+        {
+            task.getOutputFile().set( config.getReportFile() );
+        }
+        else
+        {
+            final String reporterFormat = config.getReportFormat().get();
+            task.getOutputFile()
+                    .set( new File( rootProject.getLayout().getBuildDirectory().getAsFile().get(),
+                            toReporterFile( reporterFormat ) ) );
+            final String resourceName = "openfasttrace-" + reporterFormat + ".zip";
+            final URL resource = task.getClass().getClassLoader().getResource( resourceName );
+            if( "ux".equals( reporterFormat ) )
+            {
+                task.getReportFile().set( "build/reports/openfasttrace/openfasttrace.html" );
+            }
+            if( resource != null )
+                task.getAdditionalResources().add( resourceName );
+        }
+    }
+
+    private static String toReporterFile( final String reporterFormat )
+    {
+        return "ux".equals( reporterFormat ) ? "reports/openfasttrace/resources/js/specitem_data.js"
+                : "html".equals( reporterFormat ) ? "reports/tracing.html"
+                : "reports/tracing.txt";
+
     }
 
     private static Set<File> getAllInputDirectories(final Set<Project> allProjects)

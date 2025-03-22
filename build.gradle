@@ -10,17 +10,21 @@ plugins {
 }
 
 repositories {
+    if (!gradle.startParameter.taskNames.contains("publish")) {
+        mavenLocal()
+    }
     mavenCentral()
 }
 
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
-version = '3.0.1'
+version = '3.2.0'
 group = 'org.itsallcode'
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
-    oftVersion = '4.1.0'
+    oftVersion = '4.2.0'
+    uxVersion = '0.1.0'
     junitVersion = '5.11.0'
     if (project.hasProperty('oftSourceDir')) {
         oftSourceDir = file(project.oftSourceDir)
@@ -93,6 +97,45 @@ task compileOft(type: Exec) {
          '-Djava.version=' + getJavaVersion()
 }
 
+// >> openfasttrace-ux
+
+
+ext {
+    if (project.hasProperty('uxSourceDir')) {
+        uxSourceDir = file(project.uxSourceDir)
+    } else {
+        uxSourceDir = 'oft-dir-not-found'
+    }
+}
+
+tasks.register("compileUx", Exec) {
+    workingDir uxSourceDir
+
+    commandLine 'npm', 'run', 'deploy'
+}
+compileUx.onlyIf { project.file(uxSourceDir).isDirectory() }
+
+configurations {
+    create("openfasttraceux")
+}
+dependencies {
+    openfasttraceux "org.itsallcode:openfasttrace-ux:$uxVersion"
+}
+
+task addOftUxAsResource(type: Copy) {
+    description "Adds the OpenFastTrace-UX ZIP artifact as file resources to the gradle plugin"
+    dependsOn(compileUx)
+
+    from configurations.getByName("openfasttraceux").getSingleFile()
+    into layout.buildDirectory.dir("resources/main")
+    rename { "openfasttrace-ux.zip" }
+}
+tasks.named("processResources") {
+    dependsOn("addOftUxAsResource")
+}
+
+// << openfasttrace-ux
+
 clean {
     def exampleProjects = rootProject.file('example-projects').listFiles()
     def propertyFiles = exampleProjects.collect { new File(it, 'gradle.properties') }
@@ -117,6 +160,9 @@ signing {
     def signingKey = findProperty("signingKey")
     def signingPassword = findProperty("signingPassword")
     useInMemoryPgpKeys(signingKey, signingPassword)
+}
+tasks.withType(Sign) {
+    onlyIf { !gradle.startParameter.taskNames.contains("publishToMavenLocal") }
 }
 
 testing {

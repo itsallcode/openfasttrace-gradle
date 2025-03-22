@@ -19,7 +19,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```groovy
     plugins {
-      id "org.itsallcode.openfasttrace" version "3.0.1"
+      id "org.itsallcode.openfasttrace" version "3.2.0"
     }
     ```
 
@@ -50,10 +50,12 @@ You can configure the following properties:
 
 * `failBuild`: Fail build when tracing finds any issues (default: `true`)
 * `inputDirectories`: Files or directories to import
-* `reportFile`: Path to the report file
+* `reportFile`: Path to the report file (do not specify when using the `ux` `reportFormat`)
 * `reportFormat`: Format of the report
   * `plain` - Plain Text (default)
   * `html` - HTML
+  * `aspec` - Extended requirement.xml format
+  * `ux` - HTML based requirement browser
 * `reportVerbosity`: Report verbosity
   * `quiet` - no output (in case only the return code is used)
   * `minimal` - display ok or not ok
