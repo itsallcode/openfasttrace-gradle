@@ -3,10 +3,10 @@ Thank you for your interest in helping us to make the Gradle plugin for OpenFast
 # Goal of This Document
 This document aims at answering all the questions potential contributors to OFT might have before feeling ready to get started.
 
-# What This Document is not
+# What This Document Is Not
 If you are looking for general information about what OpenFastTrace is, please make sure to check out the [README](./README.md) that comes with the project.
 
-# What Kind of Contributions can I Make?
+# What Kind of Contributions Can I Make?
 
 ## Contributing Code
 If you are a programmer and want to help us improve the implementation, test cases or design of OFT please create a branch of the current `main` branch of OFT using [git](https://git-scm.com/) and make your changes on that branch.
