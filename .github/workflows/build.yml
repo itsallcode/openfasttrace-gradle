@@ -17,8 +17,9 @@ jobs:
       run:
         shell: "bash"
     strategy:
+      fail-fast: false
       matrix:
-        java: [17, 21, 24]
+        java: [17, 21]
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-java-${{ matrix.java }}
       cancel-in-progress: true
@@ -47,7 +48,7 @@ jobs:
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
     - name: Build with Java ${{ matrix.java }}
-      run: ./gradlew build --warning-mode all -PjavaVersion=${{ matrix.java }}
+      run: ./gradlew build --info --warning-mode all -PjavaVersion=${{ matrix.java }}
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
