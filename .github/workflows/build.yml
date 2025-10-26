@@ -49,6 +49,10 @@ jobs:
 
     - name: Build with Java ${{ matrix.java }}
       run: ./gradlew build --info --warning-mode all -PjavaVersion=${{ matrix.java }}
+      env:
+        ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
+        ORG_GRADLE_PROJECT_ossIndexToken: ${{ secrets.OSSINDEX_TOKEN }}
+
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
