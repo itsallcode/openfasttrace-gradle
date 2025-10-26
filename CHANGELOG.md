@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- [PR #58](https://github.com/itsallcode/openfasttrace-gradle/pull/58)
+  - Upgrade dependencies
+  - Specify credentials for OssIndex
+
 ## [3.1.0] - 2025-08-03
 
 - [PR #51](https://github.com/itsallcode/openfasttrace-gradle/pull/51) (Thanks to [@koppor](https://github.com/koppor) for his contribution!)
