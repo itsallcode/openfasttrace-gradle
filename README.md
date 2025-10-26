@@ -183,7 +183,7 @@ To use `openfasttrace` from source during development:
 
 ### Check dependencies for vulnerabilities
 
-Get token for OssIndex from [ossindex.sonatype.org](https://ossindex.sonatype.org/user/settings) and add it to `~/.gradle/gradle.properties`:
+Get token for OssIndex from [ossindex.sonatype.org](https://ossindex.sonatype.org/) and add it to `~/.gradle/gradle.properties`:
 
 ```properties
 ossIndexUsername = <user>
