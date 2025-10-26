@@ -170,8 +170,10 @@ tasks.named("dependencyUpdates").configure {
 }
 
 ossIndexAudit {
-  username = findProperty("ossIndexUsername")
-  password = findProperty("ossIndexToken")
+  if(project.hasProperty("ossIndexUsername") && project.hasProperty("ossIndexToken")) {
+    username = findProperty("ossIndexUsername")
+    password = findProperty("ossIndexToken")
+  }
   allConfigurations = false
   useCache = true
   excludeVulnerabilityIds = []
