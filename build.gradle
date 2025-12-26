@@ -18,13 +18,13 @@ repositories {
 
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
-version = '3.2.0'
+version = project.findProperty("version") ?: '3.2.0'
 group = 'org.itsallcode'
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
-    oftVersion = '4.2.0'
-    uxVersion = '0.1.0'
+    oftVersion = project.findProperty("oftVersion") ?: '4.3.0'
+    uxVersion = project.findProperty("uxVersion") ?: '0.6.0'
     junitVersion = '5.11.0'
     if (project.hasProperty('oftSourceDir')) {
         oftSourceDir = file(project.oftSourceDir)
@@ -36,6 +36,7 @@ ext {
         oftSourceDir = 'oft-dir-not-found'
         useOftSources = false
     }
+	print "version=${version} oftVersion: ${oftVersion} uxVersion=${uxVersion}"
 }
 
 def compiledClassesFolders(File dir) {
@@ -222,4 +223,4 @@ ossIndexAudit {
   printBanner = false
 }
 
-rootProject.tasks["build"].dependsOn(tasks["ossIndexAudit"])
+rootProject.tasks["publish"].dependsOn(tasks["ossIndexAudit"])
