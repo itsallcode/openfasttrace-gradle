@@ -60,7 +60,7 @@ dependencies {
 }
 
 def getJavaVersion = {
-    return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
+    return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 21
 }
 
 java {
