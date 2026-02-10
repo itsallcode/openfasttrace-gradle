@@ -3,9 +3,10 @@ package org.itsallcode.openfasttrace.gradle;
 public enum GradleTestConfig {
     THIS_VERSION(null),
     /**
-     * We support the latest Gradle version and the previous two.
+     * We support the latest Gradle version and the previous two. Older Gradle
+     * versions do not work with Java 21 and above.
      */
-    PREVIOUS_VERSION_MINUS_ONE("7.6.6"), PREVIOUS_VERSION("8.14.1"), CURRENT_VERSION("9.3.1");
+    PREVIOUS_VERSION_MINUS_ONE("9.1"), PREVIOUS_VERSION("9.2"), CURRENT_VERSION("9.3.1");
 
     public final String gradleVersion;
 
