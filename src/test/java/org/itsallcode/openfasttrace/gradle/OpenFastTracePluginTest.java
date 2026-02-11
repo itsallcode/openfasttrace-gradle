@@ -226,6 +226,7 @@ class OpenFastTracePluginTest
     void testTraceDependencyProject(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":clean").getOutcome());
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
@@ -237,9 +238,9 @@ class OpenFastTracePluginTest
                 "not ok - 2 total, 1 defect");
     }
 
-    @ParameterizedTest(name = "testPublishToMavenRepo {0}")
+    @ParameterizedTest(name = "publishToMavenRepo {0}")
     @EnumSource
-    void testPublishToMavenRepo(final GradleTestConfig config) throws IOException
+    void publishToMavenRepo(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
@@ -251,8 +252,10 @@ class OpenFastTracePluginTest
         try (ZipFile zip = ZipFile.builder().setFile(archive.toFile()).get())
         {
             final String entryContent = readEntry(zip, "requirements.xml");
-            assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-                    "<specdocument>\n"));
+            assertThat(entryContent, containsString("""
+                    <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+                    <specdocument>
+                    """));
             assertThat(entryContent, containsString("""
                       <specobjects doctype="dsn">
                         <specobject>
