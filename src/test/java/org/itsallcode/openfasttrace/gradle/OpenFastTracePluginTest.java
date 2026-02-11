@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
@@ -33,13 +34,27 @@ class OpenFastTracePluginTest
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
 
-    @ParameterizedTest(name = "testTracingTaskAddedToProject {0}")
+    @ParameterizedTest(name = "tracingTaskAddedToProject {0}")
     @EnumSource
-    void testTracingTaskAddedToProject(final GradleTestConfig config)
+    void tracingTaskAddedToProject(final GradleTestConfig config)
     {
         final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
+    }
+
+    @ParameterizedTest(name = "pluginUsesConfigurationCache {0}")
+    @EnumSource
+    void pluginUsesConfigurationCache(final GradleTestConfig config)
+    {
+        BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
+        assertThat(buildResult.getOutput(), containsString(
+                "traceRequirements - Trace requirements and generate tracing report"));
+        buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
+        assertThat(buildResult.getOutput(),
+                allOf(containsString(
+                        "traceRequirements - Trace requirements and generate tracing report"),
+                        containsString("Reusing configuration cache.")));
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithDefaultConfig {0}")
