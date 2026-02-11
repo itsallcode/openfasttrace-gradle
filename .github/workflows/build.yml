@@ -53,6 +53,12 @@ jobs:
         ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
         ORG_GRADLE_PROJECT_ossIndexToken: ${{ secrets.OSSINDEX_TOKEN }}
 
+    - name: Upload reports
+      uses: actions/upload-artifact@v6
+      if: ${{ always() }}
+      with:
+        name: reports-java-${{ matrix.java }}
+        path: build/reports/
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
