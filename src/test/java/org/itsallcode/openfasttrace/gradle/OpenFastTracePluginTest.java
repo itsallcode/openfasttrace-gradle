@@ -47,24 +47,22 @@ class OpenFastTracePluginTest
     @EnumSource
     void pluginUsesConfigurationCache(final GradleTestConfig config)
     {
-        BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
-        assertThat(buildResult.getOutput(), containsString(
-                "traceRequirements - Trace requirements and generate tracing report"));
-        buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
-        assertThat(buildResult.getOutput(),
-                allOf(containsString(
-                        "traceRequirements - Trace requirements and generate tracing report"),
-                        containsString("Reusing configuration cache.")));
+        testConfigurationCache(config, PROJECT_DEFAULT_CONFIG_DIR);
     }
 
     @ParameterizedTest(name = "pluginUsesConfigurationCacheWithMultiModuleProject {0}")
     @EnumSource
     void pluginUsesConfigurationCacheWithMultiModuleProject(final GradleTestConfig config)
     {
-        BuildResult buildResult = runBuild(config, MULTI_PROJECT_DIR, "tasks");
+        testConfigurationCache(config, MULTI_PROJECT_DIR);
+    }
+
+    private void testConfigurationCache(final GradleTestConfig config, final Path projectDir)
+    {
+        BuildResult buildResult = runBuild(config, projectDir, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
-        buildResult = runBuild(config, MULTI_PROJECT_DIR, "tasks");
+        buildResult = runBuild(config, projectDir, "tasks");
         assertThat(buildResult.getOutput(),
                 allOf(containsString(
                         "traceRequirements - Trace requirements and generate tracing report"),
