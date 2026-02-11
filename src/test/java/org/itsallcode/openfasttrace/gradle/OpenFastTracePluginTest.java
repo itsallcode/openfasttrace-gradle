@@ -57,6 +57,20 @@ class OpenFastTracePluginTest
                         containsString("Reusing configuration cache.")));
     }
 
+    @ParameterizedTest(name = "pluginUsesConfigurationCacheWithMultiModuleProject {0}")
+    @EnumSource
+    void pluginUsesConfigurationCacheWithMultiModuleProject(final GradleTestConfig config)
+    {
+        BuildResult buildResult = runBuild(config, MULTI_PROJECT_DIR, "tasks");
+        assertThat(buildResult.getOutput(), containsString(
+                "traceRequirements - Trace requirements and generate tracing report"));
+        buildResult = runBuild(config, MULTI_PROJECT_DIR, "tasks");
+        assertThat(buildResult.getOutput(),
+                allOf(containsString(
+                        "traceRequirements - Trace requirements and generate tracing report"),
+                        containsString("Reusing configuration cache.")));
+    }
+
     @ParameterizedTest(name = "testTraceExampleProjectWithDefaultConfig {0}")
     @EnumSource
     void testTraceExampleProjectWithDefaultConfig(final GradleTestConfig config) throws IOException
