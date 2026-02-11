@@ -1,22 +1,19 @@
 package org.itsallcode.openfasttrace.gradle;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.util.Optional;
 
 public class TestUtil
 {
-    public static String readResource(final Class<?> clazz, final String resourceName)
+    public static Optional<String> readResource(final Class<?> clazz, final String resourceName)
     {
         final URL resource = clazz.getResource(resourceName);
         if (resource == null)
         {
-            throw new AssertionError("Resource '" + resourceName + "' not found");
+            return Optional.empty();
         }
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8.name())))
@@ -27,7 +24,7 @@ public class TestUtil
             {
                 b.append(line).append("\n");
             }
-            return b.toString();
+            return Optional.of(b.toString());
         }
         catch (final IOException e)
         {

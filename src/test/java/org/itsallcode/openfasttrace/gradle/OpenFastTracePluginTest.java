@@ -10,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.gradle.api.logging.Logging;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -169,7 +168,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest(name = "filteredArtifactTypes {0}")
     @EnumSource
-    void filteredArtifactTypes(final GradleTestConfig config) throws IOException
+    void filteredArtifactTypes(final GradleTestConfig config)
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
@@ -312,7 +311,7 @@ class OpenFastTracePluginTest
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(asList(arguments));
-        allArgs.addAll(asList("--info", "--stacktrace"));
+        allArgs.addAll(asList("--info", "--stacktrace", "--configuration-cache"));
         if (ENABLE_WARNINGS)
         {
             allArgs.addAll(asList("--warning-mode", "all"));
@@ -331,11 +330,16 @@ class OpenFastTracePluginTest
 
     private static void configureJacoco(final Path projectDir)
     {
-        final String testkitGradleConfig = TestUtil.readResource(OpenFastTracePluginTest.class,
-                "/testkit-gradle.properties");
-        LOG.info("Found testkit gradle config: {}", testkitGradleConfig);
+        final Optional<String> testkitGradleConfig = TestUtil
+                .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
+        if (testkitGradleConfig.isEmpty())
+        {
+            LOG.info("Testkit gradle config not available. Skipping configuration");
+            return;
+        }
+        LOG.info("Found testkit gradle config: {}", testkitGradleConfig.get());
         final Path gradleProperties = projectDir.resolve("gradle.properties");
         LOG.info("Writing testkit gradle config to {}", gradleProperties);
-        TestUtil.writeFile(gradleProperties, testkitGradleConfig);
+        TestUtil.writeFile(gradleProperties, testkitGradleConfig.get());
     }
 }
