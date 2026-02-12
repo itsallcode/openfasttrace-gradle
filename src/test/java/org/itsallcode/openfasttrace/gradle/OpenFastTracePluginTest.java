@@ -1,6 +1,5 @@
 package org.itsallcode.openfasttrace.gradle;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -233,9 +232,9 @@ class OpenFastTracePluginTest
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
-    @ParameterizedTest(name = "testTraceDependencyProject {0}")
+    @ParameterizedTest(name = "traceDependencyProject {0}")
     @EnumSource
-    void testTraceDependencyProject(final GradleTestConfig config) throws IOException
+    void traceDependencyProject(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":clean").getOutcome());
@@ -340,11 +339,11 @@ class OpenFastTracePluginTest
     {
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
-        allArgs.addAll(asList(arguments));
-        allArgs.addAll(asList("--info", "--stacktrace", "--configuration-cache"));
+        allArgs.addAll(List.of(arguments));
+        allArgs.addAll(List.of("--info", "--stacktrace", "--configuration-cache", "--build-cache"));
         if (ENABLE_WARNINGS)
         {
-            allArgs.addAll(asList("--warning-mode", "all"));
+            allArgs.addAll(List.of("--warning-mode", "all"));
         }
         final GradleRunner runner = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
