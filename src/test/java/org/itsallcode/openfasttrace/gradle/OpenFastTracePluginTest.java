@@ -236,13 +236,13 @@ class OpenFastTracePluginTest
     void traceDependencyProject(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":clean").getOutcome());
+        assertThat(buildResult.task(":clean").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
-        assertThat(buildResult.task(":traceRequirements").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
+        assertThat(buildResult.task(":traceRequirements").getOutcome(), is(TaskOutcome.SUCCESS));
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
                 "requirements-1.0.zip!source.java:1", //
