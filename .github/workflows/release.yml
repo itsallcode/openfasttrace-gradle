@@ -40,11 +40,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build
-        run: ./gradlew build --warning-mode all
+        run: ./gradlew build --warning-mode all -PjavaVersion=17
 
       - name: Publish to plugins.gradle.org
         if: ${{ !inputs.skip-deploy-gradle-plugin }}
-        run: ./gradlew publishPlugins --warning-mode all
+        run: ./gradlew publishPlugins --warning-mode all -PjavaVersion=17
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
