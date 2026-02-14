@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-02-14
+
+- [PR #64](https://github.com/itsallcode/openfasttrace-gradle/pull/64)
+  - Upgrade to OpenFastTrace [4.2.1](https://github.com/itsallcode/openfasttrace/releases/tag/4.2.1)
+  - Upgrade integration tests to use Gradle 9.3.1 and 8.14.4
 - [PR #58](https://github.com/itsallcode/openfasttrace-gradle/pull/58)
   - Upgrade dependencies
   - Specify credentials for OssIndex

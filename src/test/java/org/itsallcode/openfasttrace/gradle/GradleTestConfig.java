@@ -4,9 +4,10 @@ public enum GradleTestConfig
 {
     THIS_VERSION(null),
     /**
-     * We support the latest Gradle version and the previous two.
+     * We support the latest Gradle version and the previous two. Older Gradle
+     * versions do not work with Java 21 and above.
      */
-    PREVIOUS_VERSION_MINUS_ONE("8.12"), PREVIOUS_VERSION("8.13"), CURRENT_VERSION("8.14");
+    PREVIOUS_VERSION("8.14.4"), CURRENT_VERSION("9.3.1");
 
     public final String gradleVersion;
 

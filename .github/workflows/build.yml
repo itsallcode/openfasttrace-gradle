@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [17, 21]
+        java: [17, 21, 25]
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-java-${{ matrix.java }}
       cancel-in-progress: true
@@ -41,7 +41,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v5
 
     - name: Cache SonarQube packages
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-java-${{ matrix.java }}-sonar
@@ -53,6 +53,12 @@ jobs:
         ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
         ORG_GRADLE_PROJECT_ossIndexToken: ${{ secrets.OSSINDEX_TOKEN }}
 
+    - name: Upload reports
+      uses: actions/upload-artifact@v6
+      if: ${{ always() }}
+      with:
+        name: reports-java-${{ matrix.java }}
+        path: build/reports/
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}

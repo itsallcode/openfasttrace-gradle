@@ -1,17 +1,15 @@
 package org.itsallcode.openfasttrace.gradle;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.gradle.api.logging.Logging;
 import org.gradle.internal.impldep.org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -34,13 +32,39 @@ class OpenFastTracePluginTest
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
 
-    @ParameterizedTest(name = "testTracingTaskAddedToProject {0}")
+    @ParameterizedTest(name = "tracingTaskAddedToProject {0}")
     @EnumSource
-    void testTracingTaskAddedToProject(final GradleTestConfig config)
+    void tracingTaskAddedToProject(final GradleTestConfig config)
     {
         final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
+    }
+
+    @ParameterizedTest(name = "pluginUsesConfigurationCache {0}")
+    @EnumSource
+    void pluginUsesConfigurationCache(final GradleTestConfig config)
+    {
+        testConfigurationCache(config, PROJECT_DEFAULT_CONFIG_DIR);
+    }
+
+    @ParameterizedTest(name = "pluginUsesConfigurationCacheWithMultiModuleProject {0}")
+    @EnumSource
+    void pluginUsesConfigurationCacheWithMultiModuleProject(final GradleTestConfig config)
+    {
+        testConfigurationCache(config, MULTI_PROJECT_DIR);
+    }
+
+    private void testConfigurationCache(final GradleTestConfig config, final Path projectDir)
+    {
+        BuildResult buildResult = runBuild(config, projectDir, "tasks");
+        assertThat(buildResult.getOutput(), containsString(
+                "traceRequirements - Trace requirements and generate tracing report"));
+        buildResult = runBuild(config, projectDir, "tasks");
+        assertThat(buildResult.getOutput(),
+                allOf(containsString(
+                        "traceRequirements - Trace requirements and generate tracing report"),
+                        containsString("Reusing configuration cache.")));
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithDefaultConfig {0}")
@@ -169,7 +193,7 @@ class OpenFastTracePluginTest
 
     @ParameterizedTest(name = "filteredArtifactTypes {0}")
     @EnumSource
-    void filteredArtifactTypes(final GradleTestConfig config) throws IOException
+    void filteredArtifactTypes(final GradleTestConfig config)
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
@@ -207,25 +231,27 @@ class OpenFastTracePluginTest
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
-    @ParameterizedTest(name = "testTraceDependencyProject {0}")
+    @ParameterizedTest(name = "traceDependencyProject {0}")
     @EnumSource
-    void testTraceDependencyProject(final GradleTestConfig config) throws IOException
+    void traceDependencyProject(final GradleTestConfig config) throws IOException
     {
         BuildResult buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "clean");
+        assertThat(buildResult.task(":clean").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(), is(TaskOutcome.SUCCESS));
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
                 "requirements-1.0.zip!source.java:1", //
                 "not ok - 2 total, 1 defect");
     }
 
-    @ParameterizedTest(name = "testPublishToMavenRepo {0}")
+    @ParameterizedTest(name = "publishToMavenRepo {0}")
     @EnumSource
-    void testPublishToMavenRepo(final GradleTestConfig config) throws IOException
+    void publishToMavenRepo(final GradleTestConfig config) throws IOException
     {
         final BuildResult buildResult = runBuild(config, PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
@@ -237,8 +263,10 @@ class OpenFastTracePluginTest
         try (ZipFile zip = ZipFile.builder().setFile(archive.toFile()).get())
         {
             final String entryContent = readEntry(zip, "requirements.xml");
-            assertThat(entryContent, containsString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-                    "<specdocument>\n"));
+            assertThat(entryContent, containsString("""
+                    <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+                    <specdocument>
+                    """));
             assertThat(entryContent, containsString("""
                       <specobjects doctype="dsn">
                         <specobject>
@@ -311,11 +339,11 @@ class OpenFastTracePluginTest
     {
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
-        allArgs.addAll(asList(arguments));
-        allArgs.addAll(asList("--info", "--stacktrace"));
+        allArgs.addAll(List.of(arguments));
+        allArgs.addAll(List.of("--info", "--stacktrace", "--configuration-cache", "--build-cache"));
         if (ENABLE_WARNINGS)
         {
-            allArgs.addAll(asList("--warning-mode", "all"));
+            allArgs.addAll(List.of("--warning-mode", "all"));
         }
         final GradleRunner runner = GradleRunner.create() //
                 .withProjectDir(projectDir.toFile()) //
@@ -331,11 +359,16 @@ class OpenFastTracePluginTest
 
     private static void configureJacoco(final Path projectDir)
     {
-        final String testkitGradleConfig = TestUtil.readResource(OpenFastTracePluginTest.class,
-                "/testkit-gradle.properties");
-        LOG.info("Found testkit gradle config: {}", testkitGradleConfig);
+        final Optional<String> testkitGradleConfig = TestUtil
+                .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
+        if (testkitGradleConfig.isEmpty())
+        {
+            LOG.info("Testkit gradle config not available. Skipping configuration");
+            return;
+        }
+        LOG.info("Found testkit gradle config: {}", testkitGradleConfig.get());
         final Path gradleProperties = projectDir.resolve("gradle.properties");
         LOG.info("Writing testkit gradle config to {}", gradleProperties);
-        TestUtil.writeFile(gradleProperties, testkitGradleConfig);
+        TestUtil.writeFile(gradleProperties, testkitGradleConfig.get());
     }
 }
