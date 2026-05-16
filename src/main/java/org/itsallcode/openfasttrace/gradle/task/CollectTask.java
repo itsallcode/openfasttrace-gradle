@@ -1,7 +1,6 @@
 package org.itsallcode.openfasttrace.gradle.task;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -20,6 +19,7 @@ import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.core.*;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
+@CacheableTask
 public class CollectTask extends DefaultTask
 {
     // Possible 'this' escape before subclass is fully initialized
@@ -33,6 +33,7 @@ public class CollectTask extends DefaultTask
             .listProperty(SerializableTagPathConfig.class);
 
     @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     public SetProperty<File> getInputDirectories()
     {
         return inputDirectories;
@@ -92,13 +93,13 @@ public class CollectTask extends DefaultTask
                 .flatMap(SerializableTagPathConfig::getPaths);
         getLogger().info("Importing from {} configured paths: {}", pathConfig.get().size(),
                 pathConfig.get());
-        return Stream.concat(inputDirPaths, inputTagPaths).collect(toList());
+        return Stream.concat(inputDirPaths, inputTagPaths).toList();
     }
 
     private List<PathConfig> getPathConfigInternal()
     {
         final List<PathConfig> paths = pathConfig.get().stream()
-                .flatMap(SerializableTagPathConfig::getPathConfig).collect(toList());
+                .flatMap(SerializableTagPathConfig::getPathConfig).toList();
         if (getLogger().isInfoEnabled())
         {
             getLogger().info("Got {} path configurations:\n{}", paths.size(),

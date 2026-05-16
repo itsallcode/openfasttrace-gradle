@@ -74,7 +74,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
     }
@@ -139,7 +140,10 @@ class OpenFastTracePluginTest
     {
         BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
+        assertThat(buildResult.task(":clean").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
+        assertThat(buildResult.task(":collectRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":collectRequirements").getOutcome());
     }
@@ -150,7 +154,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>",
                 "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
@@ -163,7 +168,8 @@ class OpenFastTracePluginTest
     {
         BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
     }
@@ -174,7 +180,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
                 "not ok - 2 total, 1 defect");
@@ -199,7 +206,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
@@ -229,7 +237,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, MULTI_PROJECT_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
@@ -244,7 +253,8 @@ class OpenFastTracePluginTest
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
-        assertThat(buildResult.task(":traceRequirements").getOutcome(), is(TaskOutcome.SUCCESS));
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
                 "requirements-1.0.zip!source.java:1", //
