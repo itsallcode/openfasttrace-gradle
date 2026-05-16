@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
@@ -84,7 +85,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
+        assertThat(buildResult.task(":collectRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
                         "<specdocument>", //

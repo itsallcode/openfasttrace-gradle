@@ -8,13 +8,14 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.itsallcode%3Aopenfasttrace-gradle&metric=coverage)](https://sonarcloud.io/dashboard?id=org.itsallcode%3Aopenfasttrace-gradle)
 
 * [Blog](https://blog.itsallcode.org/)
+* [Gradle Plugin page](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace)
 * [Changelog](CHANGELOG.md)
 * [Contributing guide](CONTRIBUTING.md)
 * [OpenFastTrace stories](https://github.com/itsallcode/openfasttrace/wiki/OFT-Stories)
 
 ## Usage
 
-1. Preconditions: Java 17 and Gradle 8.6
+1. Preconditions: Java 17 and Gradle 9.5
 1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
 
     ```groovy
