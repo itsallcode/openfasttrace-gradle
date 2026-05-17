@@ -6,11 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.1.2] - 2026-05-16
+## [3.1.2] - 2026-05-17
 
-- [PR #]()
+- [PR #70](https://github.com/itsallcode/openfasttrace-gradle/pull/70)
   - Upgrade to OpenFastTrace [4.4.0](https://github.com/itsallcode/openfasttrace/releases/tag/4.4.0)
   - Upgrade integration tests to use Gradle 9.5.1 and 8.14.5
+  - Add workaround for https://github.com/gradle/gradle/issues/25979 to calculate test coverage
 
 ## [3.1.1] - 2026-02-14
 
