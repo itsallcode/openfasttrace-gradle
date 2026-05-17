@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +59,7 @@ class OpenFastTracePluginTest
 
     private void testConfigurationCache(final GradleTestConfig config, final Path projectDir)
     {
+        assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
         BuildResult buildResult = runBuild(config, projectDir, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
@@ -352,7 +354,11 @@ class OpenFastTracePluginTest
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
-        allArgs.addAll(List.of("--info", "--stacktrace", "--configuration-cache", "--build-cache"));
+        allArgs.addAll(List.of("--info", "--stacktrace", "--build-cache"));
+        if (configurationCacheEnabled())
+        {
+            allArgs.add("--configuration-cache");
+        }
         if (ENABLE_WARNINGS)
         {
             allArgs.addAll(List.of("--warning-mode", "all"));
@@ -369,8 +375,19 @@ class OpenFastTracePluginTest
         return runner;
     }
 
+    private static boolean configurationCacheEnabled()
+    {
+        return System.getProperty("enableConfigurationCache", "false").equalsIgnoreCase("true");
+    }
+
     private static void configureJacoco(final Path projectDir)
     {
+        if (configurationCacheEnabled())
+        {
+            LOG.info(
+                    "Configuration cache enabled. Skipping jacoco configuration for testkit: https://github.com/gradle/gradle/issues/25979");
+            return;
+        }
         final Optional<String> testkitGradleConfig = TestUtil
                 .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
