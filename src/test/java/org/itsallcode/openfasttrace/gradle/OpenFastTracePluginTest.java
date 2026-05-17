@@ -4,7 +4,9 @@ import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -57,6 +59,7 @@ class OpenFastTracePluginTest
 
     private void testConfigurationCache(final GradleTestConfig config, final Path projectDir)
     {
+        assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
         BuildResult buildResult = runBuild(config, projectDir, "tasks");
         assertThat(buildResult.getOutput(), containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
@@ -73,7 +76,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_DEFAULT_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
     }
@@ -84,7 +88,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
+        assertThat(buildResult.task(":collectRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
                         "<specdocument>", //
@@ -137,7 +142,10 @@ class OpenFastTracePluginTest
     {
         BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "collectRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":collectRequirements").getOutcome());
+        assertThat(buildResult.task(":clean").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
+        assertThat(buildResult.task(":collectRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":collectRequirements").getOutcome());
     }
@@ -148,7 +156,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>",
                 "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
@@ -161,7 +170,8 @@ class OpenFastTracePluginTest
     {
         BuildResult buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         buildResult = runBuild(config, HTML_REPORT_CONFIG_DIR, "traceRequirements");
         assertEquals(TaskOutcome.UP_TO_DATE, buildResult.task(":traceRequirements").getOutcome());
     }
@@ -172,7 +182,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
                 "not ok - 2 total, 1 defect");
@@ -197,7 +208,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, PROJECT_CUSTOM_CONFIG_DIR, "clean",
                 "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
@@ -227,7 +239,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(config, MULTI_PROJECT_DIR, "clean",
                 "traceRequirements");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":traceRequirements").getOutcome());
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"), "ok - 6 total");
     }
 
@@ -242,7 +255,8 @@ class OpenFastTracePluginTest
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(config, DEPENDENCY_CONFIG_DIR, "traceRequirements");
-        assertThat(buildResult.task(":traceRequirements").getOutcome(), is(TaskOutcome.SUCCESS));
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2", //
                 "requirements-1.0.zip!source.java:1", //
@@ -340,7 +354,11 @@ class OpenFastTracePluginTest
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
-        allArgs.addAll(List.of("--info", "--stacktrace", "--configuration-cache", "--build-cache"));
+        allArgs.addAll(List.of("--info", "--stacktrace", "--build-cache"));
+        if (configurationCacheEnabled())
+        {
+            allArgs.add("--configuration-cache");
+        }
         if (ENABLE_WARNINGS)
         {
             allArgs.addAll(List.of("--warning-mode", "all"));
@@ -357,8 +375,19 @@ class OpenFastTracePluginTest
         return runner;
     }
 
+    private static boolean configurationCacheEnabled()
+    {
+        return System.getProperty("enableConfigurationCache", "false").equalsIgnoreCase("true");
+    }
+
     private static void configureJacoco(final Path projectDir)
     {
+        if (configurationCacheEnabled())
+        {
+            LOG.info(
+                    "Configuration cache enabled. Skipping jacoco configuration for testkit: https://github.com/gradle/gradle/issues/25979");
+            return;
+        }
         final Optional<String> testkitGradleConfig = TestUtil
                 .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())

@@ -21,6 +21,7 @@ import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
 
 @SuppressWarnings("this-escape")
+@CacheableTask
 public class TraceTask extends DefaultTask
 {
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
@@ -41,6 +42,7 @@ public class TraceTask extends DefaultTask
     private final Property<Boolean> failBuild = getProject().getObjects().property(Boolean.class);
 
     @InputFile
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     public RegularFileProperty getRequirementsFile()
     {
         return requirementsFile;
