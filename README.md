@@ -15,12 +15,12 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ## Usage
 
-1. Preconditions: Java 17 and Gradle 9.5
+1. Preconditions: Java 17 and Gradle 9.7.0
 1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
 
     ```groovy
     plugins {
-      id "org.itsallcode.openfasttrace" version "3.1.0"
+      id "org.itsallcode.openfasttrace" version "3.2.0"
     }
     ```
 
@@ -165,7 +165,7 @@ cd openfasttrace-gradle
 # Test report: build/reports/tests/index.html
 ```
 
-### Use `openfasttrace` from Source
+### Use `openfasttrace` From Source
 
 To use `openfasttrace` from source during development:
 
@@ -176,13 +176,13 @@ To use `openfasttrace` from source during development:
     oftSourceDir = ../openfasttrace
     ```
 
-### Check if dependencies are up-to-date
+### Check if Dependencies are Up-to-date
 
 ```sh
 ./gradlew dependencyUpdates
 ```
 
-### Check dependencies for vulnerabilities
+### Check Dependencies for Vulnerabilities
 
 Get token for OssIndex from [ossindex.sonatype.org](https://ossindex.sonatype.org/) and add it to `~/.gradle/gradle.properties`:
 
@@ -197,7 +197,7 @@ Then run
 ./gradlew ossIndexAudit
 ```
 
-### Run sonar analysis
+### Run Sonar Analysis
 
 ```sh
 ./gradlew clean sonar --info -Dsonar.token=[token]
