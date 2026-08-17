@@ -382,6 +382,12 @@ class OpenFastTracePluginTest
 
     private static void configureJacoco(final Path projectDir)
     {
+        if (configurationCacheEnabled())
+        {
+            LOG.info(
+                    "Configuration cache enabled. Skipping jacoco configuration for testkit: https://github.com/gradle/gradle/issues/25979");
+            return;
+        }
         final Optional<String> testkitGradleConfig = TestUtil
                 .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
