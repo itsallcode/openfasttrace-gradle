@@ -53,6 +53,7 @@ jobs:
       run: ./gradlew build --warning-mode all --exclude-task ossIndexAudit -PenableConfigurationCache=true -PjavaVersion=${{ matrix.java }}
 
     - name: Build with Java ${{ matrix.java }} without configuration cache
+      if: ${{ always() }}
       # Required to get jacoco test coverage reports for SonarQube, which doesn't work with configuration cache enabled, see https://github.com/gradle/gradle/issues/25979
       run: ./gradlew clean build --warning-mode all --exclude-task ossIndexAudit -PenableConfigurationCache=false -PjavaVersion=${{ matrix.java }}
 
