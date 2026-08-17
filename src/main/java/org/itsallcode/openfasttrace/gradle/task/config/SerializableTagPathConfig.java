@@ -1,7 +1,5 @@
 package org.itsallcode.openfasttrace.gradle.task.config;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.List;
@@ -22,7 +20,7 @@ public class SerializableTagPathConfig implements Serializable
     public SerializableTagPathConfig(final TagPathConfiguration tagPathConfig)
     {
         tagConfigs = tagPathConfig.getPathConfig().stream().map(SerializableTagConfig::new)
-                .collect(toList());
+                .toList();
     }
 
     public Stream<Path> getPaths()
