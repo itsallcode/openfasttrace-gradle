@@ -1,7 +1,5 @@
 package org.itsallcode.openfasttrace.gradle.task.config;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -35,7 +33,7 @@ public class SerializableTagConfig implements Serializable
 
     public List<Path> getPaths()
     {
-        return paths.stream().map(File::toPath).collect(toList());
+        return paths.stream().map(File::toPath).toList();
     }
 
     public String getCoveredItemArtifactType()

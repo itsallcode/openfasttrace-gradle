@@ -186,7 +186,7 @@ class OpenFastTracePluginTest
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
-                "not ok - 2 total, 1 defect");
+                "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
     @ParameterizedTest(name = "testTraceExampleProjectWithCustomConfigFailBuild {0}")
@@ -198,8 +198,8 @@ class OpenFastTracePluginTest
                 "clean", "traceRequirements", "-PfailBuild=true");
         assertEquals(TaskOutcome.FAILED, buildResult.task(":traceRequirements").getOutcome());
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
-                "not ok - 2 total, 1 defect");
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)",
+                "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
     @ParameterizedTest(name = "filteredArtifactTypes {0}")
@@ -258,9 +258,9 @@ class OpenFastTracePluginTest
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
-                "requirements-1.0.zip!spec.md:2", //
-                "requirements-1.0.zip!source.java:1", //
-                "not ok - 2 total, 1 defect");
+                "requirements-1.0.zip!spec.md:2",
+                "requirements-1.0.zip!source.java:1",
+                "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
     @ParameterizedTest(name = "publishToMavenRepo {0}")

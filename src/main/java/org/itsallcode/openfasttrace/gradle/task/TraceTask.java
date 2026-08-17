@@ -1,7 +1,6 @@
 package org.itsallcode.openfasttrace.gradle.task;
 
 import static java.util.Collections.emptySet;
-import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -177,7 +176,7 @@ public class TraceTask extends DefaultTask
         final Stream<Path> importedRequirementPaths = importedRequirements.get().stream()
                 .map(File::toPath);
         final Stream<Path> inputDirPaths = Stream.of(requirementsFile.getAsFile().get().toPath());
-        return Stream.concat(importedRequirementPaths, inputDirPaths).collect(toList());
+        return Stream.concat(importedRequirementPaths, inputDirPaths).toList();
     }
 
     private void createReportOutputDir()

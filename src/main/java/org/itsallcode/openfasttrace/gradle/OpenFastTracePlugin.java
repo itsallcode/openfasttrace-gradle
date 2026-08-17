@@ -1,6 +1,5 @@
 package org.itsallcode.openfasttrace.gradle;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
@@ -130,11 +129,11 @@ public class OpenFastTracePlugin implements Plugin<Project>
 
     private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)
     {
-        return allProjects.stream() //
-                .map(OpenFastTracePlugin::getTagPathConfig) //
-                .filter(Optional::isPresent) //
-                .map(Optional::get) //
-                .collect(toList());
+        return allProjects.stream()
+                .map(OpenFastTracePlugin::getTagPathConfig)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 
     private static Optional<SerializableTagPathConfig> getTagPathConfig(final Project project)

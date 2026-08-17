@@ -85,7 +85,7 @@ public class CollectTask extends DefaultTask
 
     private List<Path> getAllImportFiles()
     {
-        final Stream<Path> inputDirPaths = inputDirectories.get().stream() //
+        final Stream<Path> inputDirPaths = inputDirectories.get().stream()
                 .map(File::toPath);
         getLogger().info("Importing from {} input directories: {}", inputDirectories.get().size(),
                 inputDirectories.get());
