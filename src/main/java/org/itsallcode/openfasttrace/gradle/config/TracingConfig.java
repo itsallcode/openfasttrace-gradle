@@ -1,6 +1,7 @@
 package org.itsallcode.openfasttrace.gradle.config;
 
 import java.util.List;
+import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -22,6 +23,7 @@ public class TracingConfig
     private final ListProperty<Object> importedRequirements;
     private final SetProperty<String> filteredTags;
     private final SetProperty<String> filteredArtifactTypes;
+    private final SetProperty<String> filterWantedStatuses;
     private final Property<Boolean> filterAcceptsItemsWithoutTag;
     private final Property<DetailsSectionDisplay> detailsSectionDisplay;
     private final Property<Boolean> failBuild;
@@ -38,6 +40,7 @@ public class TracingConfig
         this.filteredTags = project.getObjects().setProperty(String.class);
         this.filteredArtifactTypes = project.getObjects().setProperty(String.class);
         this.filterAcceptsItemsWithoutTag = project.getObjects().property(Boolean.class);
+        this.filterWantedStatuses = project.getObjects().setProperty(String.class);
         this.filterAcceptsItemsWithoutTag.set(true);
         this.detailsSectionDisplay = project.getObjects().property(DetailsSectionDisplay.class);
         this.detailsSectionDisplay.set(DetailsSectionDisplay.COLLAPSE);
@@ -90,6 +93,11 @@ public class TracingConfig
         return detailsSectionDisplay;
     }
 
+    public SetProperty<String> getFilterWantedStatuses()
+    {
+        return filterWantedStatuses;
+    }
+
     public void setReportVerbosity(final String reportVerbosity)
     {
         setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity));
@@ -138,6 +146,11 @@ public class TracingConfig
     public void setDetailsSectionDisplay(final String detailsSectionDisplay)
     {
         this.detailsSectionDisplay.set(DetailsSectionDisplay.valueOf(detailsSectionDisplay));
+    }
+
+    public void setFilterWantedStatuses(final Set<String> statuses)
+    {
+        this.filterWantedStatuses.set(statuses);
     }
 
     public TagPathConfiguration getTagPathConfig()

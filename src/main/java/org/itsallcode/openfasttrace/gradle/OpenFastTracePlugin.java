@@ -12,6 +12,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.tasks.TaskProvider;
+import org.itsallcode.openfasttrace.api.core.ItemStatus;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.CollectTask;
@@ -95,6 +96,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
+        task.getFilterWantedStatuses().set(
+                config.getFilterWantedStatuses().map(String::toUpperCase).map(ItemStatus::valueOf));
         task.getDetailsSectionDisplay().set(config.getDetailsSectionDisplay());
     }
 
