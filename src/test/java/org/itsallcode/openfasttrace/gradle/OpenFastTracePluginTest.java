@@ -239,6 +239,16 @@ class OpenFastTracePluginTest
     }
 
     @Test
+    void filteredWantedStatusesInvalidStatus()
+    {
+        final BuildResult buildResult = runBuildExpectFailure(PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "traceRequirements",
+                "-PfilterWantedStatuses=invalid");
+        assertThat(buildResult.getOutput(), containsString(
+                "Invalid status 'invalid'. Valid statuses are: APPROVED, PROPOSED, DRAFT, REJECTED"));
+    }
+
+    @Test
     void testTraceExampleProjectWithCustomConfigFailBuildErrorMessage()
     {
         try
