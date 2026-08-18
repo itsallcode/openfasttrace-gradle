@@ -30,8 +30,7 @@ class OpenFastTracePluginTest
 
     private static final boolean ENABLE_WARNINGS = true;
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
-    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR
-            .resolve("default-config");
+    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
     private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
@@ -261,9 +260,7 @@ class OpenFastTracePluginTest
         {
             assertAll(
                     () -> assertEquals(TaskOutcome.FAILED,
-                            e.getBuildResult()
-                                    .task(":traceRequirements")
-                                    .getOutcome()),
+                            e.getBuildResult().task(":traceRequirements").getOutcome()),
                     () -> assertThat(e.getMessage(),
                             startsWith("Unexpected build execution failure")),
                     () -> assertThat(e.getMessage(),
@@ -288,15 +285,13 @@ class OpenFastTracePluginTest
         BuildResult buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "clean");
         assertThat(buildResult.task(":clean").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
-        final Path dependencyZip = DEPENDENCY_CONFIG_DIR
-                .resolve("build/repo/requirements-1.0.zip");
+        final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(
-                DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+        TestUtil.assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2",
                 "requirements-1.0.zip!source.java:1",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
@@ -307,8 +302,7 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
-        assertEquals(TaskOutcome.SUCCESS,
-                buildResult.task(":publishToMavenLocal").getOutcome());
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
 
         final Path archive = PUBLISH_CONFIG_DIR
                 .resolve("build/distributions/publish-config-1.0.zip");
@@ -372,8 +366,7 @@ class OpenFastTracePluginTest
         }
         catch (final IOException e)
         {
-            throw new UncheckedIOException(
-                    "Failed to create dependency zip " + dependencyZip, e);
+            throw new UncheckedIOException("Failed to create dependency zip " + dependencyZip, e);
         }
     }
 
@@ -422,8 +415,7 @@ class OpenFastTracePluginTest
     private static void configureJacoco(final Path projectDir)
     {
         final Optional<String> testkitGradleConfig = TestUtil
-                .readResource(OpenFastTracePluginTest.class,
-                        "/testkit-gradle.properties");
+                .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
         {
             LOG.info("Testkit gradle config not available. Skipping configuration");

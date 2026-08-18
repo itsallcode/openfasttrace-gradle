@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.2.0] - ????
+## [3.2.0] - 2026-08-18
 
+- [PR #79](https://github.com/itsallcode/openfasttrace-gradle/pull/79)
+  - Add support for filtering by item status
 - [PR #78](https://github.com/itsallcode/openfasttrace-gradle/pull/78)
   - Simplify Gradle plugin integration tests
 - [PR #73](https://github.com/itsallcode/openfasttrace-gradle/pull/73)
