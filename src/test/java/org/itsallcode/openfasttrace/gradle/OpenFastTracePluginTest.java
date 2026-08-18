@@ -234,7 +234,8 @@ class OpenFastTracePluginTest
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         TestUtil.assertFileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok [ in:  0 /  0   | out:  0 /  1 ✘ ] impl~exampleB-34853351~0 ()",
+                // Generated ID depends on JVM
+                "not ok [ in:  0 /  0   | out:  0 /  1 ✘ ] impl~exampleB-",
                 "not ok - 1 total, 1 direct, 0 transitive defects");
     }
 
