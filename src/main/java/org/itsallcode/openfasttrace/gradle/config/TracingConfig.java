@@ -174,6 +174,6 @@ public class TracingConfig
         return "TracingConfig [reportVerbosity=" + reportVerbosity + ", inputDirectories="
                 + inputDirectories + ", reportFile=" + reportFile + ", pathConfig="
                 + getTagPathConfig() + ", failBuild=" + failBuild + ", filteredArtifactTypes="
-                + filteredArtifactTypes + "]";
+                + filteredArtifactTypes + ", filterWantedStatuses=" + filterWantedStatuses + "]";
     }
 }
