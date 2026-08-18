@@ -19,10 +19,17 @@ import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
 
+/** Gradle task that traces requirements and writes a report. */
 @SuppressWarnings("this-escape")
 @CacheableTask
 public class TraceTask extends DefaultTask
 {
+    /** Creates the task. */
+    public TraceTask()
+    {
+        super();
+    }
+
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
     private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
@@ -42,6 +49,11 @@ public class TraceTask extends DefaultTask
     private final SetProperty<ItemStatus> filterWantedStatuses = getProject().getObjects()
             .setProperty(ItemStatus.class);
 
+    /**
+     * Returns the collected requirements file.
+     * 
+     * @return the requirements file
+     */
     @InputFile
     @PathSensitive(PathSensitivity.ABSOLUTE)
     public RegularFileProperty getRequirementsFile()
@@ -49,30 +61,55 @@ public class TraceTask extends DefaultTask
         return requirementsFile;
     }
 
+    /**
+     * Returns the generated tracing report.
+     * 
+     * @return the report file
+     */
     @OutputFile
     public RegularFileProperty getOutputFile()
     {
         return outputFile;
     }
 
+    /**
+     * Returns the report verbosity property.
+     * 
+     * @return the verbosity property
+     */
     @Input
     public Property<ReportVerbosity> getReportVerbosity()
     {
         return reportVerbosity;
     }
 
+    /**
+     * Returns the report format property.
+     * 
+     * @return the format property
+     */
     @Input
     public Property<String> getReportFormat()
     {
         return reportFormat;
     }
 
+    /**
+     * Returns the imported requirements property.
+     * 
+     * @return the imported requirements property
+     */
     @Input
     public SetProperty<File> getImportedRequirements()
     {
         return importedRequirements;
     }
 
+    /**
+     * Returns the artifact type filter.
+     * 
+     * @return the artifact type filter
+     */
     @Input
     @Optional
     public SetProperty<String> getFilteredArtifactTypes()
@@ -80,30 +117,55 @@ public class TraceTask extends DefaultTask
         return filteredArtifactTypes;
     }
 
+    /**
+     * Returns the tag filter.
+     * 
+     * @return the tag filter
+     */
     @Input
     public SetProperty<String> getFilteredTags()
     {
         return filteredTags;
     }
 
+    /**
+     * Returns whether items without tags are accepted.
+     * 
+     * @return the untagged item setting
+     */
     @Input
     public Property<Boolean> getFilterAcceptsItemsWithoutTag()
     {
         return filterAcceptsItemsWithoutTag;
     }
 
+    /**
+     * Returns the report details section display setting.
+     * 
+     * @return the display setting
+     */
     @Input
     public Property<DetailsSectionDisplay> getDetailsSectionDisplay()
     {
         return detailsSectionDisplay;
     }
 
+    /**
+     * Returns whether tracing defects fail the build.
+     * 
+     * @return the fail-build setting
+     */
     @Input
     public Property<Boolean> getFailBuild()
     {
         return failBuild;
     }
 
+    /**
+     * Returns the status filter.
+     * 
+     * @return the status filter
+     */
     @Input
     @Optional
     public SetProperty<ItemStatus> getFilterWantedStatuses()
@@ -116,6 +178,7 @@ public class TraceTask extends DefaultTask
         return failBuild.getOrElse(true);
     }
 
+    /** Traces the requirements and writes the report. */
     @TaskAction
     public void trace()
     {
