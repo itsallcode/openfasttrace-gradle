@@ -23,7 +23,7 @@ import org.junit.jupiter.params.ParameterizedClass;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.Logger;
 
-@ParameterizedClass(name = "{0}")
+@ParameterizedClass(name = "OpenFastTracePluginTest {0}")
 @EnumSource(GradleTestConfig.class)
 class OpenFastTracePluginTest
 {
@@ -31,8 +31,7 @@ class OpenFastTracePluginTest
 
     private static final boolean ENABLE_WARNINGS = true;
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
-    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR
-            .resolve("default-config");
+    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
     private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
@@ -78,8 +77,7 @@ class OpenFastTracePluginTest
     @Test
     void testTraceExampleProjectWithDefaultConfig()
     {
-        final BuildResult buildResult = runBuild(PROJECT_DEFAULT_CONFIG_DIR,
-                "clean",
+        final BuildResult buildResult = runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean",
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
@@ -96,8 +94,8 @@ class OpenFastTracePluginTest
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
-                        "<specdocument>", //
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<specdocument>",
                 """
                           <specobjects doctype="impl">
                             <specobject>
@@ -106,7 +104,7 @@ class OpenFastTracePluginTest
                         </id>
                               <status>approved</status>
                               <version>0</version>
-                        """, //
+                        """,
 
                 """
                               <sourceline>1</sourceline>
@@ -116,7 +114,7 @@ class OpenFastTracePluginTest
                                   <dstversion>1</dstversion>
                                 </provcov>
                               </providescoverage>
-                        """, //
+                        """,
 
                 """
                           <specobjects doctype="dsn">
@@ -125,7 +123,7 @@ class OpenFastTracePluginTest
                               <shortdesc>Tracing Example</shortdesc>
                               <status>approved</status>
                               <version>1</version>
-                        """, //
+                        """,
 
                 """
                               <sourceline>2</sourceline>
@@ -135,9 +133,9 @@ class OpenFastTracePluginTest
                                 <needsobj>impl</needsobj>
                               </needscoverage>
                             </specobject>
-                        """, //
+                        """,
 
-                "  </specobjects>\n" + //
+                "  </specobjects>\n" +
                         "</specdocument>");
     }
 
@@ -188,7 +186,7 @@ class OpenFastTracePluginTest
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)", //
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
@@ -208,8 +206,7 @@ class OpenFastTracePluginTest
     void filteredArtifactTypes()
     {
         final BuildResult buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean",
-                "traceRequirements", "-PfailBuild=true",
-                "-PfilteredArtifactTypes=dsn");
+                "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
     }
@@ -246,7 +243,7 @@ class OpenFastTracePluginTest
     }
 
     @Test
-    void traceDependencyProject() throws IOException
+    void traceDependencyProject()
     {
         BuildResult buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "clean");
         assertThat(buildResult.task(":clean").getOutcome(),
@@ -265,7 +262,7 @@ class OpenFastTracePluginTest
     }
 
     @Test
-    void publishToMavenRepo() throws IOException
+    void publishToMavenRepo()
     {
         final BuildResult buildResult = runBuild(PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
@@ -300,10 +297,13 @@ class OpenFastTracePluginTest
                         </specobject>
                     """));
         }
+        catch (final IOException e)
+        {
+            throw new UncheckedIOException("Failed to read zip file " + archive, e);
+        }
     }
 
     private static String readEntry(final ZipFile zip, final String entryName)
-            throws IOException
     {
         final ZipArchiveEntry reqirementsEntry = zip.getEntry(entryName);
         try (BufferedReader reader = new BufferedReader(
@@ -311,11 +311,15 @@ class OpenFastTracePluginTest
         {
             return reader.lines().collect(joining("\n"));
         }
+        catch (final IOException e)
+        {
+            throw new UncheckedIOException("Failed to read entry " + entryName, e);
+        }
     }
 
-    private static void createDependencyZip(final Path dependencyZip) throws IOException
+    private static void createDependencyZip(final Path dependencyZip)
     {
-        Files.createDirectories(dependencyZip.getParent());
+        createParentDir(dependencyZip);
         try (ZipFileBuilder zipBuilder = ZipFileBuilder.create(dependencyZip))
         {
             zipBuilder
@@ -324,6 +328,23 @@ class OpenFastTracePluginTest
                                     .resolve("src/source.java")) //
                     .addEntry("spec.md", PROJECT_DEFAULT_CONFIG_DIR
                             .resolve("doc/spec.md"));
+        }
+        catch (final IOException e)
+        {
+            throw new UncheckedIOException("Failed to create dependency zip " + dependencyZip, e);
+        }
+    }
+
+    private static void createParentDir(final Path dependencyZip)
+    {
+        try
+        {
+            Files.createDirectories(dependencyZip.getParent());
+        }
+        catch (final IOException e)
+        {
+            throw new UncheckedIOException(
+                    "Failed to create directory " + dependencyZip.getParent(), e);
         }
     }
 
@@ -372,10 +393,10 @@ class OpenFastTracePluginTest
         {
             allArgs.addAll(List.of("--warning-mode", "all"));
         }
-        final GradleRunner runner = GradleRunner.create() //
-                .withProjectDir(projectDir.toFile()) //
-                .withPluginClasspath() //
-                .withArguments(allArgs) //
+        final GradleRunner runner = GradleRunner.create()
+                .withProjectDir(projectDir.toFile())
+                .withPluginClasspath()
+                .withArguments(allArgs)
                 .forwardOutput();
         if (config.gradleVersion != null)
         {
@@ -396,11 +417,10 @@ class OpenFastTracePluginTest
         {
             LOG.info(
                     "Configuration cache enabled. Skipping jacoco configuration for testkit: https://github.com/gradle/gradle/issues/25979");
-            return;
+            // return;
         }
         final Optional<String> testkitGradleConfig = TestUtil
-                .readResource(OpenFastTracePluginTest.class,
-                        "/testkit-gradle.properties");
+                .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
         {
             LOG.info("Testkit gradle config not available. Skipping configuration");
