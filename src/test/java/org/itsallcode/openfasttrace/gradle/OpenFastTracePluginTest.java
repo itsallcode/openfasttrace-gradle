@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
@@ -81,7 +80,7 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+        TestUtil.assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "ok - 0 total");
     }
 
@@ -92,7 +91,7 @@ class OpenFastTracePluginTest
                 "collectRequirements");
         assertThat(buildResult.task(":collectRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertFileContent(
+        TestUtil.assertFileContent(
                 PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<specdocument>",
@@ -160,7 +159,7 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
+        TestUtil.assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>",
                 "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
                 "<details open>");
@@ -185,7 +184,7 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+        TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
@@ -197,7 +196,7 @@ class OpenFastTracePluginTest
                 "clean", "traceRequirements", "-PfailBuild=true");
         assertEquals(TaskOutcome.FAILED,
                 buildResult.task(":traceRequirements").getOutcome());
-        assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+        TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
@@ -238,7 +237,7 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"),
+        TestUtil.assertFileContent(MULTI_PROJECT_DIR.resolve("build/custom-report.txt"),
                 "ok - 6 total");
     }
 
@@ -248,14 +247,13 @@ class OpenFastTracePluginTest
         BuildResult buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "clean");
         assertThat(buildResult.task(":clean").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
-        final Path dependencyZip = DEPENDENCY_CONFIG_DIR
-                .resolve("build/repo/requirements-1.0.zip");
+        final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+        TestUtil.assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2",
                 "requirements-1.0.zip!source.java:1",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
@@ -266,8 +264,7 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
-        assertEquals(TaskOutcome.SUCCESS,
-                buildResult.task(":publishToMavenLocal").getOutcome());
+        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
 
         final Path archive = PUBLISH_CONFIG_DIR
                 .resolve("build/distributions/publish-config-1.0.zip");
@@ -319,7 +316,7 @@ class OpenFastTracePluginTest
 
     private static void createDependencyZip(final Path dependencyZip)
     {
-        createParentDir(dependencyZip);
+        TestUtil.createDirs(dependencyZip.getParent());
         try (ZipFileBuilder zipBuilder = ZipFileBuilder.create(dependencyZip))
         {
             zipBuilder
@@ -332,40 +329,6 @@ class OpenFastTracePluginTest
         catch (final IOException e)
         {
             throw new UncheckedIOException("Failed to create dependency zip " + dependencyZip, e);
-        }
-    }
-
-    private static void createParentDir(final Path dependencyZip)
-    {
-        try
-        {
-            Files.createDirectories(dependencyZip.getParent());
-        }
-        catch (final IOException e)
-        {
-            throw new UncheckedIOException(
-                    "Failed to create directory " + dependencyZip.getParent(), e);
-        }
-    }
-
-    private static void assertFileContent(final Path file, final String... lines)
-    {
-        final String fileContent = fileContent(file);
-        for (final String line : lines)
-        {
-            assertThat("Content of file " + file, fileContent, containsString(line));
-        }
-    }
-
-    private static String fileContent(final Path file)
-    {
-        try
-        {
-            return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
-        }
-        catch (final IOException e)
-        {
-            throw new UncheckedIOException(e);
         }
     }
 
@@ -413,12 +376,6 @@ class OpenFastTracePluginTest
 
     private static void configureJacoco(final Path projectDir)
     {
-        if (configurationCacheEnabled())
-        {
-            LOG.info(
-                    "Configuration cache enabled. Skipping jacoco configuration for testkit: https://github.com/gradle/gradle/issues/25979");
-            // return;
-        }
         final Optional<String> testkitGradleConfig = TestUtil
                 .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
