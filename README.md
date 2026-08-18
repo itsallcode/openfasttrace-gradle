@@ -44,6 +44,7 @@ requirementTracing {
   reportVerbosity = 'failure_details'
   detailsSectionDisplay = 'collapse'
   filteredArtifactTypes = ["req", "dsn"]
+  filterWantedStatuses = ["draft", "approved"]
 }
 ```
 
@@ -67,6 +68,7 @@ You can configure the following properties:
   * `collapse` - hide details (default)
   * `expand` - show details
 * `filteredArtifactTypes`: Use only the listed artifact types during tracing
+* `filterWantedStatuses`: Import only specification items that have a status contained in the list of statuses. Possible values: `draft`, `proposed`, `approved`, `rejected`. See the [OFT user guide](https://github.com/itsallcode/openfasttrace/blob/main/doc/user_guide/user_guide.md#filtering-by-status) for details.
 
 ### Configuring the Short Tag Importer
 

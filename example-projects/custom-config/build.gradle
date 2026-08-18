@@ -5,6 +5,8 @@ plugins {
 
 def artifactTypes = findProperty('filteredArtifactTypes')
 artifactTypes = artifactTypes ? artifactTypes.split(',').toList() : null
+def wantedStatuses = findProperty('filterWantedStatuses')
+wantedStatuses = wantedStatuses ? wantedStatuses.split(',').toList() : null
 requirementTracing {
   failBuild = findProperty('failBuild') == 'true'
   inputDirectories = files('custom-dir')
@@ -12,4 +14,5 @@ requirementTracing {
   reportFormat = 'plain'
   reportVerbosity = 'ALL'
   filteredArtifactTypes = artifactTypes
+  filterWantedStatuses = wantedStatuses
 }

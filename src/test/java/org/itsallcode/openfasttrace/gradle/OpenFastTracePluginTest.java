@@ -120,7 +120,7 @@ class OpenFastTracePluginTest
                             <specobject>
                               <id>exampleB</id>
                               <shortdesc>Tracing Example</shortdesc>
-                              <status>approved</status>
+                              <status>draft</status>
                               <version>1</version>
                         """,
 
@@ -185,7 +185,7 @@ class OpenFastTracePluginTest
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
         TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)",
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
@@ -197,7 +197,7 @@ class OpenFastTracePluginTest
         assertEquals(TaskOutcome.FAILED,
                 buildResult.task(":traceRequirements").getOutcome());
         TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
-                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 (impl, -utest)",
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
@@ -208,6 +208,44 @@ class OpenFastTracePluginTest
                 "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
+    }
+
+    @Test
+    void filteredWantedStatuses()
+    {
+        final BuildResult buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "traceRequirements",
+                "-PfilterWantedStatuses=draft,approved");
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
+        TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
+                "not ok - 2 total, 1 direct, 0 transitive defects");
+    }
+
+    @Test
+    void filteredWantedStatusesNoMatch()
+    {
+        final BuildResult buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "traceRequirements",
+                "-PfilterWantedStatuses=approved");
+        assertThat(buildResult.task(":traceRequirements").getOutcome(),
+                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
+        TestUtil.assertFileContent(
+                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+                // Generated ID depends on JVM
+                "not ok [ in:  0 /  0   | out:  0 /  1 ✘ ] impl~exampleB-",
+                "not ok - 1 total, 1 direct, 0 transitive defects");
+    }
+
+    @Test
+    void filteredWantedStatusesInvalidStatus()
+    {
+        final BuildResult buildResult = runBuildExpectFailure(PROJECT_CUSTOM_CONFIG_DIR, "clean",
+                "traceRequirements",
+                "-PfilterWantedStatuses=invalid");
+        assertThat(buildResult.getOutput(), containsString(
+                "Invalid status 'invalid'. Valid statuses are: APPROVED, PROPOSED, DRAFT, REJECTED"));
     }
 
     @Test

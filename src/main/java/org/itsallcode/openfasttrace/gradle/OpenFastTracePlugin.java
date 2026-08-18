@@ -1,5 +1,6 @@
 package org.itsallcode.openfasttrace.gradle;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.tasks.TaskProvider;
+import org.itsallcode.openfasttrace.api.core.ItemStatus;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
 import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
 import org.itsallcode.openfasttrace.gradle.task.CollectTask;
@@ -95,7 +97,30 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
+        task.getFilterWantedStatuses().set(getWantedStatuses(config));
         task.getDetailsSectionDisplay().set(config.getDetailsSectionDisplay());
+    }
+
+    private static Set<ItemStatus> getWantedStatuses(final TracingConfig config)
+    {
+        return config.getFilterWantedStatuses().getOrElse(Collections.emptySet()).stream()
+                .map(OpenFastTracePlugin::convertStatus)
+                .collect(toSet());
+    }
+
+    private static ItemStatus convertStatus(final String value)
+    {
+        try
+        {
+            return ItemStatus.valueOf(value.toUpperCase(Locale.ROOT));
+        }
+        catch (final IllegalArgumentException e)
+        {
+            final String validStatuses = Arrays.stream(ItemStatus.values()).map(ItemStatus::name)
+                    .collect(joining(", "));
+            throw new IllegalArgumentException(
+                    "Invalid status '" + value + "'. Valid statuses are: " + validStatuses, e);
+        }
     }
 
     private static Set<File> getAllInputDirectories(final Set<Project> allProjects)

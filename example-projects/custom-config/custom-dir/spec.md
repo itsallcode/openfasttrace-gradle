@@ -4,3 +4,4 @@
 Example requirement
 
 Needs: utest, impl
+Status: draft

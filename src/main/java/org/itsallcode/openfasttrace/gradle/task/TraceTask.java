@@ -39,6 +39,8 @@ public class TraceTask extends DefaultTask
     private final Property<Boolean> filterAcceptsItemsWithoutTag = getProject().getObjects()
             .property(Boolean.class);
     private final Property<Boolean> failBuild = getProject().getObjects().property(Boolean.class);
+    private final SetProperty<ItemStatus> filterWantedStatuses = getProject().getObjects()
+            .setProperty(ItemStatus.class);
 
     @InputFile
     @PathSensitive(PathSensitivity.ABSOLUTE)
@@ -102,6 +104,13 @@ public class TraceTask extends DefaultTask
         return failBuild;
     }
 
+    @Input
+    @Optional
+    public SetProperty<ItemStatus> getFilterWantedStatuses()
+    {
+        return filterWantedStatuses;
+    }
+
     private boolean shouldFailBuild()
     {
         return failBuild.getOrElse(true);
@@ -161,10 +170,12 @@ public class TraceTask extends DefaultTask
 
     private FilterSettings getFilterSettings()
     {
-        final FilterSettings settings = FilterSettings.builder() //
-                .artifactTypes(filteredArtifactTypes.getOrElse(emptySet())) //
-                .tags(filteredTags.get()) //
-                .withoutTags(filterAcceptsItemsWithoutTag.get()).build();
+        final FilterSettings settings = FilterSettings.builder()
+                .artifactTypes(filteredArtifactTypes.getOrElse(emptySet()))
+                .tags(filteredTags.get())
+                .withoutTags(filterAcceptsItemsWithoutTag.get())
+                .wantedStatuses(filterWantedStatuses.get())
+                .build();
         getLogger().info("Filter settings: artifactTypes={}, tags={}, acceptItemsWithoutTag={}",
                 settings.getArtifactTypes(), settings.getTags(),
                 settings.isArtifactTypeCriteriaSet());
