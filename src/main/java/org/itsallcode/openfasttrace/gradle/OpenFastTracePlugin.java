@@ -96,8 +96,12 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
-        task.getFilterWantedStatuses().set(
-                config.getFilterWantedStatuses().map(String::toUpperCase).map(ItemStatus::valueOf));
+
+        task.getFilterWantedStatuses()
+                .set(config.getFilterWantedStatuses().getOrElse(Collections.emptySet()).stream()
+                        .map(String::toUpperCase)
+                        .map(ItemStatus::valueOf)
+                        .collect(toSet()));
         task.getDetailsSectionDisplay().set(config.getDetailsSectionDisplay());
     }
 
