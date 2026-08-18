@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.2.0] - ????
 
+- [PR #78](https://github.com/itsallcode/openfasttrace-gradle/pull/78)
+  - Simplify Gradle plugin integration tests
 - [PR #73](https://github.com/itsallcode/openfasttrace-gradle/pull/73)
   - Upgrade to OpenFastTrace [4.8.0](https://github.com/itsallcode/openfasttrace/releases/tag/4.8.0)
   - Upgrade integration tests to use Gradle 9.7.0. Gradle 8 is no longer supported.
