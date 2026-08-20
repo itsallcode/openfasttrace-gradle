@@ -52,6 +52,13 @@ class PluginTestFixture
         return new Result(buildResult);
     }
 
+    Result runExpectingFailure()
+    {
+        final GradleRunner runner = createGradleRunner();
+        final BuildResult buildResult = runner.buildAndFail();
+        return new Result(buildResult);
+    }
+
     private GradleRunner createGradleRunner()
     {
         configureJacoco(projectDir);
