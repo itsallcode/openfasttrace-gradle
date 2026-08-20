@@ -30,7 +30,8 @@ class OpenFastTracePluginTest
 
     private static final boolean ENABLE_WARNINGS = true;
     private static final Path EXAMPLES_DIR = Paths.get("example-projects").toAbsolutePath();
-    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR.resolve("default-config");
+    private static final Path PROJECT_DEFAULT_CONFIG_DIR = EXAMPLES_DIR
+            .resolve("default-config");
     private static final Path PROJECT_CUSTOM_CONFIG_DIR = EXAMPLES_DIR.resolve("custom-config");
     private static final Path MULTI_PROJECT_DIR = EXAMPLES_DIR.resolve("multi-project");
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
@@ -43,9 +44,9 @@ class OpenFastTracePluginTest
     @Test
     void tracingTaskAddedToProject()
     {
-        final BuildResult buildResult = runBuild(PROJECT_DEFAULT_CONFIG_DIR, "tasks");
-        assertThat(buildResult.getOutput(), containsString(
-                "traceRequirements - Trace requirements and generate tracing report"));
+        testFixture(PROJECT_DEFAULT_CONFIG_DIR).withArgs("tasks").run()
+                .assertOutput(containsString(
+                        "traceRequirements - Trace requirements and generate tracing report"));
     }
 
     @Test
@@ -63,25 +64,24 @@ class OpenFastTracePluginTest
     private void testConfigurationCache(final Path projectDir)
     {
         assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
-        BuildResult buildResult = runBuild(projectDir, "tasks");
-        assertThat(buildResult.getOutput(), containsString(
+        final PluginTestFixture testFixture = testFixture(projectDir).withArgs("tasks");
+
+        testFixture.run().assertOutput(containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
-        buildResult = runBuild(projectDir, "tasks");
-        assertThat(buildResult.getOutput(),
-                allOf(containsString(
-                        "traceRequirements - Trace requirements and generate tracing report"),
-                        containsString("Reusing configuration cache.")));
+
+        testFixture.run().assertOutput(allOf(containsString(
+                "traceRequirements - Trace requirements and generate tracing report"),
+                containsString("Reusing configuration cache.")));
     }
 
     @Test
     void testTraceExampleProjectWithDefaultConfig()
     {
-        final BuildResult buildResult = runBuild(PROJECT_DEFAULT_CONFIG_DIR, "clean",
-                "traceRequirements");
-        assertThat(buildResult.task(":traceRequirements").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(PROJECT_DEFAULT_CONFIG_DIR.resolve("build/reports/tracing.txt"),
-                "ok - 0 total");
+        testFixture(PROJECT_DEFAULT_CONFIG_DIR).withArgs("clean", "traceRequirements")
+                .withReportFile(Path.of("build/reports/tracing.txt"))
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
+                .assertReportFileLines("ok - 0 total");
     }
 
     @Test
@@ -159,7 +159,8 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
+        TestUtil.assertFileContent(
+                HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
                 "<!DOCTYPE html>",
                 "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
                 "<details open>");
@@ -184,7 +185,8 @@ class OpenFastTracePluginTest
                 "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+        TestUtil.assertFileContent(
+                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
@@ -196,7 +198,8 @@ class OpenFastTracePluginTest
                 "clean", "traceRequirements", "-PfailBuild=true");
         assertEquals(TaskOutcome.FAILED,
                 buildResult.task(":traceRequirements").getOutcome());
-        TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+        TestUtil.assertFileContent(
+                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
@@ -205,7 +208,8 @@ class OpenFastTracePluginTest
     void filteredArtifactTypes()
     {
         final BuildResult buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean",
-                "traceRequirements", "-PfailBuild=true", "-PfilteredArtifactTypes=dsn");
+                "traceRequirements", "-PfailBuild=true",
+                "-PfilteredArtifactTypes=dsn");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
     }
@@ -218,7 +222,8 @@ class OpenFastTracePluginTest
                 "-PfilterWantedStatuses=draft,approved");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
+        TestUtil.assertFileContent(
+                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/custom-report.txt"),
                 "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
     }
@@ -241,7 +246,8 @@ class OpenFastTracePluginTest
     @Test
     void filteredWantedStatusesInvalidStatus()
     {
-        final BuildResult buildResult = runBuildExpectFailure(PROJECT_CUSTOM_CONFIG_DIR, "clean",
+        final BuildResult buildResult = runBuildExpectFailure(PROJECT_CUSTOM_CONFIG_DIR,
+                "clean",
                 "traceRequirements",
                 "-PfilterWantedStatuses=invalid");
         assertThat(buildResult.getOutput(), containsString(
@@ -260,7 +266,9 @@ class OpenFastTracePluginTest
         {
             assertAll(
                     () -> assertEquals(TaskOutcome.FAILED,
-                            e.getBuildResult().task(":traceRequirements").getOutcome()),
+                            e.getBuildResult()
+                                    .task(":traceRequirements")
+                                    .getOutcome()),
                     () -> assertThat(e.getMessage(),
                             startsWith("Unexpected build execution failure")),
                     () -> assertThat(e.getMessage(),
@@ -285,13 +293,15 @@ class OpenFastTracePluginTest
         BuildResult buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "clean");
         assertThat(buildResult.task(":clean").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
-        final Path dependencyZip = DEPENDENCY_CONFIG_DIR.resolve("build/repo/requirements-1.0.zip");
+        final Path dependencyZip = DEPENDENCY_CONFIG_DIR
+                .resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
         buildResult = runBuild(DEPENDENCY_CONFIG_DIR, "traceRequirements");
         assertThat(buildResult.task(":traceRequirements").getOutcome(),
                 either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
+        TestUtil.assertFileContent(
+                DEPENDENCY_CONFIG_DIR.resolve("build/reports/tracing.txt"),
                 "requirements-1.0.zip!spec.md:2",
                 "requirements-1.0.zip!source.java:1",
                 "not ok - 2 total, 1 direct, 0 transitive defects");
@@ -302,7 +312,8 @@ class OpenFastTracePluginTest
     {
         final BuildResult buildResult = runBuild(PUBLISH_CONFIG_DIR, "clean",
                 "publishToMavenLocal");
-        assertEquals(TaskOutcome.SUCCESS, buildResult.task(":publishToMavenLocal").getOutcome());
+        assertEquals(TaskOutcome.SUCCESS,
+                buildResult.task(":publishToMavenLocal").getOutcome());
 
         final Path archive = PUBLISH_CONFIG_DIR
                 .resolve("build/distributions/publish-config-1.0.zip");
@@ -366,7 +377,8 @@ class OpenFastTracePluginTest
         }
         catch (final IOException e)
         {
-            throw new UncheckedIOException("Failed to create dependency zip " + dependencyZip, e);
+            throw new UncheckedIOException(
+                    "Failed to create dependency zip " + dependencyZip, e);
         }
     }
 
@@ -415,7 +427,8 @@ class OpenFastTracePluginTest
     private static void configureJacoco(final Path projectDir)
     {
         final Optional<String> testkitGradleConfig = TestUtil
-                .readResource(OpenFastTracePluginTest.class, "/testkit-gradle.properties");
+                .readResource(OpenFastTracePluginTest.class,
+                        "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
         {
             LOG.info("Testkit gradle config not available. Skipping configuration");
@@ -425,5 +438,10 @@ class OpenFastTracePluginTest
         final Path gradleProperties = projectDir.resolve("gradle.properties");
         LOG.info("Writing testkit gradle config to {}", gradleProperties);
         TestUtil.writeFile(gradleProperties, testkitGradleConfig.get());
+    }
+
+    private PluginTestFixture testFixture(final Path projectDir)
+    {
+        return PluginTestFixture.create(config, projectDir);
     }
 }
