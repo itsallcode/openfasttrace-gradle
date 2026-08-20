@@ -19,11 +19,11 @@ import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.core.*;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
-/** Gradle task that collects requirements into a specobject file. */
+/** Gradle task that collects specification items into a specobject file. */
 @CacheableTask
 public class CollectTask extends DefaultTask
 {
-    /** Directories from which requirements are collected. */
+    /** Directories from which specification items are collected. */
     // Possible 'this' escape before subclass is fully initialized
     @SuppressWarnings("this-escape")
     public final SetProperty<File> inputDirectories = getProject().getObjects()
@@ -43,7 +43,7 @@ public class CollectTask extends DefaultTask
     }
 
     /**
-     * Returns the directories from which requirements are collected.
+     * Returns the directories from which specification items are collected.
      * 
      * @return the input directories
      */
@@ -76,7 +76,7 @@ public class CollectTask extends DefaultTask
         return pathConfig;
     }
 
-    /** Collects requirements and writes the specobject file. */
+    /** Collects specification items and writes the specobject file. */
     @TaskAction
     public void collectRequirements()
     {
