@@ -1,9 +1,7 @@
 package org.itsallcode.openfasttrace.gradle;
 
-import static org.hamcrest.CoreMatchers.either;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Path;
@@ -132,8 +130,13 @@ class PluginTestFixture
 
         Result assertOutcome(final String taskPath, final TaskOutcome expectedOutcome)
         {
-            assertEquals(expectedOutcome, buildResult.task(taskPath).getOutcome(),
-                    "Outcome of task " + taskPath);
+            return assertOutcome(taskPath, equalTo(expectedOutcome));
+        }
+
+        Result assertOutcome(final String taskPath, final Matcher<TaskOutcome> matcher)
+        {
+            assertThat("Outcome of task " + taskPath, buildResult.task(taskPath).getOutcome(),
+                    matcher);
             return this;
         }
 
@@ -144,9 +147,8 @@ class PluginTestFixture
 
         Result assertOutcomeSuccessOrFromCache(final String taskPath)
         {
-            assertThat(buildResult.task(taskPath).getOutcome(),
+            return assertOutcome(taskPath,
                     either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-            return this;
         }
 
         Result assertReportFileLines(final String... lines)

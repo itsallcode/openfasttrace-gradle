@@ -85,8 +85,9 @@ class OpenFastTracePluginTest
         fixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "collectRequirements")
                 .withReportFile(Path.of("build/reports/requirements.xml"))
                 .run().assertCollectOutcomeSuccessOrFromCache()
-                .assertReportFileLines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<specdocument>",
+                .assertReportFileLines(
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                "<specdocument>",
                         """
                                   <specobjects doctype="impl">
                                     <specobject>
@@ -219,7 +220,8 @@ class OpenFastTracePluginTest
     void filteredWantedStatusesNoMatch()
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
-                .withArgs("clean", "traceRequirements", "-PfilterWantedStatuses=approved")
+                .withArgs("clean", "traceRequirements",
+                        "-PfilterWantedStatuses=approved")
                 .withReportFile(Path.of("build/custom-report.txt"))
                 .run()
                 .assertTraceOutcomeSuccessOrFromCache()
@@ -233,7 +235,8 @@ class OpenFastTracePluginTest
     void filteredWantedStatusesInvalidStatus()
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
-                .withArgs("clean", "traceRequirements", "-PfilterWantedStatuses=invalid")
+                .withArgs("clean", "traceRequirements",
+                        "-PfilterWantedStatuses=invalid")
                 .runExpectingFailure()
                 .assertOutput(containsString(
                         "Invalid status 'invalid'. Valid statuses are: APPROVED, PROPOSED, DRAFT, REJECTED"));
@@ -248,7 +251,9 @@ class OpenFastTracePluginTest
                 fixture::run);
         assertAll(
                 () -> assertEquals(TaskOutcome.FAILED,
-                        exception.getBuildResult().task(":traceRequirements").getOutcome()),
+                        exception.getBuildResult()
+                                .task(":traceRequirements")
+                                .getOutcome()),
                 () -> assertThat(exception.getMessage(),
                         startsWith("Unexpected build execution failure")),
                 () -> assertThat(exception.getMessage(),
@@ -268,13 +273,16 @@ class OpenFastTracePluginTest
     @Test
     void traceDependencyProject()
     {
-        fixture(DEPENDENCY_CONFIG_DIR).withArgs("clean").run()
-                .assertOutcome(":clean", TaskOutcome.SUCCESS);
+        final PluginTestFixture fixture = fixture(DEPENDENCY_CONFIG_DIR);
+        fixture.withArgs("clean")
+                .run()
+                .assertOutcomeSuccessOrFromCache(":clean");
+
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR
                 .resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
-        fixture(DEPENDENCY_CONFIG_DIR).withArgs("traceRequirements")
+        fixture.withArgs("traceRequirements")
                 .withReportFile(Path.of("build/reports/tracing.txt"))
                 .run()
                 .assertTraceOutcomeSuccessOrFromCache()
