@@ -23,14 +23,8 @@ import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig
 @CacheableTask
 public class CollectTask extends DefaultTask
 {
-    /** Creates the task. */
-    public CollectTask()
-    {
-        super();
-    }
-
-    // Possible 'this' escape before subclass is fully initialized
     /** Directories from which requirements are collected. */
+    // Possible 'this' escape before subclass is fully initialized
     @SuppressWarnings("this-escape")
     public final SetProperty<File> inputDirectories = getProject().getObjects()
             .setProperty(File.class);
@@ -41,6 +35,12 @@ public class CollectTask extends DefaultTask
     @SuppressWarnings({ "this-escape" })
     public final ListProperty<SerializableTagPathConfig> pathConfig = getProject().getObjects()
             .listProperty(SerializableTagPathConfig.class);
+
+    /** Creates the task. */
+    public CollectTask()
+    {
+        super();
+    }
 
     /**
      * Returns the directories from which requirements are collected.

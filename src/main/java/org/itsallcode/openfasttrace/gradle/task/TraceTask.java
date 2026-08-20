@@ -24,12 +24,6 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 @CacheableTask
 public class TraceTask extends DefaultTask
 {
-    /** Creates the task. */
-    public TraceTask()
-    {
-        super();
-    }
-
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
     private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
@@ -48,6 +42,12 @@ public class TraceTask extends DefaultTask
     private final Property<Boolean> failBuild = getProject().getObjects().property(Boolean.class);
     private final SetProperty<ItemStatus> filterWantedStatuses = getProject().getObjects()
             .setProperty(ItemStatus.class);
+
+    /** Creates the task. */
+    public TraceTask()
+    {
+        super();
+    }
 
     /**
      * Returns the collected requirements file.
