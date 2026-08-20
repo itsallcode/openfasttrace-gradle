@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -61,6 +62,7 @@ class PluginTestFixture
 
     private GradleRunner createGradleRunner()
     {
+        assertNotNull(arguments, "Arguments must be set before running the test fixture");
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
@@ -91,7 +93,7 @@ class PluginTestFixture
     private static void configureJacoco(final Path projectDir)
     {
         final Optional<String> testkitGradleConfig = TestUtil
-                .readResource(OpenFastTracePluginTest.class,
+                .readResource(PluginTestFixture.class,
                         "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
         {
@@ -150,6 +152,8 @@ class PluginTestFixture
 
         Result assertReportFileLines(final String... lines)
         {
+            assertNotNull(relativeReportPath,
+                    "Report file path must be set before asserting report file lines");
             final Path reportFile = projectDir.resolve(relativeReportPath);
             TestUtil.assertFileContent(reportFile, lines);
             return this;

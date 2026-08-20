@@ -39,7 +39,7 @@ class OpenFastTracePluginTest
     @Test
     void tracingTaskAddedToProject()
     {
-        testFixture(PROJECT_DEFAULT_CONFIG_DIR).withArgs("tasks").run()
+        fixture(PROJECT_DEFAULT_CONFIG_DIR).withArgs("tasks").run()
                 .assertOutput(containsString(
                         "traceRequirements - Trace requirements and generate tracing report"));
     }
@@ -59,12 +59,12 @@ class OpenFastTracePluginTest
     private void testConfigurationCache(final Path projectDir)
     {
         assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
-        final PluginTestFixture testFixture = testFixture(projectDir).withArgs("tasks");
+        final PluginTestFixture fixture = fixture(projectDir).withArgs("tasks");
 
-        testFixture.run().assertOutput(containsString(
+        fixture.run().assertOutput(containsString(
                 "traceRequirements - Trace requirements and generate tracing report"));
 
-        testFixture.run().assertOutput(allOf(containsString(
+        fixture.run().assertOutput(allOf(containsString(
                 "traceRequirements - Trace requirements and generate tracing report"),
                 containsString("Reusing configuration cache.")));
     }
@@ -72,7 +72,7 @@ class OpenFastTracePluginTest
     @Test
     void testTraceExampleProjectWithDefaultConfig()
     {
-        testFixture(PROJECT_DEFAULT_CONFIG_DIR).withArgs("clean", "traceRequirements")
+        fixture(PROJECT_DEFAULT_CONFIG_DIR).withArgs("clean", "traceRequirements")
                 .withReportFile(Path.of("build/reports/tracing.txt"))
                 .run()
                 .assertTraceOutcomeSuccessOrFromCache()
@@ -82,7 +82,7 @@ class OpenFastTracePluginTest
     @Test
     void testCollectExampleProjectWithCustomConfig()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "collectRequirements")
+        fixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "collectRequirements")
                 .withReportFile(Path.of("build/reports/requirements.xml"))
                 .run().assertCollectOutcomeSuccessOrFromCache()
                 .assertReportFileLines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -133,7 +133,7 @@ class OpenFastTracePluginTest
     @Test
     void testCollectIsUpToDateWhenAlreadyRunBefore()
     {
-        final PluginTestFixture fixture = testFixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean",
+        final PluginTestFixture fixture = fixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean",
                 "collectRequirements");
         fixture
                 .run().assertCollectOutcomeSuccessOrFromCache()
@@ -147,7 +147,7 @@ class OpenFastTracePluginTest
     @Test
     void testHtmlReportConfig()
     {
-        testFixture(HTML_REPORT_CONFIG_DIR)
+        fixture(HTML_REPORT_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements")
                 .withReportFile(Path.of("build/reports/tracing.html"))
                 .run()
@@ -160,17 +160,17 @@ class OpenFastTracePluginTest
     @Test
     void testTraceTaskUpToDateWhenAlreadyRun()
     {
-        final PluginTestFixture testFixture = testFixture(HTML_REPORT_CONFIG_DIR);
-        testFixture.withArgs("clean", "traceRequirements").run()
+        final PluginTestFixture fixture = fixture(HTML_REPORT_CONFIG_DIR);
+        fixture.withArgs("clean", "traceRequirements").run()
                 .assertTraceOutcomeSuccessOrFromCache();
-        testFixture.withArgs("traceRequirements").run().assertOutcome(":traceRequirements",
+        fixture.withArgs("traceRequirements").run().assertOutcome(":traceRequirements",
                 TaskOutcome.UP_TO_DATE);
     }
 
     @Test
     void testTraceExampleProjectWithCustomConfig()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "traceRequirements")
+        fixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "traceRequirements")
                 .withReportFile(Path.of("build/custom-report.txt"))
                 .run().assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines(
@@ -181,7 +181,7 @@ class OpenFastTracePluginTest
     @Test
     void testTraceExampleProjectWithCustomConfigFailBuild()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR)
+        fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements", "-PfailBuild=true")
                 .withReportFile(Path.of("build/custom-report.txt"))
                 .runExpectingFailure()
@@ -194,7 +194,7 @@ class OpenFastTracePluginTest
     @Test
     void filteredArtifactTypes()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR)
+        fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements", "-PfailBuild=true",
                         "-PfilteredArtifactTypes=dsn")
                 .run().assertTraceOutcomeSuccessOrFromCache();
@@ -203,7 +203,7 @@ class OpenFastTracePluginTest
     @Test
     void filteredWantedStatuses()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR)
+        fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements",
                         "-PfilterWantedStatuses=draft,approved")
                 .withReportFile(Path.of("build/custom-report.txt"))
@@ -216,7 +216,7 @@ class OpenFastTracePluginTest
     @Test
     void filteredWantedStatusesNoMatch()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR)
+        fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements",
                         "-PfilterWantedStatuses=approved")
                 .withReportFile(Path.of("build/custom-report.txt"))
@@ -230,7 +230,7 @@ class OpenFastTracePluginTest
     @Test
     void filteredWantedStatusesInvalidStatus()
     {
-        testFixture(PROJECT_CUSTOM_CONFIG_DIR)
+        fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements",
                         "-PfilterWantedStatuses=invalid")
                 .runExpectingFailure()
@@ -241,7 +241,7 @@ class OpenFastTracePluginTest
     @Test
     void testTraceExampleProjectWithCustomConfigFailBuildErrorMessage()
     {
-        final PluginTestFixture fixture = testFixture(PROJECT_CUSTOM_CONFIG_DIR)
+        final PluginTestFixture fixture = fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements", "-PfailBuild=true");
         final UnexpectedBuildFailure exception = assertThrows(UnexpectedBuildFailure.class,
                 fixture::run);
@@ -257,7 +257,7 @@ class OpenFastTracePluginTest
     @Test
     void testTraceMultiProject()
     {
-        testFixture(MULTI_PROJECT_DIR).withArgs("clean", "traceRequirements")
+        fixture(MULTI_PROJECT_DIR).withArgs("clean", "traceRequirements")
                 .withReportFile(Path.of("build/custom-report.txt"))
                 .run().assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines("ok - 6 total");
@@ -266,13 +266,13 @@ class OpenFastTracePluginTest
     @Test
     void traceDependencyProject()
     {
-        testFixture(DEPENDENCY_CONFIG_DIR).withArgs("clean").run()
+        fixture(DEPENDENCY_CONFIG_DIR).withArgs("clean").run()
                 .assertOutcome(":clean", TaskOutcome.SUCCESS);
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR
                 .resolve("build/repo/requirements-1.0.zip");
         createDependencyZip(dependencyZip);
 
-        testFixture(DEPENDENCY_CONFIG_DIR).withArgs("traceRequirements")
+        fixture(DEPENDENCY_CONFIG_DIR).withArgs("traceRequirements")
                 .withReportFile(Path.of("build/reports/tracing.txt"))
                 .run().assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines(
@@ -284,7 +284,7 @@ class OpenFastTracePluginTest
     @Test
     void publishToMavenRepo()
     {
-        testFixture(PUBLISH_CONFIG_DIR).withArgs("clean", "publishToMavenLocal")
+        fixture(PUBLISH_CONFIG_DIR).withArgs("clean", "publishToMavenLocal")
                 .run().assertOutcome(":publishToMavenLocal", TaskOutcome.SUCCESS);
 
         final Path archive = PUBLISH_CONFIG_DIR
@@ -360,7 +360,7 @@ class OpenFastTracePluginTest
                 .equalsIgnoreCase("true");
     }
 
-    private PluginTestFixture testFixture(final Path projectDir)
+    private PluginTestFixture fixture(final Path projectDir)
     {
         return PluginTestFixture.create(config, projectDir);
     }
