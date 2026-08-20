@@ -156,8 +156,6 @@ test {
     finalizedBy jacocoTestReport
 }
 
-project.tasks["sonar"].dependsOn jacocoTestReport
-
 sonarqube {
     properties {
         property "sonar.host.url", "https://sonarcloud.io"
