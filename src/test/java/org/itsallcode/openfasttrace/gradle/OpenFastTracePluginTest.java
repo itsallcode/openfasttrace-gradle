@@ -6,7 +6,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.*;
 import java.nio.file.*;
@@ -58,7 +57,7 @@ class OpenFastTracePluginTest
 
     private void testConfigurationCache(final Path projectDir)
     {
-        assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
+        PluginTestFixture.assumeConfigurationCacheEnabled();
         final PluginTestFixture fixture = fixture(projectDir).withArgs("tasks");
 
         fixture.run().assertOutput(containsString(
@@ -277,7 +276,8 @@ class OpenFastTracePluginTest
         fixture.withArgs("clean")
                 .run()
                 .assertOutcome(":clean",
-                        either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
+                        either(is(TaskOutcome.SUCCESS))
+                                .or(is(TaskOutcome.UP_TO_DATE)));
 
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR
                 .resolve("build/repo/requirements-1.0.zip");
@@ -365,12 +365,6 @@ class OpenFastTracePluginTest
             throw new UncheckedIOException(
                     "Failed to create dependency zip " + dependencyZip, e);
         }
-    }
-
-    private static boolean configurationCacheEnabled()
-    {
-        return System.getProperty("enableConfigurationCache", "false")
-                .equalsIgnoreCase("true");
     }
 
     private PluginTestFixture fixture(final Path projectDir)

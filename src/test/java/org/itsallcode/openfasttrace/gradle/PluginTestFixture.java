@@ -3,6 +3,7 @@ package org.itsallcode.openfasttrace.gradle;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -82,7 +83,12 @@ class PluginTestFixture
         return runner;
     }
 
-    private static boolean configurationCacheEnabled()
+    static void assumeConfigurationCacheEnabled()
+    {
+        assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
+    }
+
+    static boolean configurationCacheEnabled()
     {
         return System.getProperty("enableConfigurationCache", "false")
                 .equalsIgnoreCase("true");
