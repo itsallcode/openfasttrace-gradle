@@ -133,10 +133,9 @@ class OpenFastTracePluginTest
     @Test
     void testCollectIsUpToDateWhenAlreadyRunBefore()
     {
-        final PluginTestFixture fixture = fixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean",
-                "collectRequirements");
-        fixture
-                .run().assertCollectOutcomeSuccessOrFromCache()
+        final PluginTestFixture fixture = fixture(PROJECT_CUSTOM_CONFIG_DIR);
+        fixture.withArgs("clean", "collectRequirements").run()
+                .assertCollectOutcomeSuccessOrFromCache()
                 .assertOutcomeSuccessOrFromCache(":clean")
                 .assertCollectOutcomeSuccessOrFromCache();
 
@@ -172,7 +171,8 @@ class OpenFastTracePluginTest
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "traceRequirements")
                 .withReportFile(Path.of("build/custom-report.txt"))
-                .run().assertTraceOutcomeSuccessOrFromCache()
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines(
                         "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                         "not ok - 2 total, 1 direct, 0 transitive defects");
@@ -197,7 +197,8 @@ class OpenFastTracePluginTest
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
                 .withArgs("clean", "traceRequirements", "-PfailBuild=true",
                         "-PfilteredArtifactTypes=dsn")
-                .run().assertTraceOutcomeSuccessOrFromCache();
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache();
     }
 
     @Test
@@ -207,7 +208,8 @@ class OpenFastTracePluginTest
                 .withArgs("clean", "traceRequirements",
                         "-PfilterWantedStatuses=draft,approved")
                 .withReportFile(Path.of("build/custom-report.txt"))
-                .run().assertTraceOutcomeSuccessOrFromCache()
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines(
                         "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
                         "not ok - 2 total, 1 direct, 0 transitive defects");
@@ -217,10 +219,10 @@ class OpenFastTracePluginTest
     void filteredWantedStatusesNoMatch()
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
-                .withArgs("clean", "traceRequirements",
-                        "-PfilterWantedStatuses=approved")
+                .withArgs("clean", "traceRequirements", "-PfilterWantedStatuses=approved")
                 .withReportFile(Path.of("build/custom-report.txt"))
-                .run().assertTraceOutcomeSuccessOrFromCache()
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines(
                         // Generated ID depends on JVM
                         "not ok [ in:  0 /  0   | out:  0 /  1 ✘ ] impl~exampleB-",
@@ -231,8 +233,7 @@ class OpenFastTracePluginTest
     void filteredWantedStatusesInvalidStatus()
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
-                .withArgs("clean", "traceRequirements",
-                        "-PfilterWantedStatuses=invalid")
+                .withArgs("clean", "traceRequirements", "-PfilterWantedStatuses=invalid")
                 .runExpectingFailure()
                 .assertOutput(containsString(
                         "Invalid status 'invalid'. Valid statuses are: APPROVED, PROPOSED, DRAFT, REJECTED"));
@@ -259,7 +260,8 @@ class OpenFastTracePluginTest
     {
         fixture(MULTI_PROJECT_DIR).withArgs("clean", "traceRequirements")
                 .withReportFile(Path.of("build/custom-report.txt"))
-                .run().assertTraceOutcomeSuccessOrFromCache()
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines("ok - 6 total");
     }
 
@@ -274,7 +276,8 @@ class OpenFastTracePluginTest
 
         fixture(DEPENDENCY_CONFIG_DIR).withArgs("traceRequirements")
                 .withReportFile(Path.of("build/reports/tracing.txt"))
-                .run().assertTraceOutcomeSuccessOrFromCache()
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines(
                         "requirements-1.0.zip!spec.md:2",
                         "requirements-1.0.zip!source.java:1",
@@ -285,7 +288,8 @@ class OpenFastTracePluginTest
     void publishToMavenRepo()
     {
         fixture(PUBLISH_CONFIG_DIR).withArgs("clean", "publishToMavenLocal")
-                .run().assertOutcome(":publishToMavenLocal", TaskOutcome.SUCCESS);
+                .run()
+                .assertOutcome(":publishToMavenLocal", TaskOutcome.SUCCESS);
 
         final Path archive = PUBLISH_CONFIG_DIR
                 .resolve("build/distributions/publish-config-1.0.zip");

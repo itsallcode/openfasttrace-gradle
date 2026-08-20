@@ -108,7 +108,6 @@ class PluginTestFixture
 
     class Result
     {
-
         private final BuildResult buildResult;
 
         private Result(final BuildResult buildResult)
