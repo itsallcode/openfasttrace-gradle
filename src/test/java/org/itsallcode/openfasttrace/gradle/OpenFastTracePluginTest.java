@@ -87,95 +87,89 @@ class OpenFastTracePluginTest
     @Test
     void testCollectExampleProjectWithCustomConfig()
     {
-        final BuildResult buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean",
-                "collectRequirements");
-        assertThat(buildResult.task(":collectRequirements").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(
-                PROJECT_CUSTOM_CONFIG_DIR.resolve("build/reports/requirements.xml"),
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        testFixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean", "collectRequirements")
+                .withReportFile(Path.of("build/reports/requirements.xml"))
+                .run().assertCollectOutcomeSuccessOrFromCache()
+                .assertReportFileLines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<specdocument>",
-                """
-                          <specobjects doctype="impl">
-                            <specobject>
-                              <id>exampleB\
-                        """, """
-                        </id>
-                              <status>approved</status>
-                              <version>0</version>
-                        """,
+                        """
+                                  <specobjects doctype="impl">
+                                    <specobject>
+                                      <id>exampleB\
+                                """, """
+                                </id>
+                                      <status>approved</status>
+                                      <version>0</version>
+                                """,
 
-                """
-                              <sourceline>1</sourceline>
-                              <providescoverage>
-                                <provcov>
-                                  <linksto>dsn:exampleB</linksto>
-                                  <dstversion>1</dstversion>
-                                </provcov>
-                              </providescoverage>
-                        """,
+                        """
+                                      <sourceline>1</sourceline>
+                                      <providescoverage>
+                                        <provcov>
+                                          <linksto>dsn:exampleB</linksto>
+                                          <dstversion>1</dstversion>
+                                        </provcov>
+                                      </providescoverage>
+                                """,
 
-                """
-                          <specobjects doctype="dsn">
-                            <specobject>
-                              <id>exampleB</id>
-                              <shortdesc>Tracing Example</shortdesc>
-                              <status>draft</status>
-                              <version>1</version>
-                        """,
+                        """
+                                  <specobjects doctype="dsn">
+                                    <specobject>
+                                      <id>exampleB</id>
+                                      <shortdesc>Tracing Example</shortdesc>
+                                      <status>draft</status>
+                                      <version>1</version>
+                                """,
 
-                """
-                              <sourceline>2</sourceline>
-                              <description>Example requirement</description>
-                              <needscoverage>
-                                <needsobj>utest</needsobj>
-                                <needsobj>impl</needsobj>
-                              </needscoverage>
-                            </specobject>
-                        """,
+                        """
+                                      <sourceline>2</sourceline>
+                                      <description>Example requirement</description>
+                                      <needscoverage>
+                                        <needsobj>utest</needsobj>
+                                        <needsobj>impl</needsobj>
+                                      </needscoverage>
+                                    </specobject>
+                                """,
 
-                "  </specobjects>\n" +
-                        "</specdocument>");
+                        "  </specobjects>\n" +
+                                "</specdocument>");
     }
 
     @Test
     void testCollectIsUpToDateWhenAlreadyRunBefore()
     {
-        BuildResult buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "clean",
+        final PluginTestFixture fixture = testFixture(PROJECT_CUSTOM_CONFIG_DIR).withArgs("clean",
                 "collectRequirements");
-        assertThat(buildResult.task(":clean").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        assertThat(buildResult.task(":collectRequirements").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        buildResult = runBuild(PROJECT_CUSTOM_CONFIG_DIR, "collectRequirements");
-        assertEquals(TaskOutcome.UP_TO_DATE,
-                buildResult.task(":collectRequirements").getOutcome());
+        fixture
+                .run().assertCollectOutcomeSuccessOrFromCache()
+                .assertOutcomeSuccessOrFromCache(":clean")
+                .assertCollectOutcomeSuccessOrFromCache();
+
+        fixture.withArgs("collectRequirements").run()
+                .assertOutcome(":collectRequirements", TaskOutcome.UP_TO_DATE);
     }
 
     @Test
     void testHtmlReportConfig()
     {
-        final BuildResult buildResult = runBuild(HTML_REPORT_CONFIG_DIR, "clean",
-                "traceRequirements");
-        assertThat(buildResult.task(":traceRequirements").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        TestUtil.assertFileContent(
-                HTML_REPORT_CONFIG_DIR.resolve("build/reports/tracing.html"),
-                "<!DOCTYPE html>",
-                "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
-                "<details open>");
+        testFixture(HTML_REPORT_CONFIG_DIR)
+                .withArgs("clean", "traceRequirements")
+                .withReportFile(Path.of("build/reports/tracing.html"))
+                .run()
+                .assertTraceOutcomeSuccessOrFromCache()
+                .assertReportFileLines("<!DOCTYPE html>",
+                        "<summary title=\"dsn~exampleB~1\"><span class=\"red\">&cross;</span>",
+                        "<details open>");
     }
 
     @Test
     void testTraceTaskUpToDateWhenAlreadyRun()
     {
-        BuildResult buildResult = runBuild(HTML_REPORT_CONFIG_DIR, "clean",
-                "traceRequirements");
-        assertThat(buildResult.task(":traceRequirements").getOutcome(),
-                either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
-        buildResult = runBuild(HTML_REPORT_CONFIG_DIR, "traceRequirements");
-        assertEquals(TaskOutcome.UP_TO_DATE,
-                buildResult.task(":traceRequirements").getOutcome());
+        final PluginTestFixture testFixture = testFixture(HTML_REPORT_CONFIG_DIR);
+        testFixture.withArgs("clean", "traceRequirements").run()
+                .assertTraceOutcomeSuccessOrFromCache();
+        testFixture.withArgs("traceRequirements").run().assertOutcome(":traceRequirements",
+                TaskOutcome.UP_TO_DATE);
     }
 
     @Test

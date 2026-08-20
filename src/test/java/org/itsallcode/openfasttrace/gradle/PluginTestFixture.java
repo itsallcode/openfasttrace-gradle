@@ -3,6 +3,7 @@ package org.itsallcode.openfasttrace.gradle;
 import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -113,7 +114,29 @@ class PluginTestFixture
 
         Result assertTraceOutcomeSuccessOrFromCache()
         {
-            assertThat(buildResult.task(":traceRequirements").getOutcome(),
+            return assertOutcomeSuccessOrFromCache(":traceRequirements");
+        }
+
+        Result assertCollectOutcomeUpToDate()
+        {
+            return this.assertOutcome(":collectRequirements", TaskOutcome.UP_TO_DATE);
+        }
+
+        Result assertOutcome(final String taskPath, final TaskOutcome expectedOutcome)
+        {
+            assertEquals(expectedOutcome, buildResult.task(taskPath).getOutcome(),
+                    "Outcome of task " + taskPath);
+            return this;
+        }
+
+        Result assertCollectOutcomeSuccessOrFromCache()
+        {
+            return assertOutcomeSuccessOrFromCache(":collectRequirements");
+        }
+
+        Result assertOutcomeSuccessOrFromCache(final String taskPath)
+        {
+            assertThat(buildResult.task(taskPath).getOutcome(),
                     either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.FROM_CACHE)));
             return this;
         }
