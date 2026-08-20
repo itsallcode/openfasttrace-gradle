@@ -141,8 +141,9 @@ class PluginTestFixture
 
         Result assertOutcome(final String taskPath, final Matcher<TaskOutcome> matcher)
         {
-            assertThat("Outcome of task " + taskPath, buildResult.task(taskPath).getOutcome(),
-                    matcher);
+            final BuildTask task = buildResult.task(taskPath);
+            assertNotNull(task, "Task '" + taskPath + "' was not executed");
+            assertThat("Outcome of task " + taskPath, task.getOutcome(), matcher);
             return this;
         }
 

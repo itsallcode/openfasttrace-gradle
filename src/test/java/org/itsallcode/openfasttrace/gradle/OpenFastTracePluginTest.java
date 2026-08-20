@@ -135,8 +135,9 @@ class OpenFastTracePluginTest
     {
         final PluginTestFixture fixture = fixture(PROJECT_CUSTOM_CONFIG_DIR);
         fixture.withArgs("clean", "collectRequirements").run()
-                .assertCollectOutcomeSuccessOrFromCache()
-                .assertOutcomeSuccessOrFromCache(":clean")
+                .assertOutcome(":clean",
+                        either(is(TaskOutcome.SUCCESS))
+                                .or(is(TaskOutcome.UP_TO_DATE)))
                 .assertCollectOutcomeSuccessOrFromCache();
 
         fixture.withArgs("collectRequirements").run()
