@@ -1,10 +1,10 @@
 package org.itsallcode.openfasttrace.gradle;
 
 import static java.util.stream.Collectors.joining;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -276,7 +276,8 @@ class OpenFastTracePluginTest
         final PluginTestFixture fixture = fixture(DEPENDENCY_CONFIG_DIR);
         fixture.withArgs("clean")
                 .run()
-                .assertOutcomeSuccessOrFromCache(":clean");
+                .assertOutcome(":clean",
+                        either(is(TaskOutcome.SUCCESS)).or(is(TaskOutcome.UP_TO_DATE)));
 
         final Path dependencyZip = DEPENDENCY_CONFIG_DIR
                 .resolve("build/repo/requirements-1.0.zip");
