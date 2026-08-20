@@ -79,7 +79,7 @@ tasks.withType(JavaCompile) {
 javadoc {
     failOnError = true
     options.addBooleanOption('html5', true)
-    //options.addStringOption('Xwerror', '-quiet')
+    options.addBooleanOption('Xwerror', true)
 }
 
 task compileOft(type: Exec) {
