@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- [PR #82](https://github.com/itsallcode/openfasttrace-gradle/pull/82)
+  - Refactor plugin integration tests
+
 ## [3.2.0] - 2026-08-18
 
 - [PR #79](https://github.com/itsallcode/openfasttrace-gradle/pull/79)
