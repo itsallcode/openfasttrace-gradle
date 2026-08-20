@@ -19,19 +19,34 @@ import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.core.*;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
+/** Gradle task that collects specification items into a specobject file. */
 @CacheableTask
 public class CollectTask extends DefaultTask
 {
+    /** Directories from which specification items are collected. */
     // Possible 'this' escape before subclass is fully initialized
     @SuppressWarnings("this-escape")
     public final SetProperty<File> inputDirectories = getProject().getObjects()
             .setProperty(File.class);
+    /** Generated specobject file. */
     @SuppressWarnings("this-escape")
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
+    /** Configured tag path settings. */
     @SuppressWarnings({ "this-escape" })
     public final ListProperty<SerializableTagPathConfig> pathConfig = getProject().getObjects()
             .listProperty(SerializableTagPathConfig.class);
 
+    /** Creates the task. */
+    public CollectTask()
+    {
+        super();
+    }
+
+    /**
+     * Returns the directories from which specification items are collected.
+     * 
+     * @return the input directories
+     */
     @InputFiles
     @PathSensitive(PathSensitivity.ABSOLUTE)
     public SetProperty<File> getInputDirectories()
@@ -39,18 +54,29 @@ public class CollectTask extends DefaultTask
         return inputDirectories;
     }
 
+    /**
+     * Returns the generated specobject file.
+     * 
+     * @return the output file
+     */
     @OutputFile
     public RegularFileProperty getOutputFile()
     {
         return outputFile;
     }
 
+    /**
+     * Returns the configured tag path settings.
+     * 
+     * @return the path settings
+     */
     @Input
     public ListProperty<SerializableTagPathConfig> getPathConfig()
     {
         return pathConfig;
     }
 
+    /** Collects specification items and writes the specobject file. */
     @TaskAction
     public void collectRequirements()
     {

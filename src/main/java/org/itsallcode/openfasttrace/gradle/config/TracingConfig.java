@@ -11,6 +11,7 @@ import org.gradle.api.provider.*;
 import org.itsallcode.openfasttrace.api.DetailsSectionDisplay;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 
+/** Configuration of requirement collection and tracing. */
 public class TracingConfig
 {
     private static final ReportVerbosity DEFAULT_REPORT_VERBOSITY = ReportVerbosity.FAILURE_DETAILS;
@@ -28,6 +29,12 @@ public class TracingConfig
     private final Property<DetailsSectionDisplay> detailsSectionDisplay;
     private final Property<Boolean> failBuild;
 
+    /**
+     * Creates a tracing configuration with the plugin defaults.
+     * 
+     * @param project
+     *            the Gradle project owning the configuration
+     */
     public TracingConfig(final Project project)
     {
         this.inputDirectories = project.files();
@@ -48,121 +55,253 @@ public class TracingConfig
         this.failBuild.set(true);
     }
 
+    /**
+     * Returns the report verbosity property.
+     * 
+     * @return the verbosity property
+     */
     public Property<ReportVerbosity> getReportVerbosity()
     {
         return reportVerbosity;
     }
 
+    /**
+     * Returns the report format property.
+     * 
+     * @return the format property
+     */
     public Property<String> getReportFormat()
     {
         return reportFormat;
     }
 
+    /**
+     * Returns the directories containing requirements.
+     * 
+     * @return the input directories
+     */
     public ConfigurableFileCollection getInputDirectories()
     {
         return inputDirectories;
     }
 
+    /**
+     * Returns the optional report output file.
+     * 
+     * @return the report file
+     */
     public RegularFileProperty getReportFile()
     {
         return reportFile;
     }
 
+    /**
+     * Returns the external requirement dependencies.
+     * 
+     * @return the imported requirements
+     */
     public ListProperty<Object> getImportedRequirements()
     {
         return importedRequirements;
     }
 
+    /**
+     * Returns the tags to include in tracing.
+     * 
+     * @return the tag filter
+     */
     public SetProperty<String> getFilteredTags()
     {
         return filteredTags;
     }
 
+    /**
+     * Returns the artifact types to include in tracing.
+     * 
+     * @return the artifact type filter
+     */
     public SetProperty<String> getFilteredArtifactTypes()
     {
         return filteredArtifactTypes;
     }
 
+    /**
+     * Returns whether untagged items are included.
+     * 
+     * @return the untagged item setting
+     */
     public Property<Boolean> getFilterAcceptsItemsWithoutTag()
     {
         return filterAcceptsItemsWithoutTag;
     }
 
+    /**
+     * Returns the report details section display setting.
+     * 
+     * @return the display setting
+     */
     public Property<DetailsSectionDisplay> getDetailsSectionDisplay()
     {
         return detailsSectionDisplay;
     }
 
+    /**
+     * Returns the statuses to include in tracing.
+     * 
+     * @return the status filter
+     */
     public SetProperty<String> getFilterWantedStatuses()
     {
         return filterWantedStatuses;
     }
 
+    /**
+     * Sets the report verbosity by name.
+     * 
+     * @param reportVerbosity
+     *            verbosity name
+     */
     public void setReportVerbosity(final String reportVerbosity)
     {
         setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity));
     }
 
+    /**
+     * Sets the report verbosity.
+     * 
+     * @param reportVerbosity
+     *            verbosity to use
+     */
     public void setReportVerbosity(final ReportVerbosity reportVerbosity)
     {
         this.reportVerbosity.set(reportVerbosity);
     }
 
+    /**
+     * Sets the report format.
+     * 
+     * @param reportFormat
+     *            format to use
+     */
     public void setReportFormat(final String reportFormat)
     {
         this.reportFormat.set(reportFormat);
     }
 
+    /**
+     * Sets the directories containing requirements.
+     * 
+     * @param inputDirectories
+     *            directories to use
+     */
     public void setInputDirectories(final ConfigurableFileCollection inputDirectories)
     {
         this.inputDirectories.setFrom(inputDirectories);
     }
 
+    /**
+     * Sets the report output file.
+     * 
+     * @param reportFile
+     *            file to write
+     */
     public void setReportFile(final RegularFileProperty reportFile)
     {
         this.reportFile.set(reportFile);
     }
 
+    /**
+     * Sets the external requirement dependencies.
+     * 
+     * @param importedRequirements
+     *            dependencies to import
+     */
     public void setImportedRequirements(final List<Object> importedRequirements)
     {
         this.importedRequirements.set(importedRequirements);
     }
 
+    /**
+     * Sets the tags to include in tracing.
+     * 
+     * @param filteredTags
+     *            tags to include
+     */
     public void setFilteredTags(final List<String> filteredTags)
     {
         this.filteredTags.set(filteredTags);
     }
 
+    /**
+     * Sets the artifact types to include in tracing.
+     * 
+     * @param filteredArtifactTypes
+     *            artifact types to include
+     */
     public void setFilteredArtifactTypes(final List<String> filteredArtifactTypes)
     {
         this.filteredArtifactTypes.set(filteredArtifactTypes);
     }
 
+    /**
+     * Sets whether untagged items are included.
+     * 
+     * @param filterAcceptsItemsWithoutTag
+     *            whether to include untagged items
+     */
     public void setFilterAcceptsItemsWithoutTag(final boolean filterAcceptsItemsWithoutTag)
     {
         this.filterAcceptsItemsWithoutTag.set(filterAcceptsItemsWithoutTag);
     }
 
+    /**
+     * Sets the report details section display setting by name.
+     * 
+     * @param detailsSectionDisplay
+     *            display setting name
+     */
     public void setDetailsSectionDisplay(final String detailsSectionDisplay)
     {
         this.detailsSectionDisplay.set(DetailsSectionDisplay.valueOf(detailsSectionDisplay));
     }
 
+    /**
+     * Sets the statuses to include in tracing.
+     * 
+     * @param statuses
+     *            statuses to include
+     */
     public void setFilterWantedStatuses(final Set<String> statuses)
     {
         this.filterWantedStatuses.set(statuses);
     }
 
+    /**
+     * Returns the tag path configuration.
+     * 
+     * @return the tag path configuration
+     */
     public TagPathConfiguration getTagPathConfig()
     {
         return ((ExtensionAware) this).getExtensions().getByType(TagPathConfiguration.class);
     }
 
+    /**
+     * Returns whether tracing defects fail the build.
+     * 
+     * @return the fail-build property
+     */
     public Property<Boolean> getFailBuild()
     {
         return failBuild;
     }
 
+    /**
+     * Sets whether tracing defects fail the build.
+     * 
+     * @param failBuild
+     *            whether defects should fail the build
+     */
     public void setFailBuild(final boolean failBuild)
     {
         this.failBuild.set(failBuild);

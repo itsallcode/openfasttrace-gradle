@@ -21,11 +21,24 @@ import org.itsallcode.openfasttrace.gradle.task.TraceTask;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 import org.slf4j.Logger;
 
+/** Gradle plugin that collects and traces requirements. */
 public class OpenFastTracePlugin implements Plugin<Project>
 {
     private static final Logger LOG = Logging.getLogger(OpenFastTracePlugin.class);
     private static final String TASK_GROUP_NAME = "trace";
 
+    /** Creates the plugin. */
+    public OpenFastTracePlugin()
+    {
+        super();
+    }
+
+    /**
+     * Applies the plugin to the root project.
+     *
+     * @param rootProject
+     *            the project receiving the plugin
+     */
     @Override
     public void apply(final Project rootProject)
     {
