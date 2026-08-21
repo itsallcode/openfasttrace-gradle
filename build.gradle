@@ -133,12 +133,6 @@ testing {
                 implementation "org.hamcrest:hamcrest-core:3.0"
                 implementation "com.jparams:to-string-verifier:1.4.8"
             }
-            targets {
-                all {
-                    testTask.configure {
-                    }
-                }
-            }
         }
     }
 }
