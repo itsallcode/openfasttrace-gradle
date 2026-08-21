@@ -100,8 +100,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
         {
             task.getOutputFile().set(config.getReportFormat().map(format -> rootProject.getLayout()
                     .getBuildDirectory()
-                    .file("reports/tracing."
-                            + ("html".equals(format) ? "html" : "txt"))
+                    .file("reports/tracing." + ("html".equals(format) ? "html" : "txt"))
                     .get()));
         }
         task.getReportVerbosity().set(config.getReportVerbosity());
