@@ -109,6 +109,11 @@ gradlePlugin {
             displayName = 'OpenFastTrace requirements tracing plugin'
             description = 'Gradle plugin for tracing requirements using OpenFastTrace'
             tags.addAll(['requirementstracing', 'requirements', 'tracing', 'reqtracing', 'openfasttrace', 'oft'])
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

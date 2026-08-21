@@ -5,11 +5,11 @@ import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Stream;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.tasks.TaskProvider;
@@ -70,9 +70,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
             task.setGroup(TASK_GROUP_NAME);
             task.setDescription("Collect requirements and generate specobject file");
             task.getInputDirectories().set(getAllInputDirectories(rootProject.getAllprojects()));
-            task.getOutputFile()
-                    .set(new File(rootProject.getLayout().getBuildDirectory().getAsFile().get(),
-                            "reports/requirements.xml"));
+            task.getOutputFile().set(
+                    rootProject.getLayout().getBuildDirectory().file("reports/requirements.xml"));
             task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
         });
     }
@@ -92,21 +91,23 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.dependsOn(collectTask);
         final TracingConfig config = getConfig(rootProject);
         task.getFailBuild().set(config.getFailBuild());
-        task.getRequirementsFile().set(collectTask.get().getOutputFile());
+        task.getRequirementsFile().set(collectTask.flatMap(CollectTask::getOutputFile));
         if (config.getReportFile().isPresent())
         {
             task.getOutputFile().set(config.getReportFile());
         }
         else
         {
-            final String extension = "html".equals(config.getReportFormat().get()) ? "html" : "txt";
-            task.getOutputFile()
-                    .set(new File(rootProject.getLayout().getBuildDirectory().getAsFile().get(),
-                            "reports/tracing." + extension));
+            task.getOutputFile().set(config.getReportFormat().map(format -> rootProject.getLayout()
+                    .getBuildDirectory()
+                    .file("reports/tracing."
+                            + ("html".equals(format) ? "html" : "txt"))
+                    .get()));
         }
         task.getReportVerbosity().set(config.getReportVerbosity());
         task.getReportFormat().set(config.getReportFormat());
-        task.getImportedRequirements().set(getImportedRequirements(rootProject.getAllprojects()));
+        task.getImportedRequirements()
+                .from(getImportedRequirements(rootProject, rootProject.getAllprojects()));
         task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
@@ -144,14 +145,15 @@ public class OpenFastTracePlugin implements Plugin<Project>
                 .collect(toSet());
     }
 
-    private static Set<File> getImportedRequirements(final Set<Project> allProjects)
+    private static ConfigurableFileCollection getImportedRequirements(final Project rootProject,
+            final Set<Project> allProjects)
     {
-        return allProjects.stream() //
-                .flatMap(OpenFastTracePlugin::getImportedRequirements) //
-                .collect(toSet());
+        return rootProject.files(allProjects.stream() //
+                .map(OpenFastTracePlugin::getImportedRequirements) //
+                .toList());
     }
 
-    private static Stream<File> getImportedRequirements(final Project project)
+    private static Configuration getImportedRequirements(final Project project)
     {
         final String CONFIG_NAME = "oftRequirementConfig";
         final Configuration configuration = project.getConfigurations().create(CONFIG_NAME);
@@ -160,9 +162,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
                     CONFIG_NAME, project);
             project.getDependencies().add(CONFIG_NAME, dependency);
         });
-        final Set<File> files = configuration.getFiles();
-        LOG.info("Found {} dependency files: {}", files.size(), files);
-        return files.stream();
+        return configuration;
     }
 
     private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)

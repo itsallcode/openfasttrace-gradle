@@ -68,9 +68,9 @@ class PluginTestFixture
         allArgs.addAll(List.of("--info", "--stacktrace", "--build-cache"));
         if (configurationCacheEnabled())
         {
-            allArgs.add("--configuration-cache");
+            allArgs.addAll(List.of("--configuration-cache", "--configuration-cache-problems=fail"));
         }
-        allArgs.addAll(List.of("--warning-mode", "all"));
+        allArgs.addAll(List.of("--warning-mode", configurationCacheEnabled() ? "fail" : "all"));
         final GradleRunner runner = GradleRunner.create()
                 .withProjectDir(projectDir.toFile())
                 .withPluginClasspath()
@@ -127,6 +127,14 @@ class PluginTestFixture
         Result assertTraceOutcomeSuccessOrFromCache()
         {
             return assertOutcomeSuccessOrFromCache(":traceRequirements");
+        }
+
+        Result assertTraceOutcomeSuccessFromCacheOrUpToDate()
+        {
+            return assertOutcome(":traceRequirements",
+                    either(is(TaskOutcome.SUCCESS))
+                            .or(is(TaskOutcome.FROM_CACHE))
+                            .or(is(TaskOutcome.UP_TO_DATE)));
         }
 
         Result assertCollectOutcomeUpToDate()
