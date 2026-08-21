@@ -61,7 +61,6 @@ class OpenFastTracePluginTest
     @Test
     void pluginUsesConfigurationCacheWithImportedRequirements()
     {
-        PluginTestFixture.assumeConfigurationCacheEnabled();
         final PluginTestFixture fixture = fixture(DEPENDENCY_CONFIG_DIR);
         fixture.withArgs("clean").run()
                 .assertOutcome(":clean",
@@ -82,7 +81,6 @@ class OpenFastTracePluginTest
     private void testConfigurationCache(final Path projectDir, final Path reportFile,
             final String... lines)
     {
-        PluginTestFixture.assumeConfigurationCacheEnabled();
         testConfigurationCache(fixture(projectDir), reportFile, lines);
     }
 

@@ -60,7 +60,7 @@ dependencies {
 }
 
 def getJavaVersion = {
-    return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 21
+    return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
 }
 
 java {
@@ -136,11 +136,6 @@ testing {
             targets {
                 all {
                     testTask.configure {
-                        if (project.hasProperty('enableConfigurationCache')) {
-                            def enableConfigurationCache = project.getProperty("enableConfigurationCache")
-                            logger.lifecycle "Setting system property 'enableConfigurationCache' to $enableConfigurationCache for test task '${name}'"
-                            systemProperty "enableConfigurationCache", enableConfigurationCache
-                        }
                     }
                 }
             }

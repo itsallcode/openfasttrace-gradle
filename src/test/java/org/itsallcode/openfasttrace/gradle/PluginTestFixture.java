@@ -3,7 +3,6 @@ package org.itsallcode.openfasttrace.gradle;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -66,11 +65,8 @@ class PluginTestFixture
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
         allArgs.addAll(List.of("--info", "--stacktrace", "--build-cache"));
-        if (configurationCacheEnabled())
-        {
-            allArgs.addAll(List.of("--configuration-cache", "--configuration-cache-problems=fail"));
-        }
-        allArgs.addAll(List.of("--warning-mode", configurationCacheEnabled() ? "fail" : "all"));
+        allArgs.addAll(List.of("--configuration-cache", "--configuration-cache-problems=fail"));
+        allArgs.addAll(List.of("--warning-mode", "fail"));
         final GradleRunner runner = GradleRunner.create()
                 .withProjectDir(projectDir.toFile())
                 .withPluginClasspath()
@@ -81,17 +77,6 @@ class PluginTestFixture
             runner.withGradleVersion(config.gradleVersion);
         }
         return runner;
-    }
-
-    static void assumeConfigurationCacheEnabled()
-    {
-        assumeTrue(configurationCacheEnabled(), "Configuration cache is not enabled");
-    }
-
-    static boolean configurationCacheEnabled()
-    {
-        return System.getProperty("enableConfigurationCache", "false")
-                .equalsIgnoreCase("true");
     }
 
     private static void configureJacoco(final Path projectDir)
