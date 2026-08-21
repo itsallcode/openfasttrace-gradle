@@ -137,8 +137,6 @@ testing {
     }
 }
 
-test.onlyIf { rootProject.name == 'openfasttrace-gradle' }
-
 jacocoTestReport {
     dependsOn test
     reports {
