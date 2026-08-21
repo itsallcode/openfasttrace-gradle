@@ -70,6 +70,22 @@ You can configure the following properties:
 * `filteredArtifactTypes`: Use only the listed artifact types during tracing
 * `filterWantedStatuses`: Import only specification items that have a status contained in the list of statuses. Possible values: `draft`, `proposed`, `approved`, `rejected`. See the [OFT user guide](https://github.com/itsallcode/openfasttrace/blob/main/doc/user_guide/user_guide.md#filtering-by-status) for details.
 
+### Using OpenFastTrace Plugins
+
+OpenFastTrace extension plugins can be added with the `pluginDependencies` property. The dependencies are added to the classpath used by requirement collection and tracing:
+
+```groovy
+repositories {
+  mavenCentral()
+}
+
+requirementTracing {
+  pluginDependencies = ['org.itsallcode:openfasttrace-asciidoc-plugin:0.3.0']
+}
+```
+
+These are OpenFastTrace extension plugins, not Gradle build plugins. Plugin JARs must provide the appropriate OpenFastTrace service descriptors and should not include a duplicate incompatible `openfasttrace-api` dependency. Plugin discovery remains additive to OpenFastTrace's built-in plugin directory.
+
 ### Configuring the Short Tag Importer
 
 The short tag importer allows omitting artifact type and the covered artifact type. Optionally you can add a prefix to the item name, e.g. a common module name.
