@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix JavaDoc warnings and let build fail on warnings
 - [PR #82](https://github.com/itsallcode/openfasttrace-gradle/pull/82)
   - Refactor plugin integration tests
+- [#81](https://github.com/itsallcode/openfasttrace-gradle/issues/81):
+  - Ensure compatibility with Gradle configuration cache
+  - Mark plugin as compatible with configuration cache
 
 ## [3.2.0] - 2026-08-18
 
