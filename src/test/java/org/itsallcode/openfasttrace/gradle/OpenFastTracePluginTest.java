@@ -3,7 +3,6 @@ package org.itsallcode.openfasttrace.gradle;
 import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,26 +45,60 @@ class OpenFastTracePluginTest
     @Test
     void pluginUsesConfigurationCache()
     {
-        testConfigurationCache(PROJECT_DEFAULT_CONFIG_DIR);
+        testConfigurationCache(PROJECT_CUSTOM_CONFIG_DIR,
+                Path.of("build/custom-report.txt"),
+                "not ok [ in:  1 /  1 ✔ | out:  0 /  0   ] dsn~exampleB~1 [draft] (impl, -utest)",
+                "not ok - 2 total, 1 direct, 0 transitive defects");
     }
 
     @Test
     void pluginUsesConfigurationCacheWithMultiModuleProject()
     {
-        testConfigurationCache(MULTI_PROJECT_DIR);
+        testConfigurationCache(MULTI_PROJECT_DIR, Path.of("build/custom-report.txt"),
+                "ok - 6 total");
     }
 
-    private void testConfigurationCache(final Path projectDir)
+    @Test
+    void pluginUsesConfigurationCacheWithImportedRequirements()
     {
-        PluginTestFixture.assumeConfigurationCacheEnabled();
-        final PluginTestFixture fixture = fixture(projectDir).withArgs("tasks");
+        final PluginTestFixture fixture = fixture(DEPENDENCY_CONFIG_DIR);
+        fixture.withArgs("clean").run()
+                .assertOutcome(":clean",
+                        either(is(TaskOutcome.SUCCESS))
+                                .or(is(TaskOutcome.UP_TO_DATE)));
 
-        fixture.run().assertOutput(containsString(
-                "traceRequirements - Trace requirements and generate tracing report"));
+        final Path dependencyZip = DEPENDENCY_CONFIG_DIR
+                .resolve("build/repo/requirements-1.0.zip");
+        createDependencyZip(dependencyZip);
 
-        fixture.run().assertOutput(allOf(containsString(
-                "traceRequirements - Trace requirements and generate tracing report"),
-                containsString("Reusing configuration cache.")));
+        testConfigurationCache(fixture,
+                Path.of("build/reports/tracing.txt"),
+                "requirements-1.0.zip!spec.md:2",
+                "requirements-1.0.zip!source.java:1",
+                "not ok - 2 total, 1 direct, 0 transitive defects");
+    }
+
+    private void testConfigurationCache(final Path projectDir, final Path reportFile,
+            final String... lines)
+    {
+        testConfigurationCache(fixture(projectDir), reportFile, lines);
+    }
+
+    private void testConfigurationCache(final PluginTestFixture fixture, final Path reportFile,
+            final String... lines)
+    {
+        fixture.withArgs("traceRequirements")
+                .withReportFile(reportFile)
+                .run()
+                .assertTraceOutcomeSuccessFromCacheOrUpToDate()
+                .assertReportFileLines(lines);
+
+        fixture.withArgs("traceRequirements")
+                .withReportFile(reportFile)
+                .run()
+                .assertTraceOutcomeSuccessFromCacheOrUpToDate()
+                .assertReportFileLines(lines)
+                .assertOutput(containsString("Reusing configuration cache."));
     }
 
     @Test

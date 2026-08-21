@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Upgrade to Gradle 9.7.1
   - Update Eclipse formatter settings to latest version
   - Remove unused Eclipse Save Actions configuration
+- [#81](https://github.com/itsallcode/openfasttrace-gradle/issues/81):
+  - Ensure compatibility with Gradle configuration cache
+  - Mark plugin as compatible with configuration cache
 
 ## [3.2.0] - 2026-08-18
 

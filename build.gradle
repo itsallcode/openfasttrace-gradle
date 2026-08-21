@@ -60,7 +60,7 @@ dependencies {
 }
 
 def getJavaVersion = {
-    return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 21
+    return project.hasProperty('javaVersion') ? project.getProperty('javaVersion') : 17
 }
 
 java {
@@ -109,6 +109,11 @@ gradlePlugin {
             displayName = 'OpenFastTrace requirements tracing plugin'
             description = 'Gradle plugin for tracing requirements using OpenFastTrace'
             tags.addAll(['requirementstracing', 'requirements', 'tracing', 'reqtracing', 'openfasttrace', 'oft'])
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
@@ -128,22 +133,9 @@ testing {
                 implementation "org.hamcrest:hamcrest-core:3.0"
                 implementation "com.jparams:to-string-verifier:1.4.8"
             }
-            targets {
-                all {
-                    testTask.configure {
-                        if (project.hasProperty('enableConfigurationCache')) {
-                            def enableConfigurationCache = project.getProperty("enableConfigurationCache")
-                            logger.lifecycle "Setting system property 'enableConfigurationCache' to $enableConfigurationCache for test task '${name}'"
-                            systemProperty "enableConfigurationCache", enableConfigurationCache
-                        }
-                    }
-                }
-            }
         }
     }
 }
-
-test.onlyIf { rootProject.name == 'openfasttrace-gradle' }
 
 jacocoTestReport {
     dependsOn test

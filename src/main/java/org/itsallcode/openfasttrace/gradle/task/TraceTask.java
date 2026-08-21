@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
@@ -31,8 +32,7 @@ public class TraceTask extends DefaultTask
     private final Property<String> reportFormat = getProject().getObjects().property(String.class);
     private final Property<DetailsSectionDisplay> detailsSectionDisplay = getProject().getObjects()
             .property(DetailsSectionDisplay.class);
-    private final SetProperty<File> importedRequirements = getProject().getObjects()
-            .setProperty(File.class);
+    private final ConfigurableFileCollection importedRequirements = getProject().files();
     private final SetProperty<String> filteredArtifactTypes = getProject().getObjects()
             .setProperty(String.class);
     private final SetProperty<String> filteredTags = getProject().getObjects()
@@ -99,8 +99,9 @@ public class TraceTask extends DefaultTask
      * 
      * @return the imported requirements property
      */
-    @Input
-    public SetProperty<File> getImportedRequirements()
+    @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
+    public ConfigurableFileCollection getImportedRequirements()
     {
         return importedRequirements;
     }
@@ -247,7 +248,7 @@ public class TraceTask extends DefaultTask
 
     private List<Path> getAllImportFiles()
     {
-        final Stream<Path> importedRequirementPaths = importedRequirements.get().stream()
+        final Stream<Path> importedRequirementPaths = importedRequirements.getFiles().stream()
                 .map(File::toPath);
         final Stream<Path> inputDirPaths = Stream.of(requirementsFile.getAsFile().get().toPath());
         return Stream.concat(importedRequirementPaths, inputDirPaths).toList();
