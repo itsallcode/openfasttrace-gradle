@@ -12,7 +12,7 @@ public enum GradleTestConfig
      * https://github.com/gradle/gradle/issues/25979
      */
     // PREVIOUS_VERSION("8.14.5"),
-    CURRENT_VERSION("9.7.0");
+    CURRENT_VERSION("9.7.1");
 
     public final String gradleVersion;
 
