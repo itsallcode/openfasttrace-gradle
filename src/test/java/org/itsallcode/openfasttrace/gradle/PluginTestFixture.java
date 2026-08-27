@@ -104,9 +104,10 @@ class PluginTestFixture
             this.buildResult = buildResult;
         }
 
-        void assertOutput(final Matcher<String> matcher)
+        Result assertOutput(final Matcher<String> matcher)
         {
             assertThat(buildResult.getOutput(), matcher);
+            return this;
         }
 
         Result assertTraceOutcomeSuccessOrFromCache()

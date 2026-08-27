@@ -8,6 +8,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.*;
+import org.itsallcode.openfasttrace.api.ColorScheme;
 import org.itsallcode.openfasttrace.api.DetailsSectionDisplay;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 
@@ -18,6 +19,7 @@ public class TracingConfig
     private static final String DEFAULT_REPORT_FORMAT = "plain";
 
     private final Property<ReportVerbosity> reportVerbosity;
+    private final Property<ColorScheme> reportColorScheme;
     private final Property<String> reportFormat;
     private final ConfigurableFileCollection inputDirectories;
     private final RegularFileProperty reportFile;
@@ -41,6 +43,8 @@ public class TracingConfig
         this.reportFile = project.getObjects().fileProperty();
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
         this.reportVerbosity.set(DEFAULT_REPORT_VERBOSITY);
+        this.reportColorScheme = project.getObjects().property(ColorScheme.class);
+        this.reportColorScheme.set(ColorScheme.BLACK_AND_WHITE);
         this.reportFormat = project.getObjects().property(String.class);
         this.reportFormat.set(DEFAULT_REPORT_FORMAT);
         this.importedRequirements = project.getObjects().listProperty(Object.class);
@@ -63,6 +67,16 @@ public class TracingConfig
     public Property<ReportVerbosity> getReportVerbosity()
     {
         return reportVerbosity;
+    }
+
+    /**
+     * Returns the report color scheme.
+     * 
+     * @return the color scheme
+     */
+    public Property<ColorScheme> getReportColorScheme()
+    {
+        return reportColorScheme;
     }
 
     /**
@@ -163,7 +177,8 @@ public class TracingConfig
      */
     public void setReportVerbosity(final String reportVerbosity)
     {
-        setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity));
+        // TODO: Handle invalid verbosity names gracefully
+        setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity.toUpperCase()));
     }
 
     /**
@@ -175,6 +190,29 @@ public class TracingConfig
     public void setReportVerbosity(final ReportVerbosity reportVerbosity)
     {
         this.reportVerbosity.set(reportVerbosity);
+    }
+
+    /**
+     * Sets the report color scheme.
+     * 
+     * @param reportColorScheme
+     *            color scheme to use
+     */
+    public void setReportColorScheme(final String reportColorScheme)
+    {
+        // TODO: Handle invalid color scheme names gracefully
+        this.setReportColorScheme(ColorScheme.valueOf(reportColorScheme.toUpperCase()));
+    }
+
+    /**
+     * Sets the report color scheme.
+     * 
+     * @param reportColorScheme
+     *            color scheme to use
+     */
+    public void setReportColorScheme(final ColorScheme reportColorScheme)
+    {
+        this.reportColorScheme.set(reportColorScheme);
     }
 
     /**
@@ -310,8 +348,8 @@ public class TracingConfig
     @Override
     public String toString()
     {
-        return "TracingConfig [reportVerbosity=" + reportVerbosity + ", inputDirectories="
-                + inputDirectories + ", reportFile=" + reportFile + ", pathConfig="
+        return "TracingConfig [reportVerbosity=" + reportVerbosity + ", reportColorScheme=" + reportColorScheme
+                + ", inputDirectories=" + inputDirectories + ", reportFile=" + reportFile + ", pathConfig="
                 + getTagPathConfig() + ", failBuild=" + failBuild + ", filteredArtifactTypes="
                 + filteredArtifactTypes + ", filterWantedStatuses=" + filterWantedStatuses + "]";
     }

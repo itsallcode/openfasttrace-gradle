@@ -12,7 +12,8 @@ requirementTracing {
   inputDirectories = files('custom-dir')
   reportFile = file('build/custom-report.txt')
   reportFormat = 'plain'
-  reportVerbosity = 'ALL'
+  reportVerbosity = 'all'
+  reportColorScheme = findProperty('reportColorScheme')
   filteredArtifactTypes = artifactTypes
   filterWantedStatuses = wantedStatuses
 }
