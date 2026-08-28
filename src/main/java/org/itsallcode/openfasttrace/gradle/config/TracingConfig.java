@@ -1,7 +1,8 @@
 package org.itsallcode.openfasttrace.gradle.config;
 
-import java.util.List;
-import java.util.Set;
+import static java.util.stream.Collectors.joining;
+
+import java.util.*;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -199,8 +200,19 @@ public class TracingConfig
      */
     public void setReportColorScheme(final String reportColorScheme)
     {
-        // TODO: Handle invalid color scheme names gracefully
-        this.setReportColorScheme(ColorScheme.valueOf(reportColorScheme.toUpperCase()));
+        try
+        {
+            this.setReportColorScheme(ColorScheme.valueOf(reportColorScheme.toUpperCase(Locale.ROOT)));
+        }
+        catch (final IllegalArgumentException e)
+        {
+            final String validColorSchemes = Arrays.stream(ColorScheme.values()).map(ColorScheme::name)
+                    .collect(joining(", "));
+            throw new IllegalArgumentException(
+                    "Invalid color scheme '" + reportColorScheme + "'. Valid color schemes are: "
+                            + validColorSchemes,
+                    e);
+        }
     }
 
     /**
