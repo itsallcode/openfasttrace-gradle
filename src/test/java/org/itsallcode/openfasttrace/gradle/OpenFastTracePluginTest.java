@@ -279,7 +279,8 @@ class OpenFastTracePluginTest
     void reportColorSchemeColor()
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
-                .withArgs("--no-build-cache", "clean", "traceRequirements", "-PreportColorScheme=color")
+                .withoutBuildCache()
+                .withArgs("clean", "traceRequirements", "-PreportColorScheme=color")
                 .withReportFile(Path.of("build/custom-report.txt"))
                 .run()
                 .assertTraceOutcomeSuccess()

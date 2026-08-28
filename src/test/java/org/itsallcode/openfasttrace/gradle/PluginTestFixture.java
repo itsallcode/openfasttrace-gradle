@@ -20,6 +20,7 @@ class PluginTestFixture
     private final Path projectDir;
     private String[] arguments;
     private Path relativeReportPath;
+    private boolean buildCache = true;
 
     private PluginTestFixture(final GradleTestConfig config, final Path projectDir)
     {
@@ -35,6 +36,12 @@ class PluginTestFixture
     PluginTestFixture withArgs(final String... args)
     {
         this.arguments = args;
+        return this;
+    }
+
+    PluginTestFixture withoutBuildCache()
+    {
+        this.buildCache = false;
         return this;
     }
 
@@ -65,7 +72,7 @@ class PluginTestFixture
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
         allArgs.addAll(List.of("--info", "--stacktrace"));
-        if (!allArgs.contains("--no-build-cache"))
+        if (buildCache)
         {
             allArgs.add("--build-cache");
         }
