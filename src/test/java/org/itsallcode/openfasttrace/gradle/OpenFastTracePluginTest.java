@@ -279,16 +279,14 @@ class OpenFastTracePluginTest
     void reportColorSchemeColor()
     {
         fixture(PROJECT_CUSTOM_CONFIG_DIR)
-                .withArgs("clean", "traceRequirements", "-PreportColorScheme=color")
+                .withArgs("--no-build-cache", "clean", "traceRequirements", "-PreportColorScheme=color")
                 .withReportFile(Path.of("build/custom-report.txt"))
                 .run()
-                .assertTraceOutcomeSuccessOrFromCache()
+                .assertTraceOutcomeSuccess()
                 .assertOutput(containsString(
                         "Report settings: verbosity=ALL, format=plain, detailsSectionDisplay=COLLAPSE, colorScheme=COLOR"))
                 .assertReportFileLines(
-                        // Generated ID depends on JVM
-                        "not ok [ in:  0 /  0   | out:  0 /  1 ✘ ] impl~exampleB-",
-                        "not ok - 1 total, 1 direct, 0 transitive defects");
+                        "\u001B[91mnot ok\u001B[0m - 2 total, 1 direct, 0 transitive defects");
     }
 
     @Test

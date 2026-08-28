@@ -64,7 +64,11 @@ class PluginTestFixture
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
-        allArgs.addAll(List.of("--info", "--stacktrace", "--build-cache"));
+        allArgs.addAll(List.of("--info", "--stacktrace"));
+        if (!allArgs.contains("--no-build-cache"))
+        {
+            allArgs.add("--build-cache");
+        }
         allArgs.addAll(List.of("--configuration-cache", "--configuration-cache-problems=fail"));
         allArgs.addAll(List.of("--warning-mode", "fail"));
         final GradleRunner runner = GradleRunner.create()
@@ -121,6 +125,11 @@ class PluginTestFixture
                     either(is(TaskOutcome.SUCCESS))
                             .or(is(TaskOutcome.FROM_CACHE))
                             .or(is(TaskOutcome.UP_TO_DATE)));
+        }
+
+        Result assertTraceOutcomeSuccess()
+        {
+            return assertOutcome(":traceRequirements", is(TaskOutcome.SUCCESS));
         }
 
         Result assertCollectOutcomeUpToDate()
