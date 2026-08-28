@@ -44,7 +44,6 @@ public class TracingConfig
         this.reportVerbosity = project.getObjects().property(ReportVerbosity.class);
         this.reportVerbosity.set(DEFAULT_REPORT_VERBOSITY);
         this.reportColorScheme = project.getObjects().property(ColorScheme.class);
-        this.reportColorScheme.set(ColorScheme.BLACK_AND_WHITE);
         this.reportFormat = project.getObjects().property(String.class);
         this.reportFormat.set(DEFAULT_REPORT_FORMAT);
         this.importedRequirements = project.getObjects().listProperty(Object.class);

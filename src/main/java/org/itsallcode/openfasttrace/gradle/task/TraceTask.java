@@ -26,6 +26,8 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 @CacheableTask
 public class TraceTask extends DefaultTask
 {
+    private static final ColorScheme DEFAULT_COLOR_SCHEME = ColorScheme.BLACK_AND_WHITE;
+
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
     private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
@@ -235,11 +237,8 @@ public class TraceTask extends DefaultTask
                 .outputFormat(reportFormat.get())
                 .showOrigin(true)
                 .newline(Newline.UNIX)
-                .detailsSectionDisplay(detailsSectionDisplay.get());
-        if (reportColorScheme.isPresent())
-        {
-            builder.colorScheme(reportColorScheme.get());
-        }
+                .detailsSectionDisplay(detailsSectionDisplay.get())
+                .colorScheme(reportColorScheme.getOrElse(DEFAULT_COLOR_SCHEME));
         return builder.build();
     }
 
