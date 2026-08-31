@@ -10,6 +10,12 @@
     "java.sources.organizeImports.staticStarThreshold": 3,
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
+    "java.test.config": {
+        "vmArgs": [
+            "--add-opens",
+            "java.base/java.lang=ALL-UNNAMED"
+        ]
+    },
     "sonarlint.connectedMode.project": {
         "connectionId": "itsallcode",
         "projectKey": "org.itsallcode:openfasttrace-gradle"

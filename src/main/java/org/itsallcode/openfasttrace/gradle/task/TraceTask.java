@@ -14,6 +14,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.*;
 import org.itsallcode.openfasttrace.api.*;
+import org.itsallcode.openfasttrace.api.ReportSettings.Builder;
 import org.itsallcode.openfasttrace.api.core.*;
 import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
@@ -25,10 +26,14 @@ import org.itsallcode.openfasttrace.core.OftRunner;
 @CacheableTask
 public class TraceTask extends DefaultTask
 {
+    private static final ColorScheme DEFAULT_COLOR_SCHEME = ColorScheme.BLACK_AND_WHITE;
+
     private final RegularFileProperty requirementsFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
     private final Property<ReportVerbosity> reportVerbosity = getProject().getObjects()
             .property(ReportVerbosity.class);
+    private final Property<ColorScheme> reportColorScheme = getProject().getObjects()
+            .property(ColorScheme.class);
     private final Property<String> reportFormat = getProject().getObjects().property(String.class);
     private final Property<DetailsSectionDisplay> detailsSectionDisplay = getProject().getObjects()
             .property(DetailsSectionDisplay.class);
@@ -82,6 +87,18 @@ public class TraceTask extends DefaultTask
     public Property<ReportVerbosity> getReportVerbosity()
     {
         return reportVerbosity;
+    }
+
+    /**
+     * Get the report color scheme property.
+     * 
+     * @return the color scheme property
+     */
+    @Input
+    @Optional
+    public Property<ColorScheme> getReportColorScheme()
+    {
+        return reportColorScheme;
     }
 
     /**
@@ -228,22 +245,23 @@ public class TraceTask extends DefaultTask
 
     private ReportSettings getReportSettings()
     {
-        getLogger().info("Report settings: verbosity={}, format={}, detailsSectionDisplay={}",
-                reportVerbosity.get(), reportFormat.get(), detailsSectionDisplay.get());
-        return ReportSettings.builder() //
-                .verbosity(reportVerbosity.get()) //
-                .outputFormat(reportFormat.get()) //
-                .showOrigin(true) //
-                .newline(Newline.UNIX) //
-                .detailsSectionDisplay(detailsSectionDisplay.get()) //
-                .build();
+        getLogger().info("Report settings: verbosity={}, format={}, detailsSectionDisplay={}, colorScheme={}",
+                reportVerbosity.get(), reportFormat.get(), detailsSectionDisplay.get(), reportColorScheme.getOrNull());
+        final Builder builder = ReportSettings.builder()
+                .verbosity(reportVerbosity.get())
+                .outputFormat(reportFormat.get())
+                .showOrigin(true)
+                .newline(Newline.UNIX)
+                .detailsSectionDisplay(detailsSectionDisplay.get())
+                .colorScheme(reportColorScheme.getOrElse(DEFAULT_COLOR_SCHEME));
+        return builder.build();
     }
 
     private ImportSettings getImportSettings()
     {
-        return ImportSettings.builder() //
-                .addInputs(getAllImportFiles()) //
-                .filter(getFilterSettings()) //
+        return ImportSettings.builder()
+                .addInputs(getAllImportFiles())
+                .filter(getFilterSettings())
                 .build();
     }
 

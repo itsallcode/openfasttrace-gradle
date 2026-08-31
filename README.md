@@ -63,7 +63,12 @@ You can configure the following properties:
   * `failures` - list of defect specification items
   * `failure_summaries` - list of summaries for defect specification items
   * `failure_details` - summaries and details for defect specification items (default)
+  * `direct_failure_details` - details of non-transitive unclean items (added in OFT 4.6.0)
   * `all` - summaries and details for all specification items
+* `reportColorScheme`: Color scheme of plain text report
+  * `black_and_white` - Black and white (default)
+  * `monochrome` - Monochrome (e.g for printers)
+  * `color` - Color
 * `detailsSectionDisplay`: Initial display status of the details section in the HTML report
   * `collapse` - hide details (default)
   * `expand` - show details

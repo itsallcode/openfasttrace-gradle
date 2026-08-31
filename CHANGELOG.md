@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#81](https://github.com/itsallcode/openfasttrace-gradle/issues/81):
   - Ensure compatibility with Gradle configuration cache
   - Mark plugin as compatible with configuration cache
+- [PR #85](https://github.com/itsallcode/openfasttrace-gradle/pull/85):
+  - Allow configuring color schema
+  - Configuration values for details section display and report verbosity are now case insensitive
+  - Improve error messages for invalid enum values
 
 ## [3.2.0] - 2026-08-18
 
