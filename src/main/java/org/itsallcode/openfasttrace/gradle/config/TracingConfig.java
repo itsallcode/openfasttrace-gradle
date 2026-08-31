@@ -183,6 +183,10 @@ public class TracingConfig
 
     private static ReportVerbosity convertVerbosity(final String reportVerbosity)
     {
+        if (reportVerbosity == null)
+        {
+            return null;
+        }
         try
         {
             return ReportVerbosity.valueOf(reportVerbosity.toUpperCase(Locale.ROOT));
@@ -222,6 +226,10 @@ public class TracingConfig
 
     private static ColorScheme convertColorScheme(final String reportColorScheme)
     {
+        if (reportColorScheme == null)
+        {
+            return null;
+        }
         try
         {
             return ColorScheme.valueOf(reportColorScheme.toUpperCase(Locale.ROOT));
@@ -349,6 +357,10 @@ public class TracingConfig
 
     private static DetailsSectionDisplay convertDetailsSelectionDisplay(final String detailsSectionDisplay)
     {
+        if (detailsSectionDisplay == null)
+        {
+            return null;
+        }
         try
         {
             return DetailsSectionDisplay.valueOf(detailsSectionDisplay.toUpperCase(Locale.ROOT));

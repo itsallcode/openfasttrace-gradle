@@ -1,7 +1,6 @@
 package org.itsallcode.openfasttrace.gradle.config;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.gradle.testfixtures.ProjectBuilder;
 import org.itsallcode.openfasttrace.api.ColorScheme;
@@ -19,6 +18,14 @@ class TracingConfigTest
         tracingConfig.setReportColorScheme("color");
 
         assertEquals(ColorScheme.COLOR, tracingConfig.getReportColorScheme().get());
+    }
+
+    @Test
+    void acceptsNullColorScheme()
+    {
+        tracingConfig.setReportColorScheme((String) null);
+
+        assertFalse(tracingConfig.getReportColorScheme().isPresent());
     }
 
     @Test
@@ -41,6 +48,14 @@ class TracingConfigTest
     }
 
     @Test
+    void acceptsNullVerbosity()
+    {
+        tracingConfig.setReportVerbosity((String) null);
+
+        assertFalse(tracingConfig.getReportVerbosity().isPresent());
+    }
+
+    @Test
     void rejectsInvalidVerbosityWithValueAndValidValues()
     {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -57,6 +72,14 @@ class TracingConfigTest
         tracingConfig.setDetailsSectionDisplay("collapse");
 
         assertEquals(DetailsSectionDisplay.COLLAPSE, tracingConfig.getDetailsSectionDisplay().get());
+    }
+
+    @Test
+    void acceptsNullDetailsSectionDisplay()
+    {
+        tracingConfig.setDetailsSectionDisplay((String) null);
+
+        assertFalse(tracingConfig.getDetailsSectionDisplay().isPresent());
     }
 
     @Test
