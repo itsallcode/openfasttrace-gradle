@@ -20,6 +20,7 @@ class PluginTestFixture
     private final Path projectDir;
     private String[] arguments;
     private Path relativeReportPath;
+    private boolean buildCache = true;
 
     private PluginTestFixture(final GradleTestConfig config, final Path projectDir)
     {
@@ -35,6 +36,12 @@ class PluginTestFixture
     PluginTestFixture withArgs(final String... args)
     {
         this.arguments = args;
+        return this;
+    }
+
+    PluginTestFixture withoutBuildCache()
+    {
+        this.buildCache = false;
         return this;
     }
 
@@ -64,7 +71,11 @@ class PluginTestFixture
         configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
-        allArgs.addAll(List.of("--info", "--stacktrace", "--build-cache"));
+        allArgs.addAll(List.of("--info", "--stacktrace"));
+        if (buildCache)
+        {
+            allArgs.add("--build-cache");
+        }
         allArgs.addAll(List.of("--configuration-cache", "--configuration-cache-problems=fail"));
         allArgs.addAll(List.of("--warning-mode", "fail"));
         final GradleRunner runner = GradleRunner.create()
@@ -104,9 +115,10 @@ class PluginTestFixture
             this.buildResult = buildResult;
         }
 
-        void assertOutput(final Matcher<String> matcher)
+        Result assertOutput(final Matcher<String> matcher)
         {
             assertThat(buildResult.getOutput(), matcher);
+            return this;
         }
 
         Result assertTraceOutcomeSuccessOrFromCache()
@@ -120,6 +132,11 @@ class PluginTestFixture
                     either(is(TaskOutcome.SUCCESS))
                             .or(is(TaskOutcome.FROM_CACHE))
                             .or(is(TaskOutcome.UP_TO_DATE)));
+        }
+
+        Result assertTraceOutcomeSuccess()
+        {
+            return assertOutcome(":traceRequirements", is(TaskOutcome.SUCCESS));
         }
 
         Result assertCollectOutcomeUpToDate()

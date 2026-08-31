@@ -276,6 +276,21 @@ class OpenFastTracePluginTest
     }
 
     @Test
+    void reportColorSchemeColor()
+    {
+        fixture(PROJECT_CUSTOM_CONFIG_DIR)
+                .withoutBuildCache()
+                .withArgs("clean", "traceRequirements", "-PreportColorScheme=color")
+                .withReportFile(Path.of("build/custom-report.txt"))
+                .run()
+                .assertTraceOutcomeSuccess()
+                .assertOutput(containsString(
+                        "Report settings: verbosity=ALL, format=plain, detailsSectionDisplay=COLLAPSE, colorScheme=COLOR"))
+                .assertReportFileLines(
+                        "\u001B[91mnot ok\u001B[0m - 2 total, 1 direct, 0 transitive defects");
+    }
+
+    @Test
     void testTraceExampleProjectWithCustomConfigFailBuildErrorMessage()
     {
         final PluginTestFixture fixture = fixture(PROJECT_CUSTOM_CONFIG_DIR)

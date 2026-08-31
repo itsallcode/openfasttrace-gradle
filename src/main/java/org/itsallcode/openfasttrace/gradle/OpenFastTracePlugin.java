@@ -104,6 +104,7 @@ public class OpenFastTracePlugin implements Plugin<Project>
                     .get()));
         }
         task.getReportVerbosity().set(config.getReportVerbosity());
+        task.getReportColorScheme().set(config.getReportColorScheme());
         task.getReportFormat().set(config.getReportFormat());
         task.getImportedRequirements()
                 .from(getImportedRequirements(rootProject, rootProject.getAllprojects()));
