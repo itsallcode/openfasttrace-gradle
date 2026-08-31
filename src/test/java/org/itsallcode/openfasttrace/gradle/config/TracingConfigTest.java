@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.gradle.testfixtures.ProjectBuilder;
 import org.itsallcode.openfasttrace.api.ColorScheme;
+import org.itsallcode.openfasttrace.api.DetailsSectionDisplay;
+import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.junit.jupiter.api.Test;
 
 class TracingConfigTest
@@ -27,6 +29,44 @@ class TracingConfigTest
 
         assertEquals(
                 "Invalid color scheme 'rainbow'. Valid color schemes are: BLACK_AND_WHITE, MONOCHROME, COLOR",
+                exception.getMessage());
+    }
+
+    @Test
+    void acceptsVerbosityNameIgnoringCase()
+    {
+        tracingConfig.setReportVerbosity("summary");
+
+        assertEquals(ReportVerbosity.SUMMARY, tracingConfig.getReportVerbosity().get());
+    }
+
+    @Test
+    void rejectsInvalidVerbosityWithValueAndValidValues()
+    {
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> tracingConfig.setReportVerbosity("extreme"));
+
+        assertEquals(
+                "Invalid verbosity 'extreme'. Valid verbosities are: QUIET, MINIMAL, SUMMARY, FAILURES, DIRECT_FAILURES, FAILURE_SUMMARIES, DIRECT_FAILURE_SUMMARIES, FAILURE_DETAILS, DIRECT_FAILURE_DETAILS, ALL",
+                exception.getMessage());
+    }
+
+    @Test
+    void acceptsDetailsSectionDisplayNameIgnoringCase()
+    {
+        tracingConfig.setDetailsSectionDisplay("collapse");
+
+        assertEquals(DetailsSectionDisplay.COLLAPSE, tracingConfig.getDetailsSectionDisplay().get());
+    }
+
+    @Test
+    void rejectsInvalidDetailsSectionDisplayWithValueAndValidValues()
+    {
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> tracingConfig.setDetailsSectionDisplay("invalid"));
+
+        assertEquals(
+                "Invalid details section display 'invalid'. Valid values are: COLLAPSE, EXPAND",
                 exception.getMessage());
     }
 }

@@ -3,6 +3,7 @@ package org.itsallcode.openfasttrace.gradle.config;
 import static java.util.stream.Collectors.joining;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -177,8 +178,24 @@ public class TracingConfig
      */
     public void setReportVerbosity(final String reportVerbosity)
     {
-        // TODO: Handle invalid verbosity names gracefully
-        setReportVerbosity(ReportVerbosity.valueOf(reportVerbosity.toUpperCase()));
+        this.setReportVerbosity(convertVerbosity(reportVerbosity));
+    }
+
+    private static ReportVerbosity convertVerbosity(final String reportVerbosity)
+    {
+        try
+        {
+            return ReportVerbosity.valueOf(reportVerbosity.toUpperCase(Locale.ROOT));
+        }
+        catch (final IllegalArgumentException e)
+        {
+            final String validVerbosities = Arrays.stream(ReportVerbosity.values()).map(ReportVerbosity::name)
+                    .collect(joining(", "));
+            throw new IllegalArgumentException(
+                    "Invalid verbosity '" + reportVerbosity + "'. Valid verbosities are: "
+                            + validVerbosities,
+                    e);
+        }
     }
 
     /**
@@ -200,9 +217,14 @@ public class TracingConfig
      */
     public void setReportColorScheme(final String reportColorScheme)
     {
+        this.setReportColorScheme(convertColorScheme(reportColorScheme));
+    }
+
+    private static ColorScheme convertColorScheme(final String reportColorScheme)
+    {
         try
         {
-            this.setReportColorScheme(ColorScheme.valueOf(reportColorScheme.toUpperCase(Locale.ROOT)));
+            return ColorScheme.valueOf(reportColorScheme.toUpperCase(Locale.ROOT));
         }
         catch (final IllegalArgumentException e)
         {
@@ -309,9 +331,37 @@ public class TracingConfig
      * @param detailsSectionDisplay
      *            display setting name
      */
+    public void setDetailsSectionDisplay(final DetailsSectionDisplay detailsSectionDisplay)
+    {
+        this.detailsSectionDisplay.set(detailsSectionDisplay);
+    }
+
+    /**
+     * Sets the report details section display setting by name.
+     * 
+     * @param detailsSectionDisplay
+     *            display setting name
+     */
     public void setDetailsSectionDisplay(final String detailsSectionDisplay)
     {
-        this.detailsSectionDisplay.set(DetailsSectionDisplay.valueOf(detailsSectionDisplay));
+        this.setDetailsSectionDisplay(convertDetailsSelectionDisplay(detailsSectionDisplay));
+    }
+
+    private static DetailsSectionDisplay convertDetailsSelectionDisplay(final String detailsSectionDisplay)
+    {
+        try
+        {
+            return DetailsSectionDisplay.valueOf(detailsSectionDisplay.toUpperCase(Locale.ROOT));
+        }
+        catch (final IllegalArgumentException e)
+        {
+            final String validValues = Arrays.stream(DetailsSectionDisplay.values()).map(Enum::name)
+                    .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException(
+                    "Invalid details section display '" + detailsSectionDisplay + "'. Valid values are: "
+                            + validValues,
+                    e);
+        }
     }
 
     /**

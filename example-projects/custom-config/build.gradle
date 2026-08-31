@@ -14,6 +14,7 @@ requirementTracing {
   reportFormat = 'plain'
   reportVerbosity = 'all'
   reportColorScheme = findProperty('reportColorScheme')
+  detailsSectionDisplay = 'collapse'
   filteredArtifactTypes = artifactTypes
   filterWantedStatuses = wantedStatuses
 }
