@@ -30,6 +30,7 @@ class OpenFastTracePluginTest
     private static final Path DEPENDENCY_CONFIG_DIR = EXAMPLES_DIR.resolve("dependency-config");
     private static final Path PUBLISH_CONFIG_DIR = EXAMPLES_DIR.resolve("publish-config");
     private static final Path HTML_REPORT_CONFIG_DIR = EXAMPLES_DIR.resolve("html-report");
+    private static final Path PLUGIN_CONFIG_DIR = EXAMPLES_DIR.resolve("plugin-config");
 
     @Parameter
     private GradleTestConfig config;
@@ -316,6 +317,13 @@ class OpenFastTracePluginTest
                 .run()
                 .assertTraceOutcomeSuccessOrFromCache()
                 .assertReportFileLines("ok - 6 total");
+    }
+
+    @Test
+    void testTraceExampleProjectWithPluginDependency()
+    {
+        testConfigurationCache(PLUGIN_CONFIG_DIR, Path.of("build/reports/tracing.txt"),
+                "ok - 6 total");
     }
 
     @Test
