@@ -20,6 +20,7 @@ import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
+import org.itsallcode.openfasttrace.gradle.task.classloader.OftPluginClassLoader;
 
 /** Gradle task that traces requirements and writes a report. */
 @SuppressWarnings("this-escape")
@@ -214,33 +215,36 @@ public class TraceTask extends DefaultTask
     public void trace()
     {
         createReportOutputDir();
-        OftPluginClassLoader.runWithPlugins(pluginFiles, () -> {
-            final Oft oft = new OftRunner();
-            final ImportSettings importSettings = getImportSettings();
-            final List<SpecificationItem> importedItems = oft.importItems(importSettings);
-            getLogger().info("Read {} spec items from {}", importedItems.size(),
-                    importSettings.getInputs());
-            final List<LinkedSpecificationItem> linkedItems = oft.link(importedItems);
-            final Trace trace = oft.trace(linkedItems);
-            final Path reportPath = getOutputFileInternal().toPath();
-            getLogger().info("Tracing result: {} total items, {} defects. Writing report to {}",
-                    trace.count(), trace.countDefects(), reportPath);
-            oft.reportToPath(trace, reportPath, getReportSettings());
-            if (trace.countDefects() > 0)
+        OftPluginClassLoader.runWithPlugins(pluginFiles, this::traceWithPlugins);
+    }
+
+    private void traceWithPlugins()
+    {
+        final Oft oft = new OftRunner();
+        final ImportSettings importSettings = getImportSettings();
+        final List<SpecificationItem> importedItems = oft.importItems(importSettings);
+        getLogger().info("Read {} spec items from {}", importedItems.size(),
+                importSettings.getInputs());
+        final List<LinkedSpecificationItem> linkedItems = oft.link(importedItems);
+        final Trace trace = oft.trace(linkedItems);
+        final Path reportPath = getOutputFileInternal().toPath();
+        getLogger().info("Tracing result: {} total items, {} defects. Writing report to {}",
+                trace.count(), trace.countDefects(), reportPath);
+        oft.reportToPath(trace, reportPath, getReportSettings());
+        if (trace.countDefects() > 0)
+        {
+            final String message = "Requirement tracing found " + trace.countDefects()
+                    + " defects. See report at " + reportPath + " for details.";
+            if (shouldFailBuild())
             {
-                final String message = "Requirement tracing found " + trace.countDefects()
-                        + " defects. See report at " + reportPath + " for details.";
-                if (shouldFailBuild())
-                {
-                    throw new IllegalStateException(message);
-                }
-                getLogger().warn(message);
+                throw new IllegalStateException(message);
             }
-            else
-            {
-                getLogger().info("Requirement tracing completed successfully.");
-            }
-        });
+            getLogger().warn(message);
+        }
+        else
+        {
+            getLogger().info("Requirement tracing completed successfully.");
+        }
     }
 
     private ReportSettings getReportSettings()

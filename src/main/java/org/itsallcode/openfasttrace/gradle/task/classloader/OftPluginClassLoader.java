@@ -1,19 +1,22 @@
-package org.itsallcode.openfasttrace.gradle.task;
+package org.itsallcode.openfasttrace.gradle.task.classloader;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
-import java.util.Objects;
 
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.itsallcode.openfasttrace.core.OftRunner;
 
 /** Runs OpenFastTrace operations with additional plugin artifacts on the context classpath. */
 public final class OftPluginClassLoader
 {
+    private static final Logger LOG = Logging.getLogger(OftPluginClassLoader.class);
+
     private OftPluginClassLoader()
     {
-        super();
     }
 
     /**
@@ -48,23 +51,21 @@ public final class OftPluginClassLoader
             {
                 pluginClassLoader.close();
             }
-            catch (final java.io.IOException e)
+            catch (final IOException e)
             {
-                throw new IllegalStateException("Could not close OpenFastTrace plugin classloader", e);
+                LOG.warn("Could not close OpenFastTrace plugin classloader", e);
             }
         }
     }
 
-    private static URLClassLoader createClassLoader(final FileCollection pluginFiles,
-            final ClassLoader parent)
+    private static URLClassLoader createClassLoader(final FileCollection pluginFiles, final ClassLoader parent)
     {
         final URL[] pluginUrls = pluginFiles.getFiles().stream()
                 .map(File::toURI)
                 .map(OftPluginClassLoader::toUrl)
                 .toArray(URL[]::new);
-
-        return new ChildFirstClassLoader("ChildFirst ClassLoader for " + Arrays.toString(pluginUrls), pluginUrls,
-                parent);
+        final String pluginUrlsString = Arrays.toString(pluginUrls);
+        return new ChildFirstClassLoader("ChildFirst ClassLoader for " + pluginUrlsString, pluginUrls, parent);
     }
 
     private static URL toUrl(final URI uri)
@@ -76,36 +77,6 @@ public final class OftPluginClassLoader
         catch (final MalformedURLException e)
         {
             throw new IllegalArgumentException("Invalid plugin file URL: " + uri, e);
-        }
-    }
-
-    private static final class ParentClassLoader extends ClassLoader
-    {
-        private final ClassLoader[] parents;
-
-        private ParentClassLoader(final ClassLoader... parents)
-        {
-            super(null);
-            this.parents = Arrays.stream(parents)
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .toArray(ClassLoader[]::new);
-        }
-
-        @Override
-        protected Class<?> loadClass(final String name, final boolean resolve)
-                throws ClassNotFoundException
-        {
-            for (final ClassLoader parent : parents)
-            {
-                try
-                {
-                    return Class.forName(name, resolve, parent);
-                }
-                catch (final ClassNotFoundException e)
-                {}
-            }
-            throw new ClassNotFoundException(name);
         }
     }
 }

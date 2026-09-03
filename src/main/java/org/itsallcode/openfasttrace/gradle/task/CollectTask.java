@@ -18,6 +18,7 @@ import org.itsallcode.openfasttrace.api.core.SpecificationItem;
 import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
 import org.itsallcode.openfasttrace.core.*;
+import org.itsallcode.openfasttrace.gradle.task.classloader.OftPluginClassLoader;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
 /** Gradle task that collects specification items into a specobject file. */
@@ -96,17 +97,20 @@ public class CollectTask extends DefaultTask
     public void collectRequirements()
     {
         createReportOutputDir();
-        OftPluginClassLoader.runWithPlugins(pluginFiles, () -> {
-            final Oft oft = new OftRunner();
-            final ImportSettings settings = getImportSettings();
-            getLogger().info("Importing from {} locations {} and {} path configurations: {}",
-                    settings.getInputs().size(), settings.getInputs(), settings.getPathConfigs().size(),
-                    settings.getPathConfigs());
-            final List<SpecificationItem> importedItems = oft.importItems(settings);
-            final Path output = getOuputFileInternal().toPath();
-            getLogger().info("Imported {} spec items, writing to {}", importedItems.size(), output);
-            oft.exportToPath(importedItems, output, getExportSettings());
-        });
+        OftPluginClassLoader.runWithPlugins(pluginFiles, this::collectWithPlugins);
+    }
+
+    private void collectWithPlugins()
+    {
+        final Oft oft = new OftRunner();
+        final ImportSettings settings = getImportSettings();
+        getLogger().info("Importing from {} locations {} and {} path configurations: {}",
+                settings.getInputs().size(), settings.getInputs(), settings.getPathConfigs().size(),
+                settings.getPathConfigs());
+        final List<SpecificationItem> importedItems = oft.importItems(settings);
+        final Path output = getOuputFileInternal().toPath();
+        getLogger().info("Imported {} spec items, writing to {}", importedItems.size(), output);
+        oft.exportToPath(importedItems, output, getExportSettings());
     }
 
     private static ExportSettings getExportSettings()

@@ -167,23 +167,21 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private static ConfigurableFileCollection getPluginDependencies(final Project rootProject,
             final Set<Project> allProjects)
     {
-        return rootProject.files(allProjects.stream() //
-                .map(OpenFastTracePlugin::getPluginDependencies) //
+        return rootProject.files(allProjects.stream()
+                .map(OpenFastTracePlugin::getPluginDependencies)
                 .toList());
     }
 
     private static Configuration getPluginDependencies(final Project project)
     {
         final String CONFIG_NAME = "oftPluginConfig";
-        return getOrCreateConfiguration(project, CONFIG_NAME,
-                getConfig(project).getPluginDependencies().get());
+        return getOrCreateConfiguration(project, CONFIG_NAME, getConfig(project).getPluginDependencies().get());
     }
 
-    private static Configuration getOrCreateConfiguration(final Project project,
-            final String configurationName, final List<Object> dependencies)
+    private static Configuration getOrCreateConfiguration(final Project project, final String configurationName,
+            final List<Object> dependencies)
     {
-        final Configuration existingConfiguration = project.getConfigurations()
-                .findByName(configurationName);
+        final Configuration existingConfiguration = project.getConfigurations().findByName(configurationName);
         if (existingConfiguration != null)
         {
             return existingConfiguration;

@@ -1,4 +1,4 @@
-package org.itsallcode.openfasttrace.gradle.task;
+package org.itsallcode.openfasttrace.gradle.task.classloader;
 
 import java.net.URL;
 import java.net.URLClassLoader;
