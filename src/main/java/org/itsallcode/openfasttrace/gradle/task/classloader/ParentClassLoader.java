@@ -1,7 +1,8 @@
 package org.itsallcode.openfasttrace.gradle.task.classloader;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 final class ParentClassLoader extends ClassLoader
 {
@@ -31,5 +32,41 @@ final class ParentClassLoader extends ClassLoader
             }
         }
         throw new ClassNotFoundException(name);
+    }
+
+    @Override
+    public URL getResource(final String name)
+    {
+        for (final ClassLoader parent : parents)
+        {
+            final URL resource = parent.getResource(name);
+            if (resource != null)
+            {
+                return resource;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Enumeration<URL> getResources(final String name) throws IOException
+    {
+        final List<URL> resources = Arrays.stream(parents)
+                .map(parent -> getResources(parent, name))
+                .flatMap(List::stream)
+                .toList();
+        return Collections.enumeration(resources);
+    }
+
+    private static List<URL> getResources(final ClassLoader parent, final String name)
+    {
+        try
+        {
+            return Collections.list(parent.getResources(name));
+        }
+        catch (final IOException e)
+        {
+            throw new IllegalStateException("Could not get resources for " + name, e);
+        }
     }
 }

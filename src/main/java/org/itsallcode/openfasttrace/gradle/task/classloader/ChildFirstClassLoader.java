@@ -31,12 +31,22 @@ class ChildFirstClassLoader extends URLClassLoader
     @Override
     protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException
     {
+        if (isSharedOpenFastTraceClass(name))
+        {
+            return super.loadClass(name, resolve);
+        }
         final Class<?> loadedClass = findClass(name, resolve);
         if (resolve)
         {
             resolveClass(loadedClass);
         }
         return loadedClass;
+    }
+
+    private static boolean isSharedOpenFastTraceClass(final String name)
+    {
+        return name.startsWith("org.itsallcode.openfasttrace.api.")
+                || name.startsWith("org.itsallcode.openfasttrace.core.");
     }
 
     private Class<?> findClass(final String name, final boolean resolve) throws ClassNotFoundException
