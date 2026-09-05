@@ -22,11 +22,23 @@ import java.util.Collection;
 @SuppressWarnings("java:S118") // Shim class. Ignore name convention.
 public abstract class RegexMatchingImporterFactory extends AbstractRegexMatchingImporterFactory
 {
+    /**
+     * Constructs a new RegexMatchingImporterFactory with the specified file extensions.
+     * 
+     * @param extensions
+     *            the file extensions to be associated with this importer factory
+     */
     protected RegexMatchingImporterFactory(final String... extensions)
     {
         super(extensions);
     }
 
+    /**
+     * Constructs a new RegexMatchingImporterFactory with the specified file extensions.
+     * 
+     * @param extensions
+     *            the file extensions to be associated with this importer factory
+     */
     protected RegexMatchingImporterFactory(final Collection<String> extensions)
     {
         super(extensions);
