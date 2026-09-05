@@ -27,7 +27,9 @@ public abstract class RegexMatchingImporterFactory extends AbstractRegexMatching
      * 
      * @param extensions
      *            the file extensions to be associated with this importer factory
+     * @deprecated use {@link AbstractRegexMatchingImporterFactory} instead.
      */
+    @Deprecated(since = "3.2.0", forRemoval = true)
     protected RegexMatchingImporterFactory(final String... extensions)
     {
         super(extensions);
@@ -38,7 +40,9 @@ public abstract class RegexMatchingImporterFactory extends AbstractRegexMatching
      * 
      * @param extensions
      *            the file extensions to be associated with this importer factory
+     * @deprecated use {@link AbstractRegexMatchingImporterFactory} instead.
      */
+    @Deprecated(since = "3.2.0", forRemoval = true)
     protected RegexMatchingImporterFactory(final Collection<String> extensions)
     {
         super(extensions);

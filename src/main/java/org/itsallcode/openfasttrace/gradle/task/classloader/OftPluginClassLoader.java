@@ -59,9 +59,8 @@ public final class OftPluginClassLoader
 
     private static URLClassLoader createClassLoader(final FileCollection pluginFiles, final ClassLoader parent)
     {
-        final Set<URL> pluginUrls = new HashSet<>(pluginFiles.getFiles().stream()
+        final Set<URI> pluginUrls = new HashSet<>(pluginFiles.getFiles().stream()
                 .map(file -> file.toPath().toUri())
-                .map(OftPluginClassLoader::toUrl)
                 .toList());
         // OFT only accepts service providers loaded by the classloader that discovered them.
         // Add OFT's built-in provider JARs to this loader so they are not filtered out.
@@ -74,7 +73,7 @@ public final class OftPluginClassLoader
         return new ChildFirstClassLoader("ChildFirst ClassLoader for " + pluginUrlsString, urls, parent);
     }
 
-    private static void addServiceProviderJars(final ClassLoader parent, final Set<URL> urls,
+    private static void addServiceProviderJars(final ClassLoader parent, final Set<URI> urls,
             final String serviceName)
     {
         try
@@ -85,7 +84,7 @@ public final class OftPluginClassLoader
                 final URLConnection connection = resource.openConnection();
                 if (connection instanceof final JarURLConnection jarConnection)
                 {
-                    urls.add(jarConnection.getJarFileURL());
+                    urls.add(toUri(jarConnection.getJarFileURL()));
                 }
             }
         }
@@ -95,15 +94,15 @@ public final class OftPluginClassLoader
         }
     }
 
-    private static URL toUrl(final URI uri)
+    private static URI toUri(final URL url)
     {
         try
         {
-            return uri.toURL();
+            return url.toURI();
         }
-        catch (final MalformedURLException e)
+        catch (final URISyntaxException e)
         {
-            throw new IllegalArgumentException("Invalid plugin file URL: " + uri, e);
+            throw new IllegalStateException("Invalid JAR file URL: " + url, e);
         }
     }
 }
