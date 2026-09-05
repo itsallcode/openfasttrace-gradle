@@ -18,6 +18,7 @@ final class ParentClassLoader extends ClassLoader
     }
 
     @Override
+    @SuppressWarnings("java:S3032") // Explicit loading is required to delegate to multiple independent parents.
     protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException
     {
         for (final ClassLoader parent : parents)

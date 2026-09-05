@@ -60,7 +60,6 @@ class ChildFirstClassLoader extends URLClassLoader
         return loadClassInternally(name, resolve);
     }
 
-    @SuppressWarnings("java:S3032") // Intentionally accessing non-standard classloader
     private Class<?> loadClassInternally(final String name, final boolean resolve) throws ClassNotFoundException
     {
         try
