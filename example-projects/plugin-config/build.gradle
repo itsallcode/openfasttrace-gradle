@@ -1,0 +1,16 @@
+plugins {
+    id "base"
+    id 'org.itsallcode.openfasttrace'
+}
+
+repositories {
+    mavenCentral()
+}
+
+requirementTracing {
+    failBuild = true
+    inputDirectories = files('doc', 'src')
+    reportFormat = 'plain'
+    // Once we upgrade this, we can remove RegexMatchingImporterFactory
+    pluginDependencies = ['org.itsallcode:openfasttrace-asciidoc-plugin:0.3.0']
+}

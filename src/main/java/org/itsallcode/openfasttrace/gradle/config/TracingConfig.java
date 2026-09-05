@@ -26,6 +26,7 @@ public class TracingConfig
     private final ConfigurableFileCollection inputDirectories;
     private final RegularFileProperty reportFile;
     private final ListProperty<Object> importedRequirements;
+    private final ListProperty<Object> pluginDependencies;
     private final SetProperty<String> filteredTags;
     private final SetProperty<String> filteredArtifactTypes;
     private final SetProperty<String> filterWantedStatuses;
@@ -35,7 +36,7 @@ public class TracingConfig
 
     /**
      * Creates a tracing configuration with the plugin defaults.
-     * 
+     *
      * @param project
      *            the Gradle project owning the configuration
      */
@@ -49,6 +50,7 @@ public class TracingConfig
         this.reportFormat = project.getObjects().property(String.class);
         this.reportFormat.set(DEFAULT_REPORT_FORMAT);
         this.importedRequirements = project.getObjects().listProperty(Object.class);
+        this.pluginDependencies = project.getObjects().listProperty(Object.class);
         this.filteredTags = project.getObjects().setProperty(String.class);
         this.filteredArtifactTypes = project.getObjects().setProperty(String.class);
         this.filterAcceptsItemsWithoutTag = project.getObjects().property(Boolean.class);
@@ -62,7 +64,7 @@ public class TracingConfig
 
     /**
      * Returns the report verbosity property.
-     * 
+     *
      * @return the verbosity property
      */
     public Property<ReportVerbosity> getReportVerbosity()
@@ -118,6 +120,16 @@ public class TracingConfig
     public ListProperty<Object> getImportedRequirements()
     {
         return importedRequirements;
+    }
+
+    /**
+     * Returns the OpenFastTrace plugin dependencies.
+     *
+     * @return the plugin dependencies
+     */
+    public ListProperty<Object> getPluginDependencies()
+    {
+        return pluginDependencies;
     }
 
     /**
@@ -298,6 +310,17 @@ public class TracingConfig
     public void setImportedRequirements(final List<Object> importedRequirements)
     {
         this.importedRequirements.set(importedRequirements);
+    }
+
+    /**
+     * Sets the OpenFastTrace plugin dependencies.
+     *
+     * @param pluginDependencies
+     *            dependencies to add to the OpenFastTrace plugin classpath
+     */
+    public void setPluginDependencies(final List<Object> pluginDependencies)
+    {
+        this.pluginDependencies.set(pluginDependencies);
     }
 
     /**
