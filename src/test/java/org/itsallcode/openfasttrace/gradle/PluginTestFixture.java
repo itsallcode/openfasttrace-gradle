@@ -76,7 +76,8 @@ class PluginTestFixture
         {
             allArgs.add("--build-cache");
         }
-        allArgs.addAll(List.of("--configuration-cache", "--configuration-cache-problems=fail"));
+        allArgs.addAll(List.of("--configuration-cache", "-Dorg.gradle.configuration-cache.parallel=true",
+                "--configuration-cache-problems=fail", "--parallel"));
         allArgs.addAll(List.of("--warning-mode", "fail"));
         final GradleRunner runner = GradleRunner.create()
                 .withProjectDir(projectDir.toFile())
