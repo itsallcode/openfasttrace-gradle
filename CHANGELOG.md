@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.3.0] - 2026-09-??
+## [3.3.0] - 2026-09-20
 
 - [PR #80](https://github.com/itsallcode/openfasttrace-gradle/pull/80)
   - Fix JavaDoc warnings and let build fail on warnings
