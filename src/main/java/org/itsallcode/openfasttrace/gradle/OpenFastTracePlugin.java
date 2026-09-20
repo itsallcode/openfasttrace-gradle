@@ -12,6 +12,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.itsallcode.openfasttrace.api.core.ItemStatus;
 import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
@@ -139,30 +140,38 @@ public class OpenFastTracePlugin implements Plugin<Project>
 
     private static Set<File> getAllInputDirectories(final Set<Project> allProjects)
     {
-        return allProjects.stream() //
-                .map(project -> getConfig(project).getInputDirectories().getFiles()) //
-                .flatMap(Set::stream) //
+        return allProjects.stream()
+                .map(project -> getConfig(project).getInputDirectories().getFiles())
+                .flatMap(Set::stream)
                 .collect(toSet());
     }
 
     private static ConfigurableFileCollection getImportedRequirements(final Project rootProject,
             final Set<Project> allProjects)
     {
-        return rootProject.files(allProjects.stream() //
-                .map(OpenFastTracePlugin::getImportedRequirements) //
-                .toList());
+        final ConfigurableFileCollection importedRequirements = rootProject.files();
+        allProjects.stream()
+                .map(OpenFastTracePlugin::getImportedRequirements)
+                .flatMap(Optional::stream)
+                .forEach(importedRequirements::from);
+        return importedRequirements;
     }
 
-    private static Configuration getImportedRequirements(final Project project)
+    private static Optional<Provider<Configuration>> getImportedRequirements(final Project project)
     {
         final String CONFIG_NAME = "oftRequirementConfig";
-            final Configuration configuration = project.getConfigurations().create(CONFIG_NAME);
-            getConfig(project).getImportedRequirements().get().forEach(dependency -> {
-                LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
-                        CONFIG_NAME, project);
-                project.getDependencies().add(CONFIG_NAME, dependency);
-            });
-        return configuration;
+        final List<Object> dependencies = getConfig(project).getImportedRequirements().get();
+        if (dependencies.isEmpty())
+        {
+            return Optional.empty();
+        }
+        project.getConfigurations().create(CONFIG_NAME);
+        dependencies.forEach(dependency -> {
+            LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
+                    CONFIG_NAME, project);
+            project.getDependencies().add(CONFIG_NAME, dependency);
+        });
+        return Optional.of(project.getConfigurations().named(CONFIG_NAME));
     }
 
     private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)
