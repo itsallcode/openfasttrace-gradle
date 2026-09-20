@@ -80,10 +80,10 @@ public class OpenFastTracePlugin implements Plugin<Project>
             final TaskProvider<CollectTask> collectTask)
     {
         rootProject.getTasks().register("traceRequirements", TraceTask.class,
-                task -> configureTask(rootProject, collectTask, task));
+                task -> configureTracingTask(rootProject, collectTask, task));
     }
 
-    private static void configureTask(final Project rootProject,
+    private static void configureTracingTask(final Project rootProject,
             final TaskProvider<CollectTask> collectTask, final TraceTask task)
     {
         task.setGroup(TASK_GROUP_NAME);
@@ -156,12 +156,12 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private static Configuration getImportedRequirements(final Project project)
     {
         final String CONFIG_NAME = "oftRequirementConfig";
-        final Configuration configuration = project.getConfigurations().create(CONFIG_NAME);
-        getConfig(project).getImportedRequirements().get().forEach(dependency -> {
-            LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
-                    CONFIG_NAME, project);
-            project.getDependencies().add(CONFIG_NAME, dependency);
-        });
+            final Configuration configuration = project.getConfigurations().create(CONFIG_NAME);
+            getConfig(project).getImportedRequirements().get().forEach(dependency -> {
+                LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
+                        CONFIG_NAME, project);
+                project.getDependencies().add(CONFIG_NAME, dependency);
+            });
         return configuration;
     }
 
