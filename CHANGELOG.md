@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-09-??
+
 - [PR #80](https://github.com/itsallcode/openfasttrace-gradle/pull/80)
   - Fix JavaDoc warnings and let build fail on warnings
 - [PR #82](https://github.com/itsallcode/openfasttrace-gradle/pull/82)
@@ -21,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow configuring color schema
   - Configuration values for details section display and report verbosity are now case insensitive
   - Improve error messages for invalid enum values
+- [#63](https://github.com/itsallcode/openfasttrace-gradle/issues/63) / [PR 88](https://github.com/itsallcode/openfasttrace-gradle/pull/88):
+  - Add support for parallel builds. This failed before with error `Resolution of the configuration 'oftRequirementConfig' was attempted without an exclusive lock`
 
 ## [3.2.0] - 2026-08-18
 
