@@ -2,11 +2,11 @@ plugins {
     id 'java-gradle-plugin'
     id 'jacoco'
     id 'signing'
-    id 'com.gradle.plugin-publish' version '2.1.1'
-    id 'org.sonarqube' version '7.4.0.8496'
+    id 'com.gradle.plugin-publish' version '2.2.1'
+    id 'org.sonarqube' version '7.5.0.8588'
     id 'pl.droidsonroids.jacoco.testkit' version '1.0.12'
-    id 'io.github.ben-manes.versions' version '0.61.0'
-    id 'org.sonatype.gradle.plugins.scan' version '4.0.0'
+    id 'io.github.ben-manes.versions' version '0.64.0'
+    id 'org.sonatype.gradle.plugins.scan' version '4.1.0-02'
 }
 
 repositories {
@@ -15,7 +15,7 @@ repositories {
 
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
-version = '3.2.0'
+version = '3.3.0'
 group = 'org.itsallcode'
 
 ext {

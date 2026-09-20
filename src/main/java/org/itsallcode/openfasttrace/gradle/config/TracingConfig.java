@@ -113,7 +113,8 @@ public class TracingConfig
     }
 
     /**
-     * Returns the external requirement dependencies.
+     * Returns the external requirement dependencies. This is a list of dependency coordinates pointing to ZIP files
+     * containing requirements, e.g. {@code com.example:swad:1.0.0@zip}.
      * 
      * @return the imported requirements
      */
