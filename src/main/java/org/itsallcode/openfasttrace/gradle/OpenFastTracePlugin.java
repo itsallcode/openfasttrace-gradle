@@ -164,14 +164,13 @@ public class OpenFastTracePlugin implements Plugin<Project>
         {
             return Optional.empty();
         }
-        final String configName = "oftRequirementConfig";
-        project.getConfigurations().create(configName);
+        final String CONFIG_NAME = "oftRequirementConfig";
+        project.getConfigurations().create(CONFIG_NAME);
         dependencies.forEach(dependency -> {
-            LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
-                    configName, project);
-            project.getDependencies().add(configName, dependency);
+            LOG.info("Adding dependency {} with configuration {} to project {}", dependency, CONFIG_NAME, project);
+            project.getDependencies().add(CONFIG_NAME, dependency);
         });
-        return Optional.of(project.getConfigurations().named(configName));
+        return Optional.of(project.getConfigurations().named(CONFIG_NAME));
     }
 
     private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)
