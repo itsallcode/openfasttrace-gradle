@@ -20,7 +20,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
     ```groovy
     plugins {
-      id "org.itsallcode.openfasttrace" version "3.3.0"
+      id "org.itsallcode.openfasttrace" version "3.4.0"
     }
     ```
 
@@ -148,7 +148,7 @@ See [publish-config](https://github.com/itsallcode/openfasttrace-gradle/tree/mai
 
 #### Importing External Requirements
 
-You can import requirements from another project using the `importedRequirements` configuration. The requirements must be published to a repository as a zip file and can be referenced using the usual gradle dependency syntax:
+You can import requirements from another project using the `importedRequirements` configuration. The requirements must be published to a repository as a zip file and can be referenced using the usual Gradle dependency syntax:
 
 ```groovy
 repositories {

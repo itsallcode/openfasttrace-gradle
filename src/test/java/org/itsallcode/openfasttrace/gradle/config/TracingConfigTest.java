@@ -62,7 +62,7 @@ class TracingConfigTest
                 () -> tracingConfig.setReportVerbosity("extreme"));
 
         assertEquals(
-                "Invalid verbosity 'extreme'. Valid verbosities are: QUIET, MINIMAL, SUMMARY, FAILURES, DIRECT_FAILURES, FAILURE_SUMMARIES, DIRECT_FAILURE_SUMMARIES, FAILURE_DETAILS, DIRECT_FAILURE_DETAILS, ALL",
+                "Invalid verbosity 'extreme'. Valid verbosities are: QUIET, MINIMAL, SUMMARY, FAILURES, DIRECT_FAILURES, FAILURE_SUMMARIES, DIRECT_FAILURE_SUMMARIES, FAILURE_DETAILS, DIRECT_FAILURE_DETAILS, OVERVIEW, ALL",
                 exception.getMessage());
     }
 
