@@ -68,7 +68,9 @@ public final class OftPluginClassLoader
                 "org.itsallcode.openfasttrace.api.exporter.ExporterFactory");
         addServiceProviderJars(parent, pluginUrls,
                 "org.itsallcode.openfasttrace.api.importer.ImporterFactory");
-        final URL[] urls = pluginUrls.toArray(URL[]::new);
+        final URL[] urls = pluginUrls.stream()
+                .map(OftPluginClassLoader::toUrl)
+                .toArray(URL[]::new);
         final String pluginUrlsString = Arrays.toString(urls);
         return new ChildFirstClassLoader("ChildFirst ClassLoader for " + pluginUrlsString, urls, parent);
     }
@@ -103,6 +105,18 @@ public final class OftPluginClassLoader
         catch (final URISyntaxException e)
         {
             throw new IllegalStateException("Invalid JAR file URL: " + url, e);
+        }
+    }
+
+    private static URL toUrl(final URI uri)
+    {
+        try
+        {
+            return uri.toURL();
+        }
+        catch (final MalformedURLException e)
+        {
+            throw new IllegalStateException("Invalid plugin JAR URI: " + uri, e);
         }
     }
 }

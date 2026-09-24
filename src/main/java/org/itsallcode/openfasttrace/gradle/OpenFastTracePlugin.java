@@ -177,6 +177,45 @@ public class OpenFastTracePlugin implements Plugin<Project>
         return Optional.of(project.getConfigurations().named(CONFIG_NAME));
     }
 
+    private static ConfigurableFileCollection getPluginDependencies(final Project rootProject,
+            final Set<Project> allProjects)
+    {
+        return rootProject.files(allProjects.stream()
+                .map(OpenFastTracePlugin::getPluginDependencies)
+                .flatMap(Optional::stream)
+                .toList());
+    }
+
+    private static Optional<Configuration> getPluginDependencies(final Project project)
+    {
+        final List<Object> dependencies = getConfig(project).getPluginDependencies().get();
+        if (dependencies.isEmpty())
+        {
+            return Optional.empty();
+        }
+        final String CONFIG_NAME = "oftPluginConfig";
+        return Optional.of(getOrCreateConfiguration(project, CONFIG_NAME, dependencies));
+    }
+
+    private static Configuration getOrCreateConfiguration(final Project project,
+            final String configurationName, final List<Object> dependencies)
+    {
+        final Configuration existingConfiguration = project.getConfigurations()
+                .findByName(configurationName);
+        if (existingConfiguration != null)
+        {
+            return existingConfiguration;
+        }
+
+        final Configuration configuration = project.getConfigurations().create(configurationName);
+        dependencies.forEach(dependency -> {
+            LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
+                    configurationName, project);
+            project.getDependencies().add(configurationName, dependency);
+        });
+        return configuration;
+    }
+
     private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)
     {
         return allProjects.stream()
