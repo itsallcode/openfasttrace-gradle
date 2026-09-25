@@ -68,6 +68,8 @@ public final class OftPluginClassLoader
                 "org.itsallcode.openfasttrace.api.exporter.ExporterFactory");
         addServiceProviderJars(parent, pluginUrls,
                 "org.itsallcode.openfasttrace.api.importer.ImporterFactory");
+        addServiceProviderJars(parent, pluginUrls,
+                "org.itsallcode.openfasttrace.api.reporter.ReporterFactory");
         final URL[] urls = pluginUrls.stream()
                 .map(OftPluginClassLoader::toUrl)
                 .toArray(URL[]::new);
