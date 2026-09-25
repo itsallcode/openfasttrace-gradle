@@ -85,7 +85,7 @@ repositories {
 }
 
 requirementTracing {
-  pluginDependencies = ['org.itsallcode:openfasttrace-asciidoc-plugin:0.3.0']
+  pluginDependencies = ['org.itsallcode:openfasttrace-asciidoc-plugin:1.0.0']
 }
 ```
 
