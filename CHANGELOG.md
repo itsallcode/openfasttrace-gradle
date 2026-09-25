@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#77](https://github.com/itsallcode/openfasttrace-gradle/issues/77)
   - Add support for OpenFastTrace plugin dependencies
 
+## [3.4.0] - 2026-09-22
+
+- Upgrade to OpenFastTrace [4.10.0](https://github.com/itsallcode/openfasttrace/releases/tag/4.10.0)
+
 ## [3.3.0] - 2026-09-20
 
 - [PR #80](https://github.com/itsallcode/openfasttrace-gradle/pull/80)

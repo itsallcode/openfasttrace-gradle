@@ -15,12 +15,12 @@ repositories {
 
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
-version = '3.3.0'
+version = '3.4.0'
 group = 'org.itsallcode'
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
-    oftVersion = '4.9.0'
+    oftVersion = '4.10.0'
     junitVersion = '6.1.3'
     if (project.hasProperty('oftSourceDir')) {
         oftSourceDir = file(project.oftSourceDir)
