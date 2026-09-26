@@ -20,6 +20,7 @@ import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.core.OftRunner;
+import org.itsallcode.openfasttrace.gradle.task.classloader.OftPluginClassLoader;
 
 /** Gradle task that traces requirements and writes a report. */
 @SuppressWarnings("this-escape")
@@ -38,6 +39,7 @@ public class TraceTask extends DefaultTask
     private final Property<DetailsSectionDisplay> detailsSectionDisplay = getProject().getObjects()
             .property(DetailsSectionDisplay.class);
     private final ConfigurableFileCollection importedRequirements = getProject().files();
+    private final ConfigurableFileCollection pluginFiles = getProject().files();
     private final SetProperty<String> filteredArtifactTypes = getProject().getObjects()
             .setProperty(String.class);
     private final SetProperty<String> filteredTags = getProject().getObjects()
@@ -124,6 +126,18 @@ public class TraceTask extends DefaultTask
     }
 
     /**
+     * Returns the OpenFastTrace plugin files.
+     *
+     * @return the plugin files
+     */
+    @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
+    public ConfigurableFileCollection getPluginFiles()
+    {
+        return pluginFiles;
+    }
+
+    /**
      * Returns the artifact type filter.
      * 
      * @return the artifact type filter
@@ -201,6 +215,11 @@ public class TraceTask extends DefaultTask
     public void trace()
     {
         createReportOutputDir();
+        OftPluginClassLoader.runWithPlugins(pluginFiles, this::traceWithPlugins);
+    }
+
+    private void traceWithPlugins()
+    {
         final Oft oft = new OftRunner();
         final ImportSettings importSettings = getImportSettings();
         final List<SpecificationItem> importedItems = oft.importItems(importSettings);
