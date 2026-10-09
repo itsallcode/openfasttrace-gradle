@@ -1,7 +1,7 @@
 # Changeset: Isolated Projects compatibility
 
 - **Date:** 2026-10-09
-- **Status:** planned
+- **Status:** blocked — implementation aborted on 2026-10-09; findings documented below
 - **Scope:** `OpenFastTracePlugin`, `example-projects/multi-project`, `README.md`, `CHANGELOG.md`
 
 ## Problem
@@ -77,18 +77,53 @@ Notes from the probes:
   (`build/oft/...`), or the export task's declared output path via convention. Custom
   `buildDir` in subprojects will not be supported for cross-project aggregation.
 
-## Decision
+## Spike findings and blocker (2026-10-09)
 
-**Option A — convention pattern** (user-approved, matches Gradle's Isolated Projects
-recommendation): every project that configures `requirementTracing` applies the plugin to itself
-in its own `build.gradle`. No settings plugin, no lifecycle-callback magic.
+The implementation was stopped before an end-to-end fix was completed. The earlier decision
+below to use per-project plugin application was not sufficient by itself: the root plugin still
+needs a way to discover which subprojects opted into tracing, without reading mutable cross-project
+state.
+
+- The attempted partial refactor (per-project DSL, root-only tasks, plus `findByType` to aggregate
+  child configuration) fails on Gradle 9.8.1 with `Project ':' cannot access 'Project.extensions'
+  functionality on subprojects via 'allprojects'`. A configuration-cache/task-realization boundary
+  does not make that access Isolated Projects-safe.
+- A cross-project dependency declared as a task path is legal when the task exists, but it fails
+  task graph construction if the named task is absent (`Task with name 'missing' not found in
+  project ':sub'`). Thus blindly depending on every subproject's export task cannot provide the
+  stated support for plugin-less subprojects.
+- Root cannot determine whether a subproject applied the plugin by inspecting that project's
+  extensions or task container. The existing tolerance requirement therefore needs explicit
+  participation information (or a different architecture), rather than implicit discovery.
+- The changeset's tested probes indicate that immutable project-directory-based manifest paths
+  and typed tasks can be used for a file-channel design. That design still needs a sound way to
+  discover the producers, track exported inputs including changed source content, represent
+  resolved imported artifacts, and preserve configuration-cache/build-cache behaviour.
+- Possible next design to evaluate: have the root explicitly list project paths to aggregate, then
+  use task-path dependencies and default-build-directory manifest paths for exactly those paths.
+  This would be an explicit user-facing configuration addition and does not yet support automatic
+  discovery; decide whether that tradeoff is acceptable before implementation. A settings plugin or
+  a requirement that all projects apply the plugin are other options with different compatibility
+  implications.
+
+No implementation option was approved after these findings. Revisit the design before changing
+plugin behavior or documentation.
+
+## Decision (superseded / not implemented)
+
+The earlier **Option A — convention pattern** proposal stated that every project configuring
+`requirementTracing` would apply the plugin itself, with no settings plugin or lifecycle-callback
+magic. That proposal is incomplete until the root can aggregate the participating subprojects
+without cross-project model reads. Do not treat this as an implementation decision.
 
 - Gradle 9.x only — do not re-enable the Gradle 8.14.5 test config.
-- Documentation updated as part of this change.
+- Documentation updates were proposed but not made.
 
 ## Changes
 
-### 1. `src/main/java/org/itsallcode/openfasttrace/gradle/OpenFastTracePlugin.java`
+### Proposed changes (not implemented)
+
+#### 1. `src/main/java/org/itsallcode/openfasttrace/gradle/OpenFastTracePlugin.java`
 
 - `apply(project)`: create the `requirementTracing` + `tags` DSL on the receiving project only
   (drop `rootProject.allprojects(...)`); register root tasks only when
@@ -132,8 +167,7 @@ in its own `build.gradle`. No settings plugin, no lifecycle-callback magic.
   subproject does not use the plugin** (`example-projects/multi-project-without-plugin`: root +
   `sub1` apply the plugin, `sub2` is plugin-less). Assert `traceRequirements` succeeds
   (`SUCCESS` / `FROM_CACHE` / `UP_TO_DATE`) and the report is generated, proving tolerance.
-- Verify: `./gradlew clean test` → all tests pass (21 before fix, 2 fail; 22 after adding the
-  new test).
+- Verify: `./gradlew clean test` → all tests pass (target counts still to be confirmed).
 
 ### 4. `README.md`
 
@@ -150,25 +184,33 @@ in its own `build.gradle`. No settings plugin, no lifecycle-callback magic.
 - Add an `[Unreleased]` entry describing Isolated Projects compatibility (per-project plugin
   application; subprojects must apply the plugin themselves).
 
-## Verification
+## Verification during the aborted implementation
 
-1. `./gradlew clean test` → 21/21 pass (currently 2 fail before the fix).
-2. Manual:
+`./gradlew test --no-daemon` ran 34 tests: 31 passed and 3 failed. The failing tests were:
 
-   ```sh
-   cd example-projects/multi-project
-   ./gradlew traceRequirements --isolated-projects -Dorg.gradle.isolated-projects.diagnostics=true
-   ```
+- `pluginUsesConfigurationCacheWithMultiModuleProject`
+- `testTraceMultiProject`
+- `testTraceMultiProjectWithSubprojectWithoutPlugin`
 
-   → violation-free build (zero Isolated Projects problems).
-3. `--warning-mode fail` holds — no new deprecations.
+All three fail while creating `:traceRequirements` with the Isolated Projects violation
+`Project ':' cannot access 'Project.extensions' functionality on subprojects via 'allprojects'`.
+The partial implementation did not yet have the files-channel design and must not be considered a
+working fix. Source/test/example changes from that attempt were reverted; only this changeset now
+records the findings. The test run also showed the suite currently executes 34 tests, so the earlier expected totals
+(21/22) were outdated. The manual isolated-projects verification and warning-mode checks have not
+been completed successfully.
+
+## Remaining verification (not performed)
+
+1. `./gradlew clean test` with the completed implementation.
+2. `traceRequirements --isolated-projects -Dorg.gradle.isolated-projects.diagnostics=true` in the
+   multi-project example, with zero Isolated Projects problems.
+3. Verify `--warning-mode fail` introduces no new deprecations.
 
 ## Notes / risks
 
-- **Status:** implementation in progress. Per-project DSL + root-only tasks are done; the
-  files-channel (`oftExportConfig` tasks + root consumption via task-path `dependsOn` and
-  `@InputFile` wiring) is the remaining core work. The spike invalidated the earlier
-  "aggregation reads are legal" assumption — see "Findings from the implementation spike".
+- **Status:** blocked. No implementation is currently present; the files-channel design and
+  producer-discovery problem remain unresolved.
 - **User-facing change:** subprojects that configure the DSL must now apply the plugin
   themselves.
 - **Custom `buildDir` in subprojects:** not supported for cross-project aggregation (config
