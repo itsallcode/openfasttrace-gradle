@@ -8,18 +8,24 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.*;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.*;
+import org.gradle.work.DisableCachingByDefault;
 
 /** Exports a project's tracing configuration for root-project aggregation. */
+@DisableCachingByDefault(because = "The task copies resolved archives to a local hand-off directory")
 public abstract class OftExportConfigTask extends DefaultTask
 {
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
 
     /** Creates the task. */
-    protected OftExportConfigTask()
+    @SuppressWarnings("java:S5993") // Constructor must be public for Gradle to instantiate the task.
+    @Inject
+    public OftExportConfigTask()
     {
         super();
     }
