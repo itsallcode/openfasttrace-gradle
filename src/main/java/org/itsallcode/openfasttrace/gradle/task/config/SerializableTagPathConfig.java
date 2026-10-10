@@ -33,6 +33,17 @@ public class SerializableTagPathConfig implements Serializable
     }
 
     /**
+     * Creates a serializable configuration from exported tag configurations.
+     *
+     * @param tagConfigs
+     *            tag configurations
+     */
+    public SerializableTagPathConfig(final List<SerializableTagConfig> tagConfigs)
+    {
+        this.tagConfigs = List.copyOf(tagConfigs);
+    }
+
+    /**
      * Returns all paths in this configuration.
      *
      * @return all configured paths

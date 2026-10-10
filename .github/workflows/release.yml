@@ -41,6 +41,7 @@ jobs:
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
       - name: Build
+        # See https://github.com/itsallcode/openfasttrace-gradle/issues/93
         run: ./gradlew build --warning-mode all -PjavaVersion=17
         env:
           ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}

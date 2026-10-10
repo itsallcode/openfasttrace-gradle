@@ -9,16 +9,13 @@ import java.util.*;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.itsallcode.openfasttrace.api.core.ItemStatus;
-import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
-import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
-import org.itsallcode.openfasttrace.gradle.task.CollectTask;
-import org.itsallcode.openfasttrace.gradle.task.TraceTask;
+import org.itsallcode.openfasttrace.gradle.config.*;
+import org.itsallcode.openfasttrace.gradle.task.*;
+import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagConfig;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 import org.slf4j.Logger;
 
@@ -35,27 +32,91 @@ public class OpenFastTracePlugin implements Plugin<Project>
     }
 
     /**
-     * Applies the plugin to the root project.
+     * Applies the plugin to a project.
      *
-     * @param rootProject
+     * @param project
      *            the project receiving the plugin
      */
     @Override
-    public void apply(final Project rootProject)
+    public void apply(final Project project)
     {
-        LOG.info("Initializing OpenFastTrack plugin for project '{}'", rootProject);
-        rootProject.allprojects(OpenFastTracePlugin::createConfigDsl);
-        createTasks(rootProject);
+        LOG.info("Initializing OpenFastTrace plugin for project '{}'", project);
+        createConfigDsl(project);
+        project.getTasks().register("oftExportConfig",
+                org.itsallcode.openfasttrace.gradle.task.OftExportConfigTask.class,
+                task -> configureExportTask(project, task));
+        if (project == project.getRootProject())
+        {
+            createTasks(project);
+        }
     }
 
     private static void createConfigDsl(final Project project)
     {
         LOG.info("Setting up plugin configuration for project '{}'", project.getName());
-
-        final TracingConfig tracingConfig = project.getExtensions().create("requirementTracing",
-                TracingConfig.class, project);
-        ((ExtensionAware) tracingConfig).getExtensions().create("tags", TagPathConfiguration.class,
+        final TracingConfig tracingConfig = project.getExtensions().create("requirementTracing", TracingConfig.class,
                 project);
+        ((ExtensionAware) tracingConfig).getExtensions().create("tags", TagPathConfiguration.class, project);
+    }
+
+    private static void configureExportTask(final Project project, final OftExportConfigTask task)
+    {
+        task.setGroup(TASK_GROUP_NAME);
+        task.setDescription("Export project tracing configuration for root aggregation");
+        task.getManifestFile().set(project.getLayout().getBuildDirectory()
+                .file("oft/trace-config.tsv"));
+        task.getImportedArchivesDirectory().set(project.getLayout().getBuildDirectory()
+                .dir("oft/imported-requirements"));
+        final TracingConfig config = getConfig(project);
+        final List<String> entries = new ArrayList<>();
+        final List<File> sourceFiles = new ArrayList<>(config.getInputDirectories().getFiles());
+        config.getInputDirectories().getFiles().stream()
+                .sorted(Comparator.comparing(File::getAbsolutePath))
+                .forEach(file -> entries.add("D\t" + encode(file.getAbsolutePath())));
+        final List<Object> dependencies = config.getImportedRequirements().get();
+        final Configuration importedConfiguration = createImportedConfiguration(project, dependencies);
+        for (final TagConfig tag : config.getTagPathConfig().getPathConfig())
+        {
+            final SerializableTagConfig serializable = new SerializableTagConfig(tag);
+            final List<File> tagFiles = serializable.getPaths().stream().map(java.nio.file.Path::toFile)
+                    .sorted(Comparator.comparing(File::getAbsolutePath)).toList();
+            sourceFiles.addAll(tagFiles);
+            for (final File tagFile : tagFiles)
+            {
+                entries.add("T\t" + encode(serializable.getCoveredItemNamePrefix()) + "\t"
+                        + encode(serializable.getTagArtifactType()) + "\t"
+                        + encode(serializable.getCoveredItemArtifactType()) + "\t"
+                        + encode(tagFile.getAbsolutePath()));
+            }
+        }
+        task.getConfigEntries().set(entries);
+        task.getSourceFiles().from(sourceFiles);
+        task.getInputs().files(sourceFiles);
+        if (importedConfiguration != null)
+        {
+            task.getImportedArchives().from(importedConfiguration);
+        }
+    }
+
+    private static Configuration createImportedConfiguration(final Project project,
+            final List<Object> dependencies)
+    {
+        if (dependencies.isEmpty())
+        {
+            return null;
+        }
+        final String name = "oftRequirementConfig";
+        final Configuration configuration = project.getConfigurations().maybeCreate(name);
+        configuration.setCanBeConsumed(false);
+        configuration.setCanBeResolved(true);
+        dependencies.forEach(dependency -> project.getDependencies().add(name, dependency));
+        return configuration;
+    }
+
+    private static String encode(final String value)
+    {
+        return Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     private static void createTasks(final Project rootProject)
@@ -70,10 +131,23 @@ public class OpenFastTracePlugin implements Plugin<Project>
         return rootProject.getTasks().register("collectRequirements", CollectTask.class, task -> {
             task.setGroup(TASK_GROUP_NAME);
             task.setDescription("Collect requirements and generate specobject file");
-            task.getInputDirectories().set(getAllInputDirectories(rootProject.getAllprojects()));
-            task.getOutputFile().set(
-                    rootProject.getLayout().getBuildDirectory().file("reports/requirements.xml"));
-            task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
+            task.getInputDirectories().set(getConfig(rootProject).getInputDirectories());
+            task.getOutputFile().set(rootProject.getLayout().getBuildDirectory().file("reports/requirements.xml"));
+            task.getPathConfig().set(getTagPathConfig(rootProject).map(List::of).orElseGet(Collections::emptyList));
+            final OftAggregationProjects projects = rootProject.getExtensions()
+                    .findByType(OftAggregationProjects.class);
+            if (projects != null)
+            {
+                projects.projectDirectories().forEach((path, directory) -> {
+                    final String taskPath = ":".equals(path) ? ":oftExportConfig" : path + ":oftExportConfig";
+                    task.dependsOn(taskPath);
+                    if (!":".equals(path))
+                    {
+                        task.getManifestFiles().from(new File(directory, "build/oft/trace-config.tsv"));
+                        task.getImportedArchiveInputs().from(new File(directory, "build/oft/imported-requirements"));
+                    }
+                });
+            }
         });
     }
 
@@ -107,8 +181,23 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.getReportVerbosity().set(config.getReportVerbosity());
         task.getReportColorScheme().set(config.getReportColorScheme());
         task.getReportFormat().set(config.getReportFormat());
-        task.getImportedRequirements()
-                .from(getImportedRequirements(rootProject, rootProject.getAllprojects()));
+        final Configuration rootImports = createImportedConfiguration(rootProject,
+                config.getImportedRequirements().get());
+        if (rootImports != null)
+        {
+            task.getImportedRequirements().from(rootImports);
+        }
+        final OftAggregationProjects projects = rootProject.getExtensions().findByType(OftAggregationProjects.class);
+        if (projects != null)
+        {
+            projects.projectDirectories().forEach((path, directory) -> {
+                task.dependsOn(":".equals(path) ? ":oftExportConfig" : path + ":oftExportConfig");
+                if (!":".equals(path))
+                {
+                    task.getImportedRequirements().from(new File(directory, "build/oft/imported-requirements"));
+                }
+            });
+        }
         task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
@@ -136,50 +225,6 @@ public class OpenFastTracePlugin implements Plugin<Project>
             throw new IllegalArgumentException(
                     "Invalid status '" + value + "'. Valid statuses are: " + validStatuses, e);
         }
-    }
-
-    private static Set<File> getAllInputDirectories(final Set<Project> allProjects)
-    {
-        return allProjects.stream()
-                .map(project -> getConfig(project).getInputDirectories().getFiles())
-                .flatMap(Set::stream)
-                .collect(toSet());
-    }
-
-    private static ConfigurableFileCollection getImportedRequirements(final Project rootProject,
-            final Set<Project> allProjects)
-    {
-        final ConfigurableFileCollection importedRequirements = rootProject.files();
-        allProjects.stream()
-                .map(OpenFastTracePlugin::getImportedRequirements)
-                .flatMap(Optional::stream)
-                .forEach(importedRequirements::from);
-        return importedRequirements;
-    }
-
-    private static Optional<Provider<Configuration>> getImportedRequirements(final Project project)
-    {
-        final List<Object> dependencies = getConfig(project).getImportedRequirements().get();
-        if (dependencies.isEmpty())
-        {
-            return Optional.empty();
-        }
-        final String CONFIG_NAME = "oftRequirementConfig";
-        project.getConfigurations().create(CONFIG_NAME);
-        dependencies.forEach(dependency -> {
-            LOG.info("Adding dependency {} with configuration {} to project {}", dependency, CONFIG_NAME, project);
-            project.getDependencies().add(CONFIG_NAME, dependency);
-        });
-        return Optional.of(project.getConfigurations().named(CONFIG_NAME));
-    }
-
-    private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)
-    {
-        return allProjects.stream()
-                .map(OpenFastTracePlugin::getTagPathConfig)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
     }
 
     private static Optional<SerializableTagPathConfig> getTagPathConfig(final Project project)
