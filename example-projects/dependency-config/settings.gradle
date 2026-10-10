@@ -1,5 +1,7 @@
+pluginManagement {
+    includeBuild('../../')
+}
+
 plugins {
     id 'org.itsallcode.openfasttrace.settings'
 }
-
-includeBuild('../../')

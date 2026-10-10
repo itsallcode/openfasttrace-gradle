@@ -107,13 +107,21 @@ See [multi-project/sub1](https://github.com/itsallcode/openfasttrace-gradle/tree
 
 ### Multi-project Builds
 
-Apply the plugin to the root project to provide the aggregate `collectRequirements` and `traceRequirements` tasks. The settings plugin `org.itsallcode.openfasttrace.settings` automatically applies the project plugin to every project so the root task can aggregate project-local input and tag configuration without accessing subproject models. Add it in `settings.gradle` and include the plugin build or resolve it from the plugin portal:
+Apply the plugin to the root project to provide the aggregate `collectRequirements` and `traceRequirements` tasks. The settings plugin `org.itsallcode.openfasttrace.settings` automatically applies the project plugin to every project so the root task can aggregate project-local input and tag configuration without accessing subproject models. Declare it in `settings.gradle`:
 
 ```groovy
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+  }
+}
+
 plugins {
   id 'org.itsallcode.openfasttrace.settings' version '3.4.0'
 }
 ```
+
+When developing against this repository, the example settings use `pluginManagement { includeBuild('../../') }` instead of a published plugin version.
 
 The [multi-project example](https://github.com/itsallcode/openfasttrace-gradle/tree/main/example-projects/multi-project) demonstrates a single root report combining subproject tag files.
 

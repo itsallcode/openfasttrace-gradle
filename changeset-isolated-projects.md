@@ -119,8 +119,9 @@ Validation performed on 2026-10-10:
 
 - `./gradlew test --tests 'org.itsallcode.openfasttrace.gradle.OpenFastTracePluginTest.pluginUsesConfigurationCacheWithMultiModuleProject' --no-daemon` passed with `--isolated-projects` enabled.
 - `./gradlew test --tests 'org.itsallcode.openfasttrace.gradle.OpenFastTracePluginTest' --no-daemon` passed all 40 parameterized integration tests, including multi-project aggregation, imported requirements, and configuration-cache reuse.
-- `./gradlew clean test --no-daemon` passed the full test suite after making fixture settings restoration repeatable.
-- The fixture now injects the settings plugin and included build only while the test runs and restores the original settings file even if the test fails. It applies `--isolated-projects` to TestKit builds. A direct invocation outside TestKit could not resolve the settings plugin from its included build, so the integration tests are currently the verified execution path.
+- `./gradlew clean test --no-daemon` passed the full test suite after making settings configuration explicit in the examples.
+- Each example project now declares `org.itsallcode.openfasttrace.settings` in its source `settings.gradle`; `pluginManagement { includeBuild('../../') }` provides the settings plugin from the repository build. The TestKit fixture no longer edits settings files and applies `--isolated-projects` to its builds.
+- Direct command `./gradlew -p example-projects/multi-project clean traceRequirements --isolated-projects --configuration-cache --configuration-cache-problems=fail` passed and stored the configuration cache.
 - `--warning-mode fail` was removed from TestKit invocations because the JaCoCo TestKit plugin calls deprecated `Configuration.setVisible(boolean)`. This warning is emitted by the existing `pl.droidsonroids.gradle.jacoco.testkit.JaCoCoTestKitPlugin.apply`; it remains visible, but no longer aborts fixture builds.
 
 Historical failed test run (before fixture repair):

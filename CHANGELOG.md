@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- [#91](https://github.com/itsallcode/openfasttrace-gradle/issues/91) Add Gradle Isolated Projects support for multi-project builds through the `org.itsallcode.openfasttrace.settings` plugin, which applies the project plugin to each project for root-level aggregation.
+- [#91](https://github.com/itsallcode/openfasttrace-gradle/issues/91) Add Gradle Isolated Projects support for multi-project builds through the `org.itsallcode.openfasttrace.settings` settings plugin, which applies the project plugin to each project for root-level aggregation.
 
 ## [3.4.0] - 2026-09-22
 
