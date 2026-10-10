@@ -50,10 +50,10 @@ jobs:
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
     - name: Build with Java ${{ matrix.java }}
-      # Can't use --warning-mode all because of warning "The Configuration.setVisible(boolean) method has been deprecated."
-      # in Plugin `pl.droidsonroids.jacoco.testkit`
+      # Can't use "--warning-mode all" because of warning "The Configuration.setVisible(boolean) method has been deprecated."
+      # in Plugin `pl.droidsonroids.jacoco.testkit`. See https://github.com/itsallcode/openfasttrace-gradle/issues/93
       run: |
-        ./gradlew build --warning-mode all \
+        ./gradlew build --warning-mode warn \
                         --configuration-cache --configuration-cache-problems=fail \
                         --exclude-task ossIndexAudit \
                         -PjavaVersion=${{ matrix.java }}
