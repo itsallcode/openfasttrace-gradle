@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -69,6 +70,13 @@ class PluginTestFixture
     {
         assertNotNull(arguments, "Arguments must be set before running the test fixture");
         configureJacoco(projectDir);
+        if (projectDir.resolve("settings.gradle").toFile().isFile())
+        {
+            TestUtil.writeFile(projectDir.resolve("settings.gradle"), "plugins {\n"
+                    + "    id 'org.itsallcode.openfasttrace.settings'\n"
+                    + "}\nincludeBuild('../..')\n"
+                    + Files.readString(projectDir.resolve("settings.gradle")));
+        }
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
         allArgs.addAll(List.of("--info", "--stacktrace"));

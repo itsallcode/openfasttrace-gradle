@@ -1,7 +1,7 @@
 # Changeset: Isolated Projects compatibility
 
 - **Date:** 2026-10-09
-- **Status:** blocked — implementation aborted on 2026-10-09; findings documented below
+- **Status:** implementation in progress — settings-plugin/file-channel design selected
 - **Scope:** `OpenFastTracePlugin`, `example-projects/multi-project`, `README.md`, `CHANGELOG.md`
 
 ## Problem
@@ -33,9 +33,7 @@ constraint violation that fails the build.
 
 The 18 single-project tests pass because there are no subprojects to touch.
 
-Note: the root project's *reads* (`rootProject.getAllprojects()`, used to aggregate input
-directories, tag path configs and imported requirements during task realization) are legal under
-Isolated Projects — only the *mutation* via `allprojects { … }` is the violation.
+Important: cross-project extension reads are also illegal under Isolated Projects, including reads made during task realization. Root aggregation therefore must use a file channel and cannot read any subproject model objects.
 
 ## Findings from the implementation spike (2026-10-09)
 
@@ -93,21 +91,21 @@ state.
   project ':sub'`). Thus blindly depending on every subproject's export task cannot provide the
   stated support for plugin-less subprojects.
 - Root cannot determine whether a subproject applied the plugin by inspecting that project's
-  extensions or task container. The existing tolerance requirement therefore needs explicit
-  participation information (or a different architecture), rather than implicit discovery.
-- The changeset's tested probes indicate that immutable project-directory-based manifest paths
-  and typed tasks can be used for a file-channel design. That design still needs a sound way to
-  discover the producers, track exported inputs including changed source content, represent
-  resolved imported artifacts, and preserve configuration-cache/build-cache behaviour.
-- Possible next design to evaluate: have the root explicitly list project paths to aggregate, then
-  use task-path dependencies and default-build-directory manifest paths for exactly those paths.
-  This would be an explicit user-facing configuration addition and does not yet support automatic
-  discovery; decide whether that tradeoff is acceptable before implementation. A settings plugin or
-  a requirement that all projects apply the plugin are other options with different compatibility
-  implications.
+  extensions or task container. The user rejected an explicit participant list, requires one root
+  aggregate report, and accepts a settings plugin that automatically applies the project plugin to
+  each project. Per-project import configuration remains local.
+- Selected architecture: a settings plugin uses the Gradle settings lifecycle to apply the project
+  plugin to each project. Each project registers an export task writing a manifest. Root tasks use
+  explicit task-path dependencies and immutable project-directory-derived manifest paths, then
+  parse manifests at execution time. They do not inspect subproject extensions/tasks.
+- A `beforeProject` callback probe applying a core plugin succeeded with Gradle 9.8.1 and both
+  `--isolated-projects` and `--configuration-cache`. This does not prove custom plugin classloading
+  or full manifest aggregation; those remain to be implemented and tested.
+- Automatic plugin application means all projects receive the plugin, but project build scripts
+  do not need a plugin block. Empty/default project configurations should export empty manifests.
 
-No implementation option was approved after these findings. Revisit the design before changing
-plugin behavior or documentation.
+Implementation may now proceed under this design. Update these findings with implementation and
+verification results.
 
 ## Decision (superseded / not implemented)
 

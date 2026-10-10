@@ -44,6 +44,27 @@ public class SerializableTagConfig implements Serializable
     }
 
     /**
+     * Creates a serializable tag configuration from manifest values.
+     *
+     * @param path
+     *            tag file
+     * @param coveredItemArtifactType
+     *            covered requirement type
+     * @param tagArtifactType
+     *            tag artifact type
+     * @param coveredItemNamePrefix
+     *            requirement name prefix
+     */
+    public SerializableTagConfig(final Path path, final String coveredItemArtifactType,
+            final String tagArtifactType, final String coveredItemNamePrefix)
+    {
+        this.paths = Set.of(path.toFile());
+        this.coveredItemArtifactType = coveredItemArtifactType;
+        this.tagArtifactType = tagArtifactType;
+        this.coveredItemNamePrefix = coveredItemNamePrefix;
+    }
+
+    /**
      * Returns the configured tag paths.
      *
      * @return the configured paths

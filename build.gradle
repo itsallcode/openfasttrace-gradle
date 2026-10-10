@@ -115,6 +115,18 @@ gradlePlugin {
                 }
             }
         }
+        openFastTraceSettingsPlugin {
+            id = 'org.itsallcode.openfasttrace.settings'
+            implementationClass = 'org.itsallcode.openfasttrace.gradle.SettingsOpenFastTracePlugin'
+            displayName = 'OpenFastTrace settings plugin'
+            description = 'Applies OpenFastTrace to all projects and aggregates their requirements'
+            tags.addAll(['requirementstracing', 'requirements', 'tracing', 'openfasttrace', 'oft'])
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
+        }
     }
 }
 
