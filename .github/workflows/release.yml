@@ -42,7 +42,7 @@ jobs:
 
       - name: Build
         # See https://github.com/itsallcode/openfasttrace-gradle/issues/93
-        run: ./gradlew build --warning-mode fail -PjavaVersion=17
+        run: ./gradlew build --warning-mode all -PjavaVersion=17
         env:
           ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
           ORG_GRADLE_PROJECT_ossIndexToken: ${{ secrets.OSSINDEX_TOKEN }}
