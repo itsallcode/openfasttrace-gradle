@@ -1,7 +1,7 @@
 # Changeset: Isolated Projects compatibility
 
 - **Date:** 2026-10-09
-- **Status:** implementation in progress — settings-plugin/file-channel design selected
+- **Status:** blocked/incomplete — initial settings-plugin/file-channel implementation exists but integration suite currently fails; next agent should continue from the working tree and this hand-off
 - **Scope:** `OpenFastTracePlugin`, `example-projects/multi-project`, `README.md`, `CHANGELOG.md`
 
 ## Problem
@@ -104,28 +104,112 @@ state.
 - Automatic plugin application means all projects receive the plugin, but project build scripts
   do not need a plugin block. Empty/default project configurations should export empty manifests.
 
-Implementation may now proceed under this design. Update these findings with implementation and
-verification results.
+## Current implementation state and learnings (2026-10-10)
 
-## Decision (superseded / not implemented)
+The working tree now contains an initial implementation attempt; it is not complete or verified.
+The project plugin creates DSL on the receiving project, registers `oftExportConfig` in each
+project, and creates aggregate tasks only on the root. A new `org.itsallcode.openfasttrace.settings`
+plugin has been registered in the root build and attempts to apply the project plugin through a
+`beforeProject` callback. `OftExportConfigTask` writes a TSV manifest and copies resolved imported
+archives to `build/oft/imported-requirements`; `CollectTask` reads project manifests at execution
+time. Integration fixtures and sample settings files were also modified to include the build and
+apply the settings plugin.
 
-The earlier **Option A — convention pattern** proposal stated that every project configuring
-`requirementTracing` would apply the plugin itself, with no settings plugin or lifecycle-callback
-magic. That proposal is incomplete until the root can aggregate the participating subprojects
-without cross-project model reads. Do not treat this as an implementation decision.
+Latest available validation:
 
-- Gradle 9.x only — do not re-enable the Gradle 8.14.5 test config.
-- Documentation updates were proposed but not made.
+- `./gradlew compileJava --no-daemon` passed before the latest small edits to the test fixture.
+- Latest recorded `./gradlew test --no-daemon` executed 40 tests with 6 failures: four logical
+  integration test methods, with failures repeated across the `THIS_VERSION` and
+  `CURRENT_VERSION` parameterizations. They are:
+  - `pluginUsesConfigurationCacheWithMultiModuleProject`
+  - `testTraceMultiProject`
+  - `pluginUsesConfigurationCacheWithImportedRequirements`
+  - `traceDependencyProject`
+- At that run, the first and multi-project tests hit `--warning-mode fail` due to
+  `Configuration.setVisible(boolean)` deprecated from `pl.droidsonroids.gradle.jacoco.testkit.JaCoCoTestKitPlugin.apply`.
+  This is from the TestKit JaCoCo plugin, not the new OFT configuration; determine whether to avoid
+  invoking that deprecated behavior in isolated fixture builds or narrowly adjust test warning
+  handling without masking project deprecations.
+- Earlier runs (before settings build resolution was corrected) also exposed a critical aggregation
+  defect: root `collectRequirements` read only root data, while subproject manifest entries were
+  not consumed correctly; the generated report had duplicate root entries and lacked expected
+  child data. Later the manifest parsing path was changed, but needs rerunning and re-evaluation.
+- Two imported-requirements tests previously returned an empty report. Their settings files were
+  subsequently modified to apply/include the settings plugin, but no passing validation exists.
+- `--isolated-projects` has **not** been added to the TestKit arguments in the visible current
+  `PluginTestFixture`; tests so far do not establish Isolated Projects compatibility.
 
-## Changes
+### Important implementation gaps / risks
 
-### Proposed changes (not implemented)
+- `SettingsOpenFastTracePlugin` obtains project descriptors in `settingsEvaluated`, then passes a
+  mutable `LinkedHashMap` into the root extension in `beforeProject`. Review thread-safety,
+  configuration-cache serialization, lifecycle timing, and whether modifying project extensions
+  there respects Isolated Projects. Prefer a settings-plugin design that hands off immutable path
+  data and uses only supported public Gradle APIs.
+- Sample project `settings.gradle` files manually include the root with `includeBuild('../../')`,
+  but TestKit currently rewrites project settings on every run with `includeBuild('../..')` and
+  injects another settings plugin block. This is not idempotent: repeated runs can duplicate plugin
+  declarations, and the relative include path may not be valid for all sample projects. Make test
+  fixture setup non-mutating/repeatable and handle plugin classpath resolution intentionally.
+- `OftExportConfigTask` declares an output directory and output file but deletes/copies archives
+  even for no-dependency projects; it also resolves dependencies during project plugin/task
+  configuration via `getImportedRequirements().get()`. Audit lazy resolution, task input/output
+  annotations, cacheability, archive copy determinism, stale output handling, and task dependency
+  correctness.
+- `CollectTask` currently reads manifests at task action, which is appropriate for execution-time
+  file parsing, but `inputDirectories` and `pathConfig` are Gradle task properties and should not
+  be mutated in the task action. Build an immutable combined local snapshot inside the action;
+  ensure declared task inputs include all directories, tag files, manifests, and imported archives
+  before execution so up-to-date/build-cache keys are correct.
+- The manifest encoder/parser currently uses TSV with Base64 fields. Validate its record schema,
+  empty/default manifests, tags with multiple files, unusual file names, and malformed records.
+  Confirm imported archives are passed to `CollectTask` correctly and that Gradle tracks them as
+  task inputs.
+- Custom subproject build directories are not currently supported if the root hardcodes
+  `projectDir/build/oft/...`; document that only if deliberately accepted and covered by tests.
+- `README.md` and `CHANGELOG.md` have not been updated. A legacy proposal remains below as
+  historical context and is explicitly marked superseded; do not mistake it for the current plan.
+- Main source contains dead/legacy cross-project aggregation helpers/imports that should be
+  removed only after verifying no usage; check no code path still calls cross-project model reads.
 
-#### 1. `src/main/java/org/itsallcode/openfasttrace/gradle/OpenFastTracePlugin.java`
+## Next steps for the next agent
 
-- `apply(project)`: create the `requirementTracing` + `tags` DSL on the receiving project only
-  (drop `rootProject.allprojects(...)`); register root tasks only when
-  `project == project.getRootProject()`.
+1. Start from the current working tree; do not assume the previous diff is sound. Inspect the
+   full diff and the exact current files, especially `OpenFastTracePlugin`, `SettingsOpenFastTracePlugin`,
+   `OftExportConfigTask`, `OftManifestReader`, `CollectTask`, and `PluginTestFixture`.
+2. Repair the settings plugin resolution and fixture strategy; make tests repeatable (run the same
+   test twice). Add `--isolated-projects` to the multi-project integration fixture/test and enable
+   diagnostics for one direct verification.
+3. Fix root manifest aggregation and imported artifact flow; remove action-time mutation of task
+   properties and declare all file inputs/outputs/providers correctly. Test root-only, multi-project,
+   imported requirements, cache reuse, and edits to child source/tag/config files.
+4. Run targeted integration tests first, then `./gradlew clean test --no-daemon`; only then record
+   whether warnings/deprecations are baseline or new. Do not claim Isolated Projects support until
+   diagnostics show zero project isolation problems and configuration cache is reused.
+5. Update README/CHANGELOG and rewrite the stale proposal/verification sections of this changeset
+   from verified facts. Preserve the original spike findings as historical context, not current
+   implementation claims.
+
+No changeset status should be marked complete until the above has been resolved and verified.
+
+## Earlier plan (superseded)
+
+The prior proposal required each participating subproject to apply the project plugin manually.
+The user subsequently rejected configuring subprojects from the root project, required a single root
+aggregate report, preferred optional plugin declarations, rejected a participant list, and accepted
+a settings plugin automatically applying the project plugin. That is the current design direction,
+but its implementation is not yet functional.
+
+- Keep `GradleTestConfig.CURRENT_VERSION("9.8.1")`; do not re-enable the old Gradle 8.14.5 config
+  without separately resolving the configuration-cache limitation.
+
+## Changes still to do
+
+Do not treat the remaining content below as implemented; it captures future work.
+
+- Continue the current `apply(project)` split: create `requirementTracing` + `tags` only on the
+  receiving project and register aggregate tasks only on root, after verifying it under isolated
+  projects.
 - **Files-channel aggregation (mandatory per spike):**
   - Each project that applies the plugin registers an `oftExportConfig` task (group `trace`)
     that serializes its own `requirementTracing` snapshot (input directories, resolved tag-path
@@ -138,9 +222,14 @@ without cross-project model reads. Do not treat this as an implementation decisi
       supported for aggregation).
     - Read the config files **at execution time** to build the import inputs (input dirs, path
       configs, imported requirements) — no cross-project model access.
-- Tolerance: subprojects without the plugin are simply absent from the dependency graph (no
-  `dependsOn`, no config file). No `findByType` / `getByType` on other projects is needed.
-- Root's own config is still read directly (same project — no violation).
+- The currently selected direction automatically applies the plugin to each project, so no project
+  file needs a plugin declaration. Verify whether that remains appropriate if projects should truly
+  remain plugin-free; any omission mechanism must preserve producer discovery without root model reads.
+
+### Previous illustrative implementation notes (superseded; not current instructions)
+
+The earlier manual plugin application proposal is superseded by the settings-plugin direction above.
+Do not implement the old instructions below without re-evaluating them against the current code.
 
 ### 2. `example-projects/multi-project`
 
@@ -182,41 +271,26 @@ without cross-project model reads. Do not treat this as an implementation decisi
 - Add an `[Unreleased]` entry describing Isolated Projects compatibility (per-project plugin
   application; subprojects must apply the plugin themselves).
 
-## Verification during the aborted implementation
+## Historical verification from the earlier aborted spike
 
-`./gradlew test --no-daemon` ran 34 tests: 31 passed and 3 failed. The failing tests were:
+An earlier implementation attempt ran 34 tests (31 passed, 3 failed), with multi-project failures
+caused by the original `allprojects` cross-project extension access. Source/test/example changes
+from that attempt were reverted at that time. These results describe the historical baseline and
+not the present working tree.
 
-- `pluginUsesConfigurationCacheWithMultiModuleProject`
-- `testTraceMultiProject`
-- `testTraceMultiProjectWithSubprojectWithoutPlugin`
+Current verification and hand-off are recorded above under **Current implementation state and
+learnings** and **Next steps for the next agent**. No end-to-end isolated-project verification has
+passed yet.
 
-All three fail while creating `:traceRequirements` with the Isolated Projects violation
-`Project ':' cannot access 'Project.extensions' functionality on subprojects via 'allprojects'`.
-The partial implementation did not yet have the files-channel design and must not be considered a
-working fix. Source/test/example changes from that attempt were reverted; only this changeset now
-records the findings. The test run also showed the suite currently executes 34 tests, so the earlier expected totals
-(21/22) were outdated. The manual isolated-projects verification and warning-mode checks have not
-been completed successfully.
+## Current risks
 
-## Remaining verification (not performed)
-
-1. `./gradlew clean test` with the completed implementation.
-2. `traceRequirements --isolated-projects -Dorg.gradle.isolated-projects.diagnostics=true` in the
-   multi-project example, with zero Isolated Projects problems.
-3. Verify `--warning-mode fail` introduces no new deprecations.
-
-## Notes / risks
-
-- **Status:** blocked. No implementation is currently present; the files-channel design and
-  producer-discovery problem remain unresolved.
-- **User-facing change:** subprojects that configure the DSL must now apply the plugin
-  themselves.
-- **Custom `buildDir` in subprojects:** not supported for cross-project aggregation (config
-  files are read from `projectDir/build/oft/...` by convention).
-- **Up-to-date tracking:** subproject source files referenced via the exported config JSON must
-  be tracked as inputs of the consuming root task (declare the referenced directories/files in
-  `CollectTask`) so the `FROM_CACHE` / `UP_TO_DATE` test assertions keep holding.
-- Upstream `main` still contains the `allprojects(...)` pattern; no upstream fix exists yet.
+- Root manifest paths currently assume `projectDir/build/oft/...`; custom child build directories
+  need a deliberate design or an explicit limitation.
+- Cache correctness depends on tracking child input directories, tag files, manifests, and imported
+  archives, and on ensuring those inputs are known before task execution.
+- TestKit settings injection and the Jacoco warning-mode failure remain unresolved.
+- The code and examples are in an intermediate state; review the working tree before making further
+  edits, and do not treat the intended architecture as verified.
 
 ## Relevant files
 
