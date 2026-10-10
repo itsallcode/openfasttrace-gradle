@@ -19,7 +19,7 @@ public abstract class OftExportConfigTask extends DefaultTask
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
 
     /** Creates the task. */
-    public OftExportConfigTask()
+    protected OftExportConfigTask()
     {
         super();
     }

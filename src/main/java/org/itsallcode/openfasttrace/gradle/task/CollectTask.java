@@ -1,7 +1,5 @@
 package org.itsallcode.openfasttrace.gradle.task;
 
-import static java.util.stream.Collectors.joining;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
@@ -178,25 +176,6 @@ public class CollectTask extends DefaultTask
                         importedPaths.stream()).toList())
                 .pathConfigs(configs)
                 .build();
-    }
-
-    private List<PathConfig> getPathConfigInternal()
-    {
-        final List<PathConfig> paths = pathConfig.get().stream()
-                .flatMap(SerializableTagPathConfig::getPathConfig).toList();
-        if (getLogger().isInfoEnabled())
-        {
-            getLogger().info("Got {} path configurations:\n{}", paths.size(),
-                    paths.stream().map(CollectTask::formatPathConfig).collect(joining("\n")));
-        }
-        return paths;
-    }
-
-    private static String formatPathConfig(final PathConfig config)
-    {
-        return " - " + config.getDescription() + " (type " + config.getTagArtifactType()
-                + "): covers '" + config.getCoveredItemArtifactType() + "', prefix: '"
-                + config.getCoveredItemNamePrefix() + "'";
     }
 
     private void createReportOutputDir()

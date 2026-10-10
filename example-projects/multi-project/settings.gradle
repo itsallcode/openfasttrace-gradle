@@ -7,5 +7,3 @@ plugins {
 }
 include 'sub1'
 include 'sub2'
-
-

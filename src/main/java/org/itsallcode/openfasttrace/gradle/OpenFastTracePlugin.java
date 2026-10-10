@@ -54,15 +54,12 @@ public class OpenFastTracePlugin implements Plugin<Project>
     private static void createConfigDsl(final Project project)
     {
         LOG.info("Setting up plugin configuration for project '{}'", project.getName());
-
-        final TracingConfig tracingConfig = project.getExtensions().create("requirementTracing",
-                TracingConfig.class, project);
-        ((ExtensionAware) tracingConfig).getExtensions().create("tags", TagPathConfiguration.class,
+        final TracingConfig tracingConfig = project.getExtensions().create("requirementTracing", TracingConfig.class,
                 project);
+        ((ExtensionAware) tracingConfig).getExtensions().create("tags", TagPathConfiguration.class, project);
     }
 
-    private static void configureExportTask(final Project project,
-            final OftExportConfigTask task)
+    private static void configureExportTask(final Project project, final OftExportConfigTask task)
     {
         task.setGroup(TASK_GROUP_NAME);
         task.setDescription("Export project tracing configuration for root aggregation");
@@ -135,24 +132,19 @@ public class OpenFastTracePlugin implements Plugin<Project>
             task.setGroup(TASK_GROUP_NAME);
             task.setDescription("Collect requirements and generate specobject file");
             task.getInputDirectories().set(getConfig(rootProject).getInputDirectories());
-            task.getOutputFile().set(
-                    rootProject.getLayout().getBuildDirectory().file("reports/requirements.xml"));
-            task.getPathConfig().set(getTagPathConfig(rootProject)
-                    .map(List::of).orElseGet(Collections::emptyList));
+            task.getOutputFile().set(rootProject.getLayout().getBuildDirectory().file("reports/requirements.xml"));
+            task.getPathConfig().set(getTagPathConfig(rootProject).map(List::of).orElseGet(Collections::emptyList));
             final OftAggregationProjects projects = rootProject.getExtensions()
                     .findByType(OftAggregationProjects.class);
             if (projects != null)
             {
                 projects.projectDirectories().forEach((path, directory) -> {
-                    final String taskPath = ":".equals(path) ? ":oftExportConfig"
-                            : path + ":oftExportConfig";
+                    final String taskPath = ":".equals(path) ? ":oftExportConfig" : path + ":oftExportConfig";
                     task.dependsOn(taskPath);
                     if (!":".equals(path))
                     {
-                        task.getManifestFiles().from(
-                                new File(directory, "build/oft/trace-config.tsv"));
-                        task.getImportedArchiveInputs().from(
-                                new File(directory, "build/oft/imported-requirements"));
+                        task.getManifestFiles().from(new File(directory, "build/oft/trace-config.tsv"));
+                        task.getImportedArchiveInputs().from(new File(directory, "build/oft/imported-requirements"));
                     }
                 });
             }
@@ -195,16 +187,14 @@ public class OpenFastTracePlugin implements Plugin<Project>
         {
             task.getImportedRequirements().from(rootImports);
         }
-        final OftAggregationProjects projects = rootProject.getExtensions()
-                .findByType(OftAggregationProjects.class);
+        final OftAggregationProjects projects = rootProject.getExtensions().findByType(OftAggregationProjects.class);
         if (projects != null)
         {
             projects.projectDirectories().forEach((path, directory) -> {
                 task.dependsOn(":".equals(path) ? ":oftExportConfig" : path + ":oftExportConfig");
                 if (!":".equals(path))
                 {
-                    task.getImportedRequirements().from(
-                            new File(directory, "build/oft/imported-requirements"));
+                    task.getImportedRequirements().from(new File(directory, "build/oft/imported-requirements"));
                 }
             });
         }
