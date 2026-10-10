@@ -2,6 +2,7 @@ package org.itsallcode.openfasttrace.gradle;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.util.*;
 
@@ -12,12 +13,8 @@ import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.tasks.TaskProvider;
 import org.itsallcode.openfasttrace.api.core.ItemStatus;
-import org.itsallcode.openfasttrace.gradle.config.TagConfig;
-import org.itsallcode.openfasttrace.gradle.config.TagPathConfiguration;
-import org.itsallcode.openfasttrace.gradle.config.TracingConfig;
-import org.itsallcode.openfasttrace.gradle.task.CollectTask;
-import org.itsallcode.openfasttrace.gradle.task.OftExportConfigTask;
-import org.itsallcode.openfasttrace.gradle.task.TraceTask;
+import org.itsallcode.openfasttrace.gradle.config.*;
+import org.itsallcode.openfasttrace.gradle.task.*;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagConfig;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 import org.slf4j.Logger;
@@ -35,9 +32,9 @@ public class OpenFastTracePlugin implements Plugin<Project>
     }
 
     /**
-     * Applies the plugin to the root project.
+     * Applies the plugin to a project.
      *
-     * @param rootProject
+     * @param project
      *            the project receiving the plugin
      */
     @Override
@@ -45,7 +42,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
     {
         LOG.info("Initializing OpenFastTrace plugin for project '{}'", project);
         createConfigDsl(project);
-        project.getTasks().register("oftExportConfig", org.itsallcode.openfasttrace.gradle.task.OftExportConfigTask.class,
+        project.getTasks().register("oftExportConfig",
+                org.itsallcode.openfasttrace.gradle.task.OftExportConfigTask.class,
                 task -> configureExportTask(project, task));
         if (project == project.getRootProject())
         {
@@ -238,8 +236,6 @@ public class OpenFastTracePlugin implements Plugin<Project>
                     "Invalid status '" + value + "'. Valid statuses are: " + validStatuses, e);
         }
     }
-
-
 
     private static Optional<SerializableTagPathConfig> getTagPathConfig(final Project project)
     {

@@ -94,7 +94,11 @@ public class CollectTask extends DefaultTask
         return manifestFiles;
     }
 
-    /** @return copied requirement archives used by the project manifests */
+    /**
+     * Returns copied requirement archives referenced by project manifests.
+     *
+     * @return copied requirement archive files
+     */
     @InputFiles
     @PathSensitive(PathSensitivity.ABSOLUTE)
     public ConfigurableFileCollection getImportedArchiveInputs()
@@ -102,7 +106,12 @@ public class CollectTask extends DefaultTask
         return importedArchiveInputs;
     }
 
-    /** Collects specification items and writes the specobject file. */
+    /**
+     * Collects specification items and writes the specobject file.
+     *
+     * @throws java.io.IOException
+     *             if reading a manifest or writing the output file fails
+     */
     @TaskAction
     public void collectRequirements() throws java.io.IOException
     {
@@ -123,7 +132,14 @@ public class CollectTask extends DefaultTask
         oft.exportToPath(importedItems, output, getExportSettings());
     }
 
-    /** Imports paths from a root-aggregated manifest. */
+    /**
+     * Adds paths from a root-aggregated manifest.
+     *
+     * @param directories
+     *            input directories to collect
+     * @param paths
+     *            tag path configurations to apply
+     */
     public void addManifestInputs(final List<File> directories,
             final List<SerializableTagPathConfig> paths)
     {

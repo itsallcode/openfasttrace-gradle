@@ -5,24 +5,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.file.*;
 import org.gradle.api.provider.ListProperty;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 /** Exports a project's tracing configuration for root-project aggregation. */
 public abstract class OftExportConfigTask extends DefaultTask
@@ -35,29 +24,54 @@ public abstract class OftExportConfigTask extends DefaultTask
         super();
     }
 
-    /** @return encoded project-local configuration entries */
+    /**
+     * Returns the encoded project-local configuration entries.
+     *
+     * @return encoded configuration entries
+     */
     @Input
     public abstract ListProperty<String> getConfigEntries();
 
-    /** @return requirement and tag files that affect the export */
+    /**
+     * Returns the requirement and tag files that affect the export.
+     *
+     * @return requirement and tag source files
+     */
     @InputFiles
     @PathSensitive(PathSensitivity.ABSOLUTE)
     public abstract ConfigurableFileCollection getSourceFiles();
 
-    /** @return resolved imported requirement archives */
+    /**
+     * Returns the resolved imported requirement archives.
+     *
+     * @return imported requirement archives
+     */
     @InputFiles
     @PathSensitive(PathSensitivity.ABSOLUTE)
     public abstract ConfigurableFileCollection getImportedArchives();
 
-    /** @return copied imported archives available to root tasks */
+    /**
+     * Returns the copied imported archives available to root tasks.
+     *
+     * @return output directory for copied imported archives
+     */
     @OutputDirectory
     public abstract DirectoryProperty getImportedArchivesDirectory();
 
-    /** @return exported configuration manifest */
+    /**
+     * Returns the exported configuration manifest file.
+     *
+     * @return output manifest file
+     */
     @OutputFile
     public abstract RegularFileProperty getManifestFile();
 
-    /** Writes a deterministic manifest and project-local copies of imported archives. */
+    /**
+     * Writes a deterministic manifest and project-local copies of imported archives.
+     *
+     * @throws IOException
+     *             if writing the manifest or copying imported archives fails
+     */
     @TaskAction
     public void exportConfig() throws IOException
     {

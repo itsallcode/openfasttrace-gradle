@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 /** Reads project configuration exported for root-project aggregation. */
 public final class OftManifestReader
@@ -19,7 +17,15 @@ public final class OftManifestReader
         // Utility class.
     }
 
-    /** Reads project-local inputs and tag paths from manifests. */
+    /**
+     * Reads project-local inputs and tag paths from manifests.
+     *
+     * @param manifests
+     *            manifest files to read
+     * @return the combined project input, tag-path, and imported-archive configuration
+     * @throws IOException
+     *             if a manifest cannot be read
+     */
     public static Manifest read(final Iterable<File> manifests) throws IOException
     {
         final List<File> inputDirectories = new ArrayList<>();
@@ -55,7 +61,16 @@ public final class OftManifestReader
                 List.copyOf(importedArchives));
     }
 
-    /** Parsed manifest data. */
+    /**
+     * Parsed manifest data.
+     *
+     * @param inputDirectories
+     *            directories to import
+     * @param pathConfigs
+     *            tag path configurations
+     * @param importedArchives
+     *            requirement archives to import
+     */
     public record Manifest(List<File> inputDirectories,
             List<SerializableTagPathConfig> pathConfigs, List<File> importedArchives)
     {
