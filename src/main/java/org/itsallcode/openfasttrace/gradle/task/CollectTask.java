@@ -34,10 +34,12 @@ public class CollectTask extends DefaultTask
     @SuppressWarnings("this-escape")
     public final RegularFileProperty outputFile = getProject().getObjects().fileProperty();
     /** Configured tag path settings. */
-    @SuppressWarnings({ "this-escape" })
+    @SuppressWarnings("this-escape")
     public final ListProperty<SerializableTagPathConfig> pathConfig = getProject().getObjects()
             .listProperty(SerializableTagPathConfig.class);
+    @SuppressWarnings("this-escape")
     private final ConfigurableFileCollection manifestFiles = getProject().files();
+    @SuppressWarnings("this-escape")
     private final ConfigurableFileCollection importedArchiveInputs = getProject().files();
 
     /** Creates the task. */
@@ -142,13 +144,17 @@ public class CollectTask extends DefaultTask
         final List<Path> inputPaths = Stream.concat(inputDirectories.get().stream()
                 .map(File::toPath), manifest.inputDirectories().stream().map(File::toPath)).toList();
         final List<Path> tagPaths = Stream.concat(pathConfig.get().stream()
-                .flatMap(SerializableTagPathConfig::getPaths), manifest.pathConfigs().stream()
-                        .flatMap(SerializableTagPathConfig::getPaths)).toList();
+                .flatMap(SerializableTagPathConfig::getPaths),
+                manifest.pathConfigs().stream()
+                        .flatMap(SerializableTagPathConfig::getPaths))
+                .toList();
         final List<Path> importedPaths = manifest.importedArchives().stream().map(File::toPath)
                 .toList();
         final List<PathConfig> configs = Stream.concat(pathConfig.get().stream()
-                .flatMap(SerializableTagPathConfig::getPathConfig), manifest.pathConfigs().stream()
-                        .flatMap(SerializableTagPathConfig::getPathConfig)).toList();
+                .flatMap(SerializableTagPathConfig::getPathConfig),
+                manifest.pathConfigs().stream()
+                        .flatMap(SerializableTagPathConfig::getPathConfig))
+                .toList();
         getLogger().info("Importing from {} inputs, {} tag paths and {} imported archives",
                 inputPaths.size(), tagPaths.size(), importedPaths.size());
         return ImportSettings.builder()
