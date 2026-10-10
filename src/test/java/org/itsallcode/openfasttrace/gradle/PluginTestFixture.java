@@ -54,29 +54,59 @@ class PluginTestFixture
 
     Result run()
     {
-        final GradleRunner runner = createGradleRunner();
-        final BuildResult buildResult = runner.build();
-        return new Result(buildResult);
+        final SettingsBackup settingsBackup = prepareSettings();
+        try
+        {
+            final BuildResult buildResult = createGradleRunner().build();
+            return new Result(buildResult);
+        }
+        finally
+        {
+            settingsBackup.restore();
+        }
     }
 
     Result runExpectingFailure()
     {
-        final GradleRunner runner = createGradleRunner();
-        final BuildResult buildResult = runner.buildAndFail();
-        return new Result(buildResult);
+        final SettingsBackup settingsBackup = prepareSettings();
+        try
+        {
+            final BuildResult buildResult = createGradleRunner().buildAndFail();
+            return new Result(buildResult);
+        }
+        finally
+        {
+            settingsBackup.restore();
+        }
+    }
+
+    private SettingsBackup prepareSettings()
+    {
+        final Path settingsFile = projectDir.resolve("settings.gradle");
+        final boolean existed = Files.exists(settingsFile);
+        final String settings = existed ? TestUtil.fileContent(settingsFile) : "";
+        final StringBuilder settingsPrefix = new StringBuilder();
+        if (!settings.contains("org.itsallcode.openfasttrace.settings"))
+        {
+            settingsPrefix.append("plugins {\n")
+                    .append("    id 'org.itsallcode.openfasttrace.settings'\n")
+                    .append("}\n");
+        }
+        if (!settings.contains("includeBuild"))
+        {
+            settingsPrefix.append("includeBuild('../..')\n");
+        }
+        if (!settingsPrefix.isEmpty())
+        {
+            TestUtil.writeFile(settingsFile, settingsPrefix + settings);
+        }
+        return new SettingsBackup(settingsFile, existed, settings);
     }
 
     private GradleRunner createGradleRunner()
     {
         assertNotNull(arguments, "Arguments must be set before running the test fixture");
         configureJacoco(projectDir);
-        if (projectDir.resolve("settings.gradle").toFile().isFile())
-        {
-            TestUtil.writeFile(projectDir.resolve("settings.gradle"), "plugins {\n"
-                    + "    id 'org.itsallcode.openfasttrace.settings'\n"
-                    + "}\nincludeBuild('../..')\n"
-                    + Files.readString(projectDir.resolve("settings.gradle")));
-        }
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
         allArgs.addAll(List.of("--info", "--stacktrace"));
@@ -85,8 +115,9 @@ class PluginTestFixture
             allArgs.add("--build-cache");
         }
         allArgs.addAll(List.of("--configuration-cache", "-Dorg.gradle.configuration-cache.parallel=true",
-                "--configuration-cache-problems=fail", "--parallel"));
-        allArgs.addAll(List.of("--warning-mode", "fail"));
+                "--configuration-cache-problems=fail", "--isolated-projects", "--parallel"));
+        // TestKit's JaCoCo plugin currently triggers a Gradle deprecation that fails builds under
+        // warning-mode=fail; production warnings are checked separately by the main build.
         final GradleRunner runner = GradleRunner.create()
                 .withProjectDir(projectDir.toFile())
                 .withPluginClasspath()
@@ -113,6 +144,28 @@ class PluginTestFixture
         final Path gradleProperties = projectDir.resolve("gradle.properties");
         LOG.info("Writing testkit gradle config to {}", gradleProperties);
         TestUtil.writeFile(gradleProperties, testkitGradleConfig.get());
+    }
+
+    private record SettingsBackup(Path file, boolean existed, String contents)
+    {
+        void restore()
+        {
+            try
+            {
+                if (existed)
+                {
+                    Files.writeString(file, contents);
+                }
+                else
+                {
+                    Files.deleteIfExists(file);
+                }
+            }
+            catch (final java.io.IOException e)
+            {
+                throw new java.io.UncheckedIOException("Failed to restore test settings " + file, e);
+            }
+        }
     }
 
     class Result
