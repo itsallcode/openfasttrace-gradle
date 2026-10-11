@@ -177,7 +177,7 @@ cd openfasttrace-gradle
 To use `openfasttrace` from source during development:
 
 1. Clone https://github.com/itsallcode/openfasttrace to `../openfasttrace`
-1. Create file `gradle.properties` with the following content:
+1. Update file `gradle.properties` with the following content:
 
     ```properties
     oftSourceDir = ../openfasttrace
