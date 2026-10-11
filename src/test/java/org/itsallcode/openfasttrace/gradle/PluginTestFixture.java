@@ -98,17 +98,13 @@ class PluginTestFixture
     private static void configureJacoco(final Path projectDir)
     {
         final Optional<String> testkitGradleConfig = TestUtil
-                .readResource(PluginTestFixture.class,
-                        "/testkit-gradle.properties");
+                .readResource(PluginTestFixture.class, "/testkit-gradle.properties");
         if (testkitGradleConfig.isEmpty())
         {
-            LOG.info("Testkit gradle config not available. Skipping configuration");
-            return;
+            throw new IllegalStateException("TestKit JaCoCo Gradle properties resource is missing");
         }
-        LOG.info("Found testkit gradle config: {}", testkitGradleConfig.get());
-        final Path gradleProperties = projectDir.resolve("gradle.properties");
-        LOG.info("Writing testkit gradle config to {}", gradleProperties);
-        TestUtil.writeFile(gradleProperties, testkitGradleConfig.get());
+        LOG.info("Writing generated TestKit JaCoCo Gradle properties to project {}", projectDir);
+        TestUtil.writeFile(projectDir.resolve("gradle.properties"), testkitGradleConfig.get());
     }
 
     class Result

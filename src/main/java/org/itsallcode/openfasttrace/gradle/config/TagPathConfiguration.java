@@ -1,7 +1,6 @@
 package org.itsallcode.openfasttrace.gradle.config;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -43,7 +42,7 @@ public class TagPathConfiguration
      */
     public List<TagConfig> getPathConfig()
     {
-        return tagConfigs;
+        return Collections.unmodifiableList(tagConfigs);
     }
 
     @Override

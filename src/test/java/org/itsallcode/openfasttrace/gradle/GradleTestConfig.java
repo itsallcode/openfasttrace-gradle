@@ -11,7 +11,7 @@ public enum GradleTestConfig
      * Version 8 does not support testkit with configuration cache, see
      * https://github.com/gradle/gradle/issues/25979
      */
-    PREVIOUS_VERSION("9.7.1"), CURRENT_VERSION("9.8.0");
+    PREVIOUS_VERSION("9.7.1"), CURRENT_VERSION("9.8.1");
 
     public final String gradleVersion;
 
