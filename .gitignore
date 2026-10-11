@@ -1,5 +1,4 @@
 /.gradle/
-/gradle.properties
 /.project
 /.classpath
 /.settings/org.eclipse.buildship.core.prefs
@@ -17,3 +16,5 @@
 /example-projects/*/gradle.properties
 /example-projects/*/.idea
 /example-projects/multi-project/*/build
+/buildSrc/.gradle/
+/buildSrc/build/

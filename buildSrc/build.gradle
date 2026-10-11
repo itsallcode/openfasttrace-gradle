@@ -1,0 +1,30 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation gradleTestKit()
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.1.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.1.3'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+gradlePlugin {
+    plugins {
+        jacocoTestKit {
+            id = 'org.itsallcode.jacoco-testkit'
+            implementationClass = 'org.itsallcode.gradle.jacoco.testkit.JacocoTestKitPlugin'
+        }
+    }
+}

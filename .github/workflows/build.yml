@@ -49,10 +49,12 @@ jobs:
         key: ${{ runner.os }}-java-${{ matrix.java }}-sonar
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
+    - name: Test buildSrc plugins
+      run: ./gradlew -p buildSrc test --warning-mode all --configuration-cache --configuration-cache-problems=fail
+
     - name: Build with Java ${{ matrix.java }}
       run: |
-        ./gradlew build --warning-mode fail \
-                        --configuration-cache --configuration-cache-problems=fail \
+        ./gradlew build --configuration-cache-problems=fail \
                         --exclude-task ossIndexAudit \
                         -PjavaVersion=${{ matrix.java }}
 
@@ -65,7 +67,7 @@ jobs:
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
-      run: ./gradlew sonar --info --warning-mode all -Dsonar.token=$SONAR_TOKEN
+      run: ./gradlew sonar --info -Dsonar.token=$SONAR_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -85,7 +87,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
     - name: Ossindex
-      run: ./gradlew ossIndexAudit --warning-mode all --info
+      run: ./gradlew ossIndexAudit --info
       env:
         ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
         ORG_GRADLE_PROJECT_ossIndexToken: ${{ secrets.OSSINDEX_TOKEN }}
