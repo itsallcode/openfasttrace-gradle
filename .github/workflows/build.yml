@@ -51,8 +51,7 @@ jobs:
 
     - name: Build with Java ${{ matrix.java }}
       run: |
-        ./gradlew build --warning-mode fail \
-                        --configuration-cache --configuration-cache-problems=fail \
+        ./gradlew build --configuration-cache-problems=fail \
                         --exclude-task ossIndexAudit \
                         -PjavaVersion=${{ matrix.java }}
 
@@ -65,7 +64,7 @@ jobs:
 
     - name: Sonar analysis
       if: ${{ env.DEFAULT_JAVA == matrix.java && env.SONAR_TOKEN != null }}
-      run: ./gradlew sonar --info --warning-mode all -Dsonar.token=$SONAR_TOKEN
+      run: ./gradlew sonar --info -Dsonar.token=$SONAR_TOKEN
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -85,6 +84,8 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
     - name: Ossindex
+      # Override warning mode to suppress deprecation warning in ossIndexAudit task.
+      # Invocation of Task.project at execution time has been deprecated. This will fail with an error in Gradle 10. This API is incompatible with the configuration cache, which will become the only mode supported by Gradle in a future release. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_7.html#task_project
       run: ./gradlew ossIndexAudit --warning-mode all --info
       env:
         ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
