@@ -15,7 +15,7 @@ Gradle plugin for the requirement tracing suite [OpenFastTrace](https://github.c
 
 ## Usage
 
-1. Preconditions: Java 17 and Gradle 9.7.0
+1. Preconditions: Java 17 and Gradle 9.7.1 or later
 1. Add plugin [`org.itsallcode.openfasttrace`](https://plugins.gradle.org/plugin/org.itsallcode.openfasttrace) to your project:
 
     ```groovy
