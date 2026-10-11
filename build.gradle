@@ -4,7 +4,6 @@ plugins {
     id 'signing'
     id 'com.gradle.plugin-publish' version '2.2.1'
     id 'org.sonarqube' version '7.5.0.8588'
-    //id 'pl.droidsonroids.jacoco.testkit' version '1.0.12'
     id 'io.github.ben-manes.versions' version '0.65.0'
     id 'org.sonatype.gradle.plugins.scan' version '4.1.0-02'
 }
@@ -17,6 +16,11 @@ apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
 version = '3.4.0'
 group = 'org.itsallcode'
+
+def jacocoTestKitExecFile = layout.buildDirectory.file('jacoco/testkit.exec')
+def cleanTestKitJacocoExec = tasks.register('cleanTestKitJacocoExec', Delete) {
+    delete jacocoTestKitExecFile
+}
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
@@ -139,12 +143,17 @@ testing {
 
 jacocoTestReport {
     dependsOn test
+    executionData(jacocoTestKitExecFile)
     reports {
         xml.required = true
     }
 }
 
 test {
+    systemProperty 'testkit.jacoco.agent', configurations.jacocoAgent.singleFile.absolutePath
+    systemProperty 'testkit.jacoco.exec', jacocoTestKitExecFile.get().asFile.absolutePath
+    dependsOn cleanTestKitJacocoExec
+    outputs.file(jacocoTestKitExecFile)
     finalizedBy jacocoTestReport
 }
 
