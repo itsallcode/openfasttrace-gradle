@@ -84,9 +84,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
     - name: Ossindex
-      # Override warning mode to suppress deprecation warning in ossIndexAudit task.
-      # Invocation of Task.project at execution time has been deprecated. This will fail with an error in Gradle 10. This API is incompatible with the configuration cache, which will become the only mode supported by Gradle in a future release. Consult the upgrading guide for further information: https://docs.gradle.org/9.8.1/userguide/upgrading_version_7.html#task_project
-      run: ./gradlew ossIndexAudit --warning-mode all --info
+      run: ./gradlew ossIndexAudit --info
       env:
         ORG_GRADLE_PROJECT_ossIndexUsername: ${{ secrets.OSSINDEX_USERNAME }}
         ORG_GRADLE_PROJECT_ossIndexToken: ${{ secrets.OSSINDEX_TOKEN }}
