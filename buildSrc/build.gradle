@@ -1,0 +1,16 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+gradlePlugin {
+    plugins {
+        jacocoTestKit {
+            id = 'org.itsallcode.jacoco-testkit'
+            implementationClass = 'org.itsallcode.gradle.jacoco.testkit.JacocoTestKitPlugin'
+        }
+    }
+}

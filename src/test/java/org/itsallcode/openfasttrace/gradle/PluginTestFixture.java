@@ -15,9 +15,6 @@ import org.hamcrest.Matcher;
 class PluginTestFixture
 {
     private static final Logger LOG = Logging.getLogger(PluginTestFixture.class);
-    private static final String JACOCO_AGENT_PROPERTY = "testkit.jacoco.agent";
-    private static final String JACOCO_EXEC_PROPERTY = "testkit.jacoco.exec";
-    private static final String JACOCO_INIT_SCRIPT = "build/tmp/testkit-jacoco.init.gradle";
 
     private final GradleTestConfig config;
     private final Path projectDir;
@@ -69,17 +66,16 @@ class PluginTestFixture
     private GradleRunner createGradleRunner()
     {
         assertNotNull(arguments, "Arguments must be set before running the test fixture");
+        configureJacoco(projectDir);
         final List<String> allArgs = new ArrayList<>();
         allArgs.addAll(List.of(arguments));
         allArgs.addAll(List.of("--info", "--stacktrace"));
-        allArgs.addAll(List.of("--init-script", jacocoInitScript().toString()));
         if (buildCache)
         {
             allArgs.add("--build-cache");
         }
         allArgs.addAll(List.of("--configuration-cache", "-Dorg.gradle.configuration-cache.parallel=true",
                 "--configuration-cache-problems=fail", "--parallel"));
-        allArgs.add("-Dorg.gradle.jvmargs=" + jacocoAgentArgument());
         allArgs.addAll(List.of("--warning-mode", "fail"));
         final GradleRunner runner = GradleRunner.create()
                 .withProjectDir(projectDir.toFile())
@@ -93,43 +89,16 @@ class PluginTestFixture
         return runner;
     }
 
-    private static Path jacocoInitScript()
+    private static void configureJacoco(final Path projectDir)
     {
-        final Path script = Path.of(JACOCO_INIT_SCRIPT).toAbsolutePath();
-        final Optional<String> contents = TestUtil.readResource(PluginTestFixture.class,
-                "/testkit-jacoco.init.gradle");
-        if (contents.isEmpty())
+        final Optional<String> testkitGradleConfig = TestUtil
+                .readResource(PluginTestFixture.class, "/testkit-gradle.properties");
+        if (testkitGradleConfig.isEmpty())
         {
-            throw new IllegalStateException("TestKit JaCoCo init script resource is missing");
+            throw new IllegalStateException("TestKit JaCoCo Gradle properties resource is missing");
         }
-        final String execFile = requiredSystemProperty(JACOCO_EXEC_PROPERTY)
-                .replace("\\", "\\\\").replace("'", "\\'");
-        TestUtil.createDirs(script.getParent());
-        TestUtil.writeFile(script, contents.get().replace("__JACOCO_EXEC_FILE__", execFile));
-        return script;
-    }
-
-    private static String jacocoAgentArgument()
-    {
-        final String agent = requiredSystemProperty(JACOCO_AGENT_PROPERTY);
-        final String execFile = requiredSystemProperty(JACOCO_EXEC_PROPERTY);
-        LOG.info("Injecting JaCoCo agent into TestKit Gradle daemon, data file {}", execFile);
-        return "-javaagent:" + quote(agent) + "=destfile=" + quote(execFile) + ",append=true";
-    }
-
-    private static String requiredSystemProperty(final String name)
-    {
-        final String value = System.getProperty(name);
-        if (value == null || value.isBlank())
-        {
-            throw new IllegalStateException("Required system property is not set: " + name);
-        }
-        return value;
-    }
-
-    private static String quote(final String value)
-    {
-        return "\"" + value.replace("\"", "\\\"") + "\"";
+        LOG.info("Writing generated TestKit JaCoCo Gradle properties to project {}", projectDir);
+        TestUtil.writeFile(projectDir.resolve("gradle.properties"), testkitGradleConfig.get());
     }
 
     class Result

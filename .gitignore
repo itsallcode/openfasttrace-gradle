@@ -16,3 +16,5 @@
 /example-projects/*/gradle.properties
 /example-projects/*/.idea
 /example-projects/multi-project/*/build
+/buildSrc/.gradle/
+/buildSrc/build/

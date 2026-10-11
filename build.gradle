@@ -8,6 +8,8 @@ plugins {
     id 'org.sonatype.gradle.plugins.scan' version '4.1.0-02'
 }
 
+apply plugin: 'org.itsallcode.jacoco-testkit'
+
 repositories {
     mavenCentral()
 }
@@ -16,14 +18,6 @@ apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
 version = '3.4.0'
 group = 'org.itsallcode'
-
-def jacocoTestKitExecFile = layout.buildDirectory.file('jacoco/testkit.exec')
-def cleanTestKitJacocoExec = tasks.register('cleanTestKitJacocoExec', Delete) {
-    delete jacocoTestKitExecFile
-}
-configurations {
-    jacocoTestKitAgent
-}
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
@@ -53,7 +47,6 @@ def compiledClassesFolders(File dir) {
 }
 
 dependencies {
-    jacocoTestKitAgent "org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime"
     if (useOftSources) {
         logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftSourceDir"
         implementation files(compiledClassesFolders(oftSourceDir)) {
@@ -147,17 +140,12 @@ testing {
 
 jacocoTestReport {
     dependsOn test
-    executionData(jacocoTestKitExecFile)
     reports {
         xml.required = true
     }
 }
 
 test {
-    systemProperty 'testkit.jacoco.agent', configurations.jacocoTestKitAgent.singleFile.absolutePath
-    systemProperty 'testkit.jacoco.exec', jacocoTestKitExecFile.get().asFile.absolutePath
-    dependsOn cleanTestKitJacocoExec
-    outputs.file(jacocoTestKitExecFile)
     finalizedBy jacocoTestReport
 }
 
