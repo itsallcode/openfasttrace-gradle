@@ -21,6 +21,9 @@ def jacocoTestKitExecFile = layout.buildDirectory.file('jacoco/testkit.exec')
 def cleanTestKitJacocoExec = tasks.register('cleanTestKitJacocoExec', Delete) {
     delete jacocoTestKitExecFile
 }
+configurations {
+    jacocoTestKitAgent
+}
 
 ext {
     gradlePluginId = 'org.itsallcode.openfasttrace'
@@ -50,6 +53,7 @@ def compiledClassesFolders(File dir) {
 }
 
 dependencies {
+    jacocoTestKitAgent "org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime"
     if (useOftSources) {
         logger.lifecycle "Including OpenFastTrace sources from Maven target dir $oftSourceDir"
         implementation files(compiledClassesFolders(oftSourceDir)) {
@@ -150,7 +154,7 @@ jacocoTestReport {
 }
 
 test {
-    systemProperty 'testkit.jacoco.agent', configurations.jacocoAgent.singleFile.absolutePath
+    systemProperty 'testkit.jacoco.agent', configurations.jacocoTestKitAgent.singleFile.absolutePath
     systemProperty 'testkit.jacoco.exec', jacocoTestKitExecFile.get().asFile.absolutePath
     dependsOn cleanTestKitJacocoExec
     outputs.file(jacocoTestKitExecFile)

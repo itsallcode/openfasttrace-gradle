@@ -39,7 +39,8 @@ public class TestUtil
     {
         try
         {
-            Files.write(file, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+            Files.write(file, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
         }
         catch (final IOException e)
         {

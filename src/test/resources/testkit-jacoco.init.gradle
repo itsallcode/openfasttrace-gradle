@@ -1,0 +1,19 @@
+gradle.beforeProject { project ->
+    def dumpJacocoData = project.tasks.register('dumpTestKitJacocoData') {
+        doLast {
+            def agentClass = ClassLoader.getSystemClassLoader().loadClass('org.jacoco.agent.rt.RT')
+            def agent = agentClass.getMethod('getAgent').invoke(null)
+            def executionData = agent.getExecutionData(true)
+            def executionFile = new File('__JACOCO_EXEC_FILE__')
+            executionFile.parentFile.mkdirs()
+            java.nio.file.Files.write(executionFile.toPath(), executionData,
+                    java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND)
+        }
+    }
+
+    project.tasks.configureEach { task ->
+        if (task.name != 'dumpTestKitJacocoData') {
+            task.finalizedBy(dumpJacocoData)
+        }
+    }
+}
