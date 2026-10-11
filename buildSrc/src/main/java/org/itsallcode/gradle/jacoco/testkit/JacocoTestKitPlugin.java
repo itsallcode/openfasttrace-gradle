@@ -12,6 +12,10 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension;
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension;
 
+/**
+ * This is a replacement for https://github.com/koral--/jacoco-gradle-testkit-plugin which triggers a deprecation
+ * warning in Gradle.
+ */
 public final class JacocoTestKitPlugin implements Plugin<Project>
 {
     private static final String JACOCO_RUNTIME_CONFIGURATION = "jacocoTestKitRuntime";

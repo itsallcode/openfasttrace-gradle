@@ -49,6 +49,9 @@ jobs:
         key: ${{ runner.os }}-java-${{ matrix.java }}-sonar
         restore-keys: ${{ runner.os }}-java-${{ matrix.java }}-sonar
 
+    - name: Test buildSrc plugins
+      run: ./gradlew -p buildSrc test --warning-mode all --configuration-cache --configuration-cache-problems=fail
+
     - name: Build with Java ${{ matrix.java }}
       run: |
         ./gradlew build --configuration-cache-problems=fail \
