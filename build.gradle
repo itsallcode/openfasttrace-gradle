@@ -113,6 +113,7 @@ gradlePlugin {
             compatibility {
                 features {
                     configurationCache = true
+                    isolatedProjects = false // See https://github.com/itsallcode/openfasttrace-gradle/issues/91
                 }
             }
         }
