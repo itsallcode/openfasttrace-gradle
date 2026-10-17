@@ -17,7 +17,8 @@ import org.itsallcode.openfasttrace.api.core.Newline;
 import org.itsallcode.openfasttrace.api.core.SpecificationItem;
 import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.importer.tag.config.PathConfig;
-import org.itsallcode.openfasttrace.core.*;
+import org.itsallcode.openfasttrace.core.ExportSettings;
+import org.itsallcode.openfasttrace.core.Oft;
 import org.itsallcode.openfasttrace.gradle.task.config.SerializableTagPathConfig;
 
 /** Gradle task that collects specification items into a specobject file. */
@@ -96,7 +97,7 @@ public class CollectTask extends DefaultTask
     public void collectRequirements()
     {
         createReportOutputDir();
-        final Oft oft = new OftRunner();
+        final Oft oft = OftFactory.createOft(getPluginFiles());
         final ImportSettings settings = getImportSettings();
         getLogger().info("Importing from {} locations {} and {} path configurations: {}",
                 settings.getInputs().size(), settings.getInputs(), settings.getPathConfigs().size(),

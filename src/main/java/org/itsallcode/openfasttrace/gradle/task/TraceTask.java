@@ -19,7 +19,6 @@ import org.itsallcode.openfasttrace.api.core.*;
 import org.itsallcode.openfasttrace.api.importer.ImportSettings;
 import org.itsallcode.openfasttrace.api.report.ReportVerbosity;
 import org.itsallcode.openfasttrace.core.Oft;
-import org.itsallcode.openfasttrace.core.OftRunner;
 
 /** Gradle task that traces requirements and writes a report. */
 @SuppressWarnings("this-escape")
@@ -214,7 +213,7 @@ public class TraceTask extends DefaultTask
     public void trace()
     {
         createReportOutputDir();
-        final Oft oft = new OftRunner();
+        final Oft oft = OftFactory.createOft(getPluginFiles());
         final ImportSettings importSettings = getImportSettings();
         final List<SpecificationItem> importedItems = oft.importItems(importSettings);
         getLogger().info("Read {} spec items from {}", importedItems.size(),
