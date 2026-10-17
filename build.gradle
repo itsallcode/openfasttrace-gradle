@@ -90,7 +90,7 @@ task compileOft(type: Exec) {
         mavenCommand = 'mvn.cmd'
     }
     commandLine mavenCommand, '-T', '1C', 'package', '-DskipTests', '-Dmaven.test.skip=true',
-         '-Dmaven.site.skip=true', '-Dmaven.javadoc.skip=true', '-Dmaven.source.skip=true', '-Dossindex.skip=true',
+         '-Dmaven.site.skip=true', '-Dmaven.javadoc.skip=true', '-Dmaven.source.skip=true', '-Dossindex.skip=true', '-Dspdx.skip=true',
          '-Djava.version=' + getJavaVersion()
 }
 
