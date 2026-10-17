@@ -4,8 +4,8 @@ plugins {
     id 'signing'
     id 'com.gradle.plugin-publish' version '2.2.1'
     id 'org.sonarqube' version '7.5.0.8588'
-    id 'io.github.ben-manes.versions' version '0.65.0'
-    id 'org.sonatype.gradle.plugins.scan' version '4.1.0-02'
+    id 'io.github.ben-manes.versions' version '0.66.0'
+    id 'org.sonatype.gradle.plugins.scan' version '4.1.1-01'
 }
 
 apply plugin: 'org.itsallcode.jacoco-testkit'
@@ -90,7 +90,7 @@ task compileOft(type: Exec) {
         mavenCommand = 'mvn.cmd'
     }
     commandLine mavenCommand, '-T', '1C', 'package', '-DskipTests', '-Dmaven.test.skip=true',
-         '-Dmaven.site.skip=true', '-Dmaven.javadoc.skip=true', '-Dmaven.source.skip=true', '-Dossindex.skip=true',
+         '-Dmaven.site.skip=true', '-Dmaven.javadoc.skip=true', '-Dmaven.source.skip=true', '-Dossindex.skip=true', '-Dspdx.skip=true',
          '-Djava.version=' + getJavaVersion()
 }
 

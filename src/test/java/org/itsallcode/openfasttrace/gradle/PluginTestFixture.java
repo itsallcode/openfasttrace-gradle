@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
@@ -53,13 +54,18 @@ class PluginTestFixture
 
     Result run()
     {
-        final BuildResult buildResult = createGradleRunner().build();
-        return new Result(buildResult);
+        return run(GradleRunner::build);
     }
 
     Result runExpectingFailure()
     {
-        final BuildResult buildResult = createGradleRunner().buildAndFail();
+        return run(GradleRunner::buildAndFail);
+    }
+
+    private Result run(final Function<GradleRunner, BuildResult> runnerFunction)
+    {
+        final GradleRunner runner = createGradleRunner();
+        final BuildResult buildResult = runnerFunction.apply(runner);
         return new Result(buildResult);
     }
 

@@ -71,6 +71,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
             task.setGroup(TASK_GROUP_NAME);
             task.setDescription("Collect requirements and generate specobject file");
             task.getInputDirectories().set(getAllInputDirectories(rootProject.getAllprojects()));
+            task.getPluginFiles().from(
+                    getPluginDependencies(rootProject, rootProject.getAllprojects()));
             task.getOutputFile().set(
                     rootProject.getLayout().getBuildDirectory().file("reports/requirements.xml"));
             task.getPathConfig().set(getPathConfig(rootProject.getAllprojects()));
@@ -109,6 +111,8 @@ public class OpenFastTracePlugin implements Plugin<Project>
         task.getReportFormat().set(config.getReportFormat());
         task.getImportedRequirements()
                 .from(getImportedRequirements(rootProject, rootProject.getAllprojects()));
+        task.getPluginFiles().from(
+                getPluginDependencies(rootProject, rootProject.getAllprojects()));
         task.getFilteredArtifactTypes().set(config.getFilteredArtifactTypes());
         task.getFilteredTags().set(config.getFilteredTags());
         task.getFilterAcceptsItemsWithoutTag().set(config.getFilterAcceptsItemsWithoutTag());
@@ -171,6 +175,45 @@ public class OpenFastTracePlugin implements Plugin<Project>
             project.getDependencies().add(CONFIG_NAME, dependency);
         });
         return Optional.of(project.getConfigurations().named(CONFIG_NAME));
+    }
+
+    private static ConfigurableFileCollection getPluginDependencies(final Project rootProject,
+            final Set<Project> allProjects)
+    {
+        return rootProject.files(allProjects.stream()
+                .map(OpenFastTracePlugin::getPluginDependencies)
+                .flatMap(Optional::stream)
+                .toList());
+    }
+
+    private static Optional<Configuration> getPluginDependencies(final Project project)
+    {
+        final List<Object> dependencies = getConfig(project).getPluginDependencies().get();
+        if (dependencies.isEmpty())
+        {
+            return Optional.empty();
+        }
+        final String CONFIG_NAME = "oftPluginConfig";
+        return Optional.of(getOrCreateConfiguration(project, CONFIG_NAME, dependencies));
+    }
+
+    private static Configuration getOrCreateConfiguration(final Project project,
+            final String configurationName, final List<Object> dependencies)
+    {
+        final Configuration existingConfiguration = project.getConfigurations()
+                .findByName(configurationName);
+        if (existingConfiguration != null)
+        {
+            return existingConfiguration;
+        }
+
+        final Configuration configuration = project.getConfigurations().create(configurationName);
+        dependencies.forEach(dependency -> {
+            LOG.info("Adding dependency {} with configuration {} to project {}", dependency,
+                    configurationName, project);
+            project.getDependencies().add(configurationName, dependency);
+        });
+        return configuration;
     }
 
     private static List<SerializableTagPathConfig> getPathConfig(final Set<Project> allProjects)

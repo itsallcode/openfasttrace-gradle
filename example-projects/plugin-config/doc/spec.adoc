@@ -1,0 +1,6 @@
+== AsciiDoc Spec
+
+[.specitem, oft-sid="dsn~asciidoc-exampleB~1", oft-needs="impl,test"]
+=== Example AsciiDoc Requirement
+
+Example AsciiDoc requirement
