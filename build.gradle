@@ -16,7 +16,7 @@ repositories {
 
 apply from: 'gradle/workAroundJacocoGradleTestKitIssueOnWindows.gradle'
 
-version = '3.4.0'
+version = '3.5.0'
 group = 'org.itsallcode'
 
 ext {
