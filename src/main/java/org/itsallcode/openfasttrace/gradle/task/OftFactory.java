@@ -10,7 +10,7 @@ import org.itsallcode.openfasttrace.core.OftBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class OftFactory
+final class OftFactory
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(OftFactory.class);
 
