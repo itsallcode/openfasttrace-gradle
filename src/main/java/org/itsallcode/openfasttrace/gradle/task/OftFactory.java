@@ -9,12 +9,20 @@ import org.itsallcode.openfasttrace.core.OftBuilder;
 
 class OftFactory
 {
+    private OftFactory()
+    {
+        // prevent instantiation
+    }
+
     static Oft createOft(final ConfigurableFileCollection pluginFiles)
     {
         final OftBuilder builder = Oft.builder();
         if (!pluginFiles.isEmpty())
         {
-            builder.addPlugin("gradle-plugins", pluginFiles.getFiles().stream().map(File::toPath).toArray(Path[]::new));
+            builder.addPlugin("gradle-plugins", pluginFiles.getFiles()
+                    .stream()
+                    .map(File::toPath)
+                    .toArray(Path[]::new));
         }
         return builder.build();
     }
