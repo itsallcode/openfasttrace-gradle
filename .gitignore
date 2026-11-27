@@ -18,3 +18,4 @@
 /example-projects/multi-project/*/build
 /buildSrc/.gradle/
 /buildSrc/build/
+/.serena/

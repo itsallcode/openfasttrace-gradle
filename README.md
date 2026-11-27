@@ -64,6 +64,7 @@ You can configure the following properties:
   * `failure_summaries` - list of summaries for defect specification items
   * `failure_details` - summaries and details for defect specification items (default)
   * `direct_failure_details` - details of non-transitive unclean items (added in OFT 4.6.0)
+  * `overview` - show an overview of the trace results without listing individual specification items
   * `all` - summaries and details for all specification items
 * `reportColorScheme`: Color scheme of plain text report
   * `black_and_white` - Black and white (default)
