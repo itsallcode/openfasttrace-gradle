@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.6.0] - 2026-11-27
 
-- Upgrade from OpenFastTrace 4.11.0 to [4.12.0](https://github.com/itsallcode/openfasttrace/releases/tag/4.12.0)
+- [PR #96](https://github.com/itsallcode/openfasttrace-gradle/pull/96): Upgrade from OpenFastTrace 4.11.0 to [4.12.0](https://github.com/itsallcode/openfasttrace/releases/tag/4.12.0)
   - Add an overview verbosity mode to the plain-text report
   - Fix Markdown and Gherkin import edge cases
 
